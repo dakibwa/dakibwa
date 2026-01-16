@@ -33,75 +33,28 @@ const App: React.FC = () => {
       
       <main className="max-w-4xl mx-auto px-6 py-16 md:py-24">
         {activeSection === '' && (
-          <div className="space-y-12">
-            {/* Hero Section */}
-            <header className="space-y-6">
-              <p className="text-xl md:text-2xl text-[#666] dark:text-[#999] leading-relaxed max-w-2xl">
-                Me trying to materialise something in the world.
-              </p>
-            </header>
+          <nav className="space-y-2">
+            <button
+              onClick={() => handleNavigationSelect('CREATION')}
+              className="block text-left w-full py-3 hover:opacity-60 transition-opacity"
+            >
+              <span className="text-xl">Creation</span>
+            </button>
 
-            {/* Quick Links */}
-            <nav className="space-y-4 pt-8">
-              <button
-                onClick={() => handleNavigationSelect('CREATION')}
-                className="block text-left w-full py-4 border-b border-[#e0e0e0] dark:border-[#333] hover:border-[#1a1a1a] dark:hover:border-[#e0e0e0] transition-colors group"
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h2 className="text-2xl font-normal group-hover:text-[#1a1a1a] dark:group-hover:text-[#fff] transition-colors">
-                      Creation
-                    </h2>
-                    <p className="text-sm text-[#666] dark:text-[#999] mt-1">
-                      Essays and applications
-                    </p>
-                  </div>
-                  <span className="text-[#999] dark:text-[#666] group-hover:text-[#1a1a1a] dark:group-hover:text-[#e0e0e0]">→</span>
-                </div>
-              </button>
+            <button
+              onClick={() => handleNavigationSelect('CONSUMPTION')}
+              className="block text-left w-full py-3 hover:opacity-60 transition-opacity"
+            >
+              <span className="text-xl">Consumption</span>
+            </button>
 
-              <button
-                onClick={() => handleNavigationSelect('CONSUMPTION')}
-                className="block text-left w-full py-4 border-b border-[#e0e0e0] dark:border-[#333] hover:border-[#1a1a1a] dark:hover:border-[#e0e0e0] transition-colors group"
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h2 className="text-2xl font-normal group-hover:text-[#1a1a1a] dark:group-hover:text-[#fff] transition-colors">
-                      Consumption
-                    </h2>
-                    <p className="text-sm text-[#666] dark:text-[#999] mt-1">
-                      Media consumed and documented
-                    </p>
-                  </div>
-                  <span className="text-[#999] dark:text-[#666] group-hover:text-[#1a1a1a] dark:group-hover:text-[#e0e0e0]">→</span>
-                </div>
-              </button>
-
-              <button
-                onClick={() => handleNavigationSelect('CONTACT')}
-                className="block text-left w-full py-4 border-b border-[#e0e0e0] dark:border-[#333] hover:border-[#1a1a1a] dark:hover:border-[#e0e0e0] transition-colors group"
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h2 className="text-2xl font-normal group-hover:text-[#1a1a1a] dark:group-hover:text-[#fff] transition-colors">
-                      Contact
-                    </h2>
-                    <p className="text-sm text-[#666] dark:text-[#999] mt-1">
-                      Get in touch
-                    </p>
-                  </div>
-                  <span className="text-[#999] dark:text-[#666] group-hover:text-[#1a1a1a] dark:group-hover:text-[#e0e0e0]">→</span>
-                </div>
-              </button>
-            </nav>
-
-            {/* Optional: Subtle background image reference */}
-            <div className="pt-16 mt-16 border-t border-[#e0e0e0] dark:border-[#333]">
-              <p className="text-sm text-[#999] dark:text-[#666] italic">
-                "The camera lens reframes our private existence into a public performance."
-              </p>
-            </div>
-          </div>
+            <button
+              onClick={() => handleNavigationSelect('CONTACT')}
+              className="block text-left w-full py-3 hover:opacity-60 transition-opacity"
+            >
+              <span className="text-xl">Contact</span>
+            </button>
+          </nav>
         )}
 
         {activeSection === 'CREATION' && (
