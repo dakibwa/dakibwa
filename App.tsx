@@ -41,7 +41,7 @@ const App: React.FC = () => {
               </h1>
               <div className="w-16 h-px bg-[#1a1a1a] dark:bg-[#e0e0e0]"></div>
               <p className="text-xl md:text-2xl text-[#666] dark:text-[#999] leading-relaxed max-w-2xl">
-                Writing about technology, perception, and the spaces between digital and physical existence.
+                Me trying to materialise something in the world.
               </p>
             </header>
 
