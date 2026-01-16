@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Navigation from './components/Navigation';
 import Projects from './components/Projects';
 import Contact from './components/Contact';
+import Consumption from './components/Consumption';
 import EssayView from './components/EssayView';
 import SoundMind from './components/SoundMind';
 
@@ -64,6 +65,23 @@ const App: React.FC = () => {
               </button>
 
               <button
+                onClick={() => handleNavigationSelect('CONSUMPTION')}
+                className="block text-left w-full py-4 border-b border-[#e0e0e0] dark:border-[#333] hover:border-[#1a1a1a] dark:hover:border-[#e0e0e0] transition-colors group"
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-2xl font-normal group-hover:text-[#1a1a1a] dark:group-hover:text-[#fff] transition-colors">
+                      Consumption
+                    </h2>
+                    <p className="text-sm text-[#666] dark:text-[#999] mt-1">
+                      Media consumed and documented
+                    </p>
+                  </div>
+                  <span className="text-[#999] dark:text-[#666] group-hover:text-[#1a1a1a] dark:group-hover:text-[#e0e0e0]">→</span>
+                </div>
+              </button>
+
+              <button
                 onClick={() => handleNavigationSelect('CONTACT')}
                 className="block text-left w-full py-4 border-b border-[#e0e0e0] dark:border-[#333] hover:border-[#1a1a1a] dark:hover:border-[#e0e0e0] transition-colors group"
               >
@@ -96,6 +114,10 @@ const App: React.FC = () => {
             onSelectEssay={handleEssaySelect} 
             onLaunchApp={handleAppLaunch}
           />
+        )}
+
+        {activeSection === 'CONSUMPTION' && (
+          <Consumption />
         )}
 
         {activeSection === 'CONTACT' && (
