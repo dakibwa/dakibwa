@@ -6,21 +6,28 @@
     <title>Akibwa</title>
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Fonts -->
+    <!-- Fonts - Gwern/LessWrong style: serif for body, sans-serif for UI -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
     <style>
       body {
         margin: 0;
         padding: 0;
-        background-color: #000;
-        overflow: hidden; /* Prevent scrolling for the hero effect */
+        background-color: #fafafa;
+        color: #1a1a1a;
+        font-family: 'Crimson Pro', Georgia, serif;
+        line-height: 1.7;
+        overflow-x: hidden;
+        overflow-y: auto;
       }
-      /* Revert to Space Grotesk for the retro-futuristic feel */
-      .font-sans-serif {
-        font-family: 'Space Grotesk', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      /* Dark mode support */
+      @media (prefers-color-scheme: dark) {
+        body {
+          background-color: #1a1a1a;
+          color: #e0e0e0;
+        }
       }
     </style>
 </head>
