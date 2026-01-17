@@ -68,54 +68,33 @@ const App: React.FC = () => {
             </p>
 
             <blockquote className="border-l-2 border-[#e0e0e0] dark:border-[#333] pl-6">
-              <p className="text-[#666] dark:text-[#999] italic">
-                "I respect anyone who gives more in this world than takes"
+              <p className="text-lg md:text-xl text-[#666] dark:text-[#999] italic leading-relaxed">
+                "To leave the world a bit better… to know even one life has breathed easier because you have lived…"
               </p>
-              <cite className="text-sm text-[#999] dark:text-[#666] mt-2 block">
-                — Elon Musk
+              <cite className="text-base text-[#999] dark:text-[#666] mt-3 block">
+                — Bessie Anderson Stanley (1911)
               </cite>
             </blockquote>
 
             <style>{`
-              @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap');
-              
               .illuminated-text {
-                position: relative;
-                font-family: 'Cinzel Decorative', 'Times New Roman', serif;
                 font-weight: 700;
                 color: #1a1a1a;
-                text-shadow: 
-                  0 0 10px rgba(0,0,0,0.1),
-                  0 0 20px rgba(0,0,0,0.05);
-                transition: all 0.3s ease;
+                transition: opacity 0.3s ease;
                 cursor: pointer;
                 border: none;
-                padding: 0 2px;
-                font-size: 1.05em;
-                letter-spacing: 0.02em;
+                padding: 0;
+                font-size: inherit;
+                font-family: inherit;
                 background: none;
               }
               
               .dark .illuminated-text {
                 color: #ffffff;
-                text-shadow: 
-                  0 0 10px rgba(255,255,255,0.4),
-                  0 0 20px rgba(255,255,255,0.2),
-                  0 0 40px rgba(255,255,255,0.1);
               }
               
               .illuminated-text:hover {
-                color: #000;
-                text-shadow: 
-                  0 0 15px rgba(0,0,0,0.2),
-                  0 0 30px rgba(0,0,0,0.1);
-              }
-              
-              .dark .illuminated-text:hover {
-                text-shadow: 
-                  0 0 15px rgba(255,255,255,0.6),
-                  0 0 30px rgba(255,255,255,0.4),
-                  0 0 60px rgba(255,255,255,0.2);
+                opacity: 0.7;
               }
             `}</style>
           </div>
