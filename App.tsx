@@ -79,22 +79,36 @@ const App: React.FC = () => {
             <style>{`
               .illuminated-text {
                 font-weight: 700;
-                color: #1a1a1a;
-                transition: opacity 0.3s ease;
+                color: #1a1a1a !important;
+                transition: color 0.3s ease;
                 cursor: pointer;
                 border: none;
                 padding: 0;
                 font-size: inherit;
                 font-family: inherit;
                 background: none;
+                text-decoration: none;
               }
               
-              .dark .illuminated-text {
-                color: #ffffff;
+              .illuminated-text:visited,
+              .illuminated-text:active,
+              .illuminated-text:focus {
+                color: #1a1a1a !important;
               }
               
               .illuminated-text:hover {
-                opacity: 0.7;
+                color: #666 !important;
+              }
+              
+              .dark .illuminated-text,
+              .dark .illuminated-text:visited,
+              .dark .illuminated-text:active,
+              .dark .illuminated-text:focus {
+                color: #ffffff !important;
+              }
+              
+              .dark .illuminated-text:hover {
+                color: #aaaaaa !important;
               }
             `}</style>
           </div>
