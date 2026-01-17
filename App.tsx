@@ -39,28 +39,28 @@ const App: React.FC = () => {
               This is a place I made to nudge my life toward{' '}
               <button
                 onClick={() => handleNavigationSelect('CREATION')}
-                className="illuminated-text"
+                className="font-bold text-[#1a1a1a] dark:text-white hover:text-[#666] dark:hover:text-[#aaa] transition-colors cursor-pointer bg-transparent border-none p-0 text-inherit"
               >
                 Creation
               </button>
               , as a counterweight to constant{' '}
               <button
                 onClick={() => handleNavigationSelect('CONSUMPTION')}
-                className="illuminated-text"
+                className="font-bold text-[#1a1a1a] dark:text-white hover:text-[#666] dark:hover:text-[#aaa] transition-colors cursor-pointer bg-transparent border-none p-0 text-inherit"
               >
                 Consumption
               </button>
               . An attempt at materialising things in this world, and sharing my{' '}
               <button
                 onClick={() => handleNavigationSelect('CONSCIOUSNESS')}
-                className="illuminated-text"
+                className="font-bold text-[#1a1a1a] dark:text-white hover:text-[#666] dark:hover:text-[#aaa] transition-colors cursor-pointer bg-transparent border-none p-0 text-inherit"
               >
                 Consciousness
               </button>
               . If you see anything you like, get in{' '}
               <button
                 onClick={() => handleNavigationSelect('CONTACT')}
-                className="illuminated-text"
+                className="font-bold text-[#1a1a1a] dark:text-white hover:text-[#666] dark:hover:text-[#aaa] transition-colors cursor-pointer bg-transparent border-none p-0 text-inherit"
               >
                 Contact
               </button>
@@ -76,41 +76,6 @@ const App: React.FC = () => {
               </cite>
             </blockquote>
 
-            <style>{`
-              .illuminated-text {
-                font-weight: 700;
-                color: #1a1a1a !important;
-                transition: color 0.3s ease;
-                cursor: pointer;
-                border: none;
-                padding: 0;
-                font-size: inherit;
-                font-family: inherit;
-                background: none;
-                text-decoration: none;
-              }
-              
-              .illuminated-text:visited,
-              .illuminated-text:active,
-              .illuminated-text:focus {
-                color: #1a1a1a !important;
-              }
-              
-              .illuminated-text:hover {
-                color: #666 !important;
-              }
-              
-              .dark .illuminated-text,
-              .dark .illuminated-text:visited,
-              .dark .illuminated-text:active,
-              .dark .illuminated-text:focus {
-                color: #ffffff !important;
-              }
-              
-              .dark .illuminated-text:hover {
-                color: #aaaaaa !important;
-              }
-            `}</style>
           </div>
         )}
 
