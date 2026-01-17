@@ -36,28 +36,28 @@ const App: React.FC = () => {
         {activeSection === '' && (
           <div className="max-w-2xl space-y-12">
             <p className="text-xl md:text-2xl leading-relaxed font-light">
-              This is a place I made to nudge my life toward{' '}
+              A place I made to nudge my actions towards{' '}
               <button
                 onClick={() => handleNavigationSelect('CREATION')}
                 className="font-bold text-[#1a1a1a] dark:text-white hover:text-[#666] dark:hover:text-[#aaa] transition-colors cursor-pointer bg-transparent border-none p-0 text-inherit"
               >
                 Creation
               </button>
-              , as a counterweight to constant{' '}
+              , acting as a counterweight to{' '}
               <button
                 onClick={() => handleNavigationSelect('CONSUMPTION')}
                 className="font-bold text-[#1a1a1a] dark:text-white hover:text-[#666] dark:hover:text-[#aaa] transition-colors cursor-pointer bg-transparent border-none p-0 text-inherit"
               >
                 Consumption
               </button>
-              . An attempt at materialising things in this world, and sharing my{' '}
+              {' '}and a general attempt to materialise things in this world. Open sourcing a slither of my{' '}
               <button
                 onClick={() => handleNavigationSelect('CONSCIOUSNESS')}
                 className="font-bold text-[#1a1a1a] dark:text-white hover:text-[#666] dark:hover:text-[#aaa] transition-colors cursor-pointer bg-transparent border-none p-0 text-inherit"
               >
                 Consciousness
               </button>
-              . If you see anything you like, get in{' '}
+              , if you see anything you like, get in{' '}
               <button
                 onClick={() => handleNavigationSelect('CONTACT')}
                 className="font-bold text-[#1a1a1a] dark:text-white hover:text-[#666] dark:hover:text-[#aaa] transition-colors cursor-pointer bg-transparent border-none p-0 text-inherit"
