@@ -77,45 +77,45 @@ const App: React.FC = () => {
             </blockquote>
 
             <style>{`
+              @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap');
+              
               .illuminated-text {
                 position: relative;
-                font-weight: 500;
-                background: linear-gradient(135deg, #1a1a1a 0%, #444 100%);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-                background-clip: text;
+                font-family: 'Cinzel Decorative', 'Times New Roman', serif;
+                font-weight: 700;
+                color: #1a1a1a;
+                text-shadow: 
+                  0 0 10px rgba(0,0,0,0.1),
+                  0 0 20px rgba(0,0,0,0.05);
                 transition: all 0.3s ease;
                 cursor: pointer;
                 border: none;
-                padding: 0;
-                font-size: inherit;
-                font-family: inherit;
+                padding: 0 2px;
+                font-size: 1.05em;
+                letter-spacing: 0.02em;
+                background: none;
               }
               
               .dark .illuminated-text {
-                background: linear-gradient(135deg, #fff 0%, #ccc 50%, #fff 100%);
-                -webkit-background-clip: text;
-                background-clip: text;
-                text-shadow: 0 0 20px rgba(255,255,255,0.3), 0 0 40px rgba(255,255,255,0.1);
-              }
-              
-              .illuminated-text::after {
-                content: '';
-                position: absolute;
-                bottom: -2px;
-                left: 0;
-                width: 100%;
-                height: 1px;
-                background: linear-gradient(90deg, transparent, currentColor, transparent);
-                opacity: 0.5;
+                color: #ffffff;
+                text-shadow: 
+                  0 0 10px rgba(255,255,255,0.4),
+                  0 0 20px rgba(255,255,255,0.2),
+                  0 0 40px rgba(255,255,255,0.1);
               }
               
               .illuminated-text:hover {
-                text-shadow: 0 0 30px rgba(0,0,0,0.2);
+                color: #000;
+                text-shadow: 
+                  0 0 15px rgba(0,0,0,0.2),
+                  0 0 30px rgba(0,0,0,0.1);
               }
               
               .dark .illuminated-text:hover {
-                text-shadow: 0 0 30px rgba(255,255,255,0.5), 0 0 60px rgba(255,255,255,0.2);
+                text-shadow: 
+                  0 0 15px rgba(255,255,255,0.6),
+                  0 0 30px rgba(255,255,255,0.4),
+                  0 0 60px rgba(255,255,255,0.2);
               }
             `}</style>
           </div>
