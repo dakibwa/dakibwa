@@ -11,26 +11,28 @@
     <!-- Fonts - Gwern/LessWrong style: serif for body, sans-serif for UI -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
       :root {
-        --bg: #f6f4ef;
-        --bg-soft: #ece8de;
-        --text: #1c1a17;
-        --muted: #6a655d;
-        --line: #d8d3c8;
-        --accent: #2a5b53;
+        --bg: #f5f3ec;
+        --bg-soft: #ede8db;
+        --text: #1c1a16;
+        --muted: #696257;
+        --line: #d8cfbe;
+        --accent: #205c5a;
+        --panel: rgba(250, 247, 239, 0.72);
       }
 
       @media (prefers-color-scheme: dark) {
         :root {
-          --bg: #171613;
-          --bg-soft: #201e1b;
-          --text: #e8e2d6;
-          --muted: #a49a88;
-          --line: #35312a;
-          --accent: #7ab2a8;
+          --bg: #161511;
+          --bg-soft: #201d17;
+          --text: #ece3d0;
+          --muted: #a89d88;
+          --line: #342f25;
+          --accent: #79b7ab;
+          --panel: rgba(26, 23, 18, 0.72);
         }
       }
 
@@ -44,7 +46,7 @@
         padding: 0;
         background-color: var(--bg);
         color: var(--text);
-        font-family: 'Crimson Pro', Georgia, serif;
+        font-family: 'Manrope', system-ui, -apple-system, sans-serif;
         line-height: 1.7;
         overflow-x: hidden;
         overflow-y: auto;
@@ -59,9 +61,19 @@
         inset: 0;
         pointer-events: none;
         background:
-          radial-gradient(circle at 15% 10%, rgba(42, 91, 83, 0.08) 0%, transparent 35%),
-          radial-gradient(circle at 85% 90%, rgba(42, 91, 83, 0.06) 0%, transparent 30%);
+          radial-gradient(circle at 10% 0%, rgba(32, 92, 90, 0.13) 0%, transparent 36%),
+          radial-gradient(circle at 100% 100%, rgba(32, 92, 90, 0.1) 0%, transparent 32%);
         z-index: -1;
+      }
+
+      .font-display {
+        font-family: 'Fraunces', Georgia, serif;
+      }
+
+      .surface-panel {
+        border: 1px solid var(--line);
+        background: var(--panel);
+        backdrop-filter: blur(8px);
       }
 
       #root {
