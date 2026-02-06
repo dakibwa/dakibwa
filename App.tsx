@@ -5,6 +5,7 @@ import Contact from './components/Contact';
 import Consumption from './components/Consumption';
 import Consciousness from './components/Consciousness';
 import EssayView from './components/EssayView';
+import LocationCard from './components/LocationCard';
 
 const SoundMind = lazy(() => import('./components/SoundMind'));
 
@@ -53,51 +54,26 @@ const App: React.FC = () => {
         {activeSection === '' && (
           <div className="space-y-8 md:space-y-10">
             <div className="surface-panel rounded-2xl p-6 md:p-10 space-y-7 shadow-[0_24px_50px_rgba(18,14,8,0.06)] dark:shadow-[0_24px_50px_rgba(0,0,0,0.28)]">
-              <div className="inline-flex items-center rounded-full border border-[#d8cfbe] dark:border-[#342f25] px-3 py-1 text-xs tracking-[0.16em] uppercase text-[#696257] dark:text-[#a89d88]">
-                Dakibwa
-              </div>
               <h1 className="font-display text-4xl md:text-6xl tracking-tight leading-[1.05] text-[#1c1a16] dark:text-[#ece3d0]">
                 A digital notebook for making things.
               </h1>
               <p className="text-lg md:text-xl leading-relaxed max-w-3xl text-[#696257] dark:text-[#a89d88]">
                 A place I made to nudge my actions towards creation, acting as a counterweight to consumption, and a public slither of consciousness.
               </p>
-              <div className="flex flex-wrap gap-2.5">
-                <button
-                  onClick={() => handleNavigationSelect('CREATION')}
-                  className="px-4 py-2 border border-[#d8cfbe] dark:border-[#342f25] rounded-full hover:border-[#205c5a] dark:hover:border-[#79b7ab] hover:text-[#205c5a] dark:hover:text-[#79b7ab] transition-colors"
-                >
-                  Open Creation
-                </button>
-                <button
-                  onClick={() => handleNavigationSelect('CONSUMPTION')}
-                  className="px-4 py-2 border border-[#d8cfbe] dark:border-[#342f25] rounded-full hover:border-[#205c5a] dark:hover:border-[#79b7ab] hover:text-[#205c5a] dark:hover:text-[#79b7ab] transition-colors"
-                >
-                  Open Consumption
-                </button>
-                <button
-                  onClick={() => handleNavigationSelect('CONSCIOUSNESS')}
-                  className="px-4 py-2 border border-[#d8cfbe] dark:border-[#342f25] rounded-full hover:border-[#205c5a] dark:hover:border-[#79b7ab] hover:text-[#205c5a] dark:hover:text-[#79b7ab] transition-colors"
-                >
-                  Open Consciousness
-                </button>
-                <button
-                  onClick={() => handleNavigationSelect('CONTACT')}
-                  className="px-4 py-2 border border-[#d8cfbe] dark:border-[#342f25] rounded-full hover:border-[#205c5a] dark:hover:border-[#79b7ab] hover:text-[#205c5a] dark:hover:text-[#79b7ab] transition-colors"
-                >
-                  Contact
-                </button>
-              </div>
             </div>
 
-            <blockquote className="surface-panel rounded-2xl p-6 md:p-7 border-l-4 border-l-[#205c5a] dark:border-l-[#79b7ab]">
-              <p className="text-lg md:text-xl text-[#696257] dark:text-[#a89d88] italic leading-relaxed">
-                "To leave the world a bit better… to know even one life has breathed easier because you have lived…"
-              </p>
-              <cite className="text-sm uppercase tracking-[0.12em] text-[#8a8378] dark:text-[#8f8575] mt-4 block">
-                — Bessie Anderson Stanley (1911)
-              </cite>
-            </blockquote>
+            <div className="grid md:grid-cols-2 gap-6">
+              <blockquote className="surface-panel rounded-2xl p-6 md:p-7 border-l-4 border-l-[#205c5a] dark:border-l-[#79b7ab]">
+                <p className="text-lg md:text-xl text-[#696257] dark:text-[#a89d88] italic leading-relaxed">
+                  "To leave the world a bit better… to know even one life has breathed easier because you have lived…"
+                </p>
+                <cite className="text-sm uppercase tracking-[0.12em] text-[#8a8378] dark:text-[#8f8575] mt-4 block">
+                  — Bessie Anderson Stanley (1911)
+                </cite>
+              </blockquote>
+
+              <LocationCard />
+            </div>
           </div>
         )}
 
