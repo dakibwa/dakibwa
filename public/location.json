@@ -1,6 +1,8 @@
 {
   "city": "Set your city",
+  "country": "Set your country",
+  "countryCode": "US",
   "latitude": 0,
   "longitude": 0,
-  "updatedAt": "Update this file with your latest city"
+  "updatedAt": "Update manually or run npm run location:update"
 }
