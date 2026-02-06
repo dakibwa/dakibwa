@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Akibwa</title>
+    <meta name="description" content="Dakibwa. A notebook of creation, consumption, and consciousness." />
+    <meta name="theme-color" content="#f6f4ef" />
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Fonts - Gwern/LessWrong style: serif for body, sans-serif for UI -->
@@ -12,21 +14,68 @@
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
     <style>
+      :root {
+        --bg: #f6f4ef;
+        --bg-soft: #ece8de;
+        --text: #1c1a17;
+        --muted: #6a655d;
+        --line: #d8d3c8;
+        --accent: #2a5b53;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #171613;
+          --bg-soft: #201e1b;
+          --text: #e8e2d6;
+          --muted: #a49a88;
+          --line: #35312a;
+          --accent: #7ab2a8;
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
       body {
         margin: 0;
         padding: 0;
-        background-color: #fafafa;
-        color: #1a1a1a;
+        background-color: var(--bg);
+        color: var(--text);
         font-family: 'Crimson Pro', Georgia, serif;
         line-height: 1.7;
         overflow-x: hidden;
         overflow-y: auto;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
       }
-      /* Dark mode support */
-      @media (prefers-color-scheme: dark) {
-        body {
-          background-color: #1a1a1a;
-          color: #e0e0e0;
+
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background:
+          radial-gradient(circle at 15% 10%, rgba(42, 91, 83, 0.08) 0%, transparent 35%),
+          radial-gradient(circle at 85% 90%, rgba(42, 91, 83, 0.06) 0%, transparent 30%);
+        z-index: -1;
+      }
+
+      #root {
+        min-height: 100vh;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
         }
       }
     </style>
