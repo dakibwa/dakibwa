@@ -8,6 +8,7 @@ import EssayView from './components/EssayView';
 import LocationCard from './components/LocationCard';
 
 const SoundMind = lazy(() => import('./components/SoundMind'));
+const BioDataHub = lazy(() => import('./components/BioDataHub'));
 
 const App: React.FC = () => {
   const [activeSection, setActiveSection] = useState<string>('');
@@ -123,6 +124,14 @@ const App: React.FC = () => {
       <Suspense fallback={null}>
         <SoundMind
           isOpen={activeAppId === 'sound-mind'}
+          onClose={() => setActiveAppId(null)}
+        />
+      </Suspense>
+
+      {/* Bio Data Hub App */}
+      <Suspense fallback={null}>
+        <BioDataHub
+          isOpen={activeAppId === 'bio-data-hub'}
           onClose={() => setActiveAppId(null)}
         />
       </Suspense>
