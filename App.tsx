@@ -9,6 +9,7 @@ import LocationCard from './components/LocationCard';
 
 const SoundMind = lazy(() => import('./components/SoundMind'));
 const BioDataHub = lazy(() => import('./components/BioDataHub'));
+const SingularityTracker = lazy(() => import('./components/SingularityTracker'));
 
 const App: React.FC = () => {
   const [activeSection, setActiveSection] = useState<string>('');
@@ -132,6 +133,14 @@ const App: React.FC = () => {
       <Suspense fallback={null}>
         <BioDataHub
           isOpen={activeAppId === 'bio-data-hub'}
+          onClose={() => setActiveAppId(null)}
+        />
+      </Suspense>
+
+      {/* Singularity Tracker App */}
+      <Suspense fallback={null}>
+        <SingularityTracker
+          isOpen={activeAppId === 'singularity-tracker'}
           onClose={() => setActiveAppId(null)}
         />
       </Suspense>
