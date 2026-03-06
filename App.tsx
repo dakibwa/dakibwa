@@ -155,12 +155,12 @@ const App: React.FC = () => {
         isMusicOpen={isMusicOpen}
       />
 
-      <main id="main-content" className="max-w-6xl mx-auto px-5 md:px-7 py-8 md:py-12">
+      <main id="main-content" className="max-w-5xl mx-auto px-5 md:px-7 py-8 md:py-12">
         <section key={activeSection || 'home'} className="animate-[fadeIn_.35s_ease-out]">
           {activeSection === '' && (
             <div className="space-y-8 md:space-y-10">
-              <div className="surface-panel rounded-[2rem] p-6 md:p-10 lg:p-12 shadow-[0_28px_70px_rgba(18,14,8,0.08)] dark:shadow-[0_28px_70px_rgba(0,0,0,0.32)]">
-                <div className="space-y-6 md:space-y-7">
+              <div className="surface-panel rounded-[2rem] p-6 md:p-10 space-y-6 md:space-y-7 shadow-[0_24px_50px_rgba(18,14,8,0.06)] dark:shadow-[0_24px_50px_rgba(0,0,0,0.28)]">
+                <div className="space-y-5">
                   <p className="text-xs uppercase tracking-[0.18em] text-[#8a8378] dark:text-[#8f8575]">
                     Dakibwa
                   </p>
@@ -171,58 +171,33 @@ const App: React.FC = () => {
                     A place I made to nudge my actions towards creation, acting as a counterweight to consumption, and a public slither of consciousness.
                   </p>
 
-                  <div className="flex flex-wrap gap-3 pt-1">
+                  <div className="flex flex-wrap gap-x-5 gap-y-2 pt-1 text-sm">
                     <button
                       onClick={() => setIsMusicOpen(true)}
-                      className="rounded-full border border-[#205c5a]/25 bg-[#205c5a] px-4 py-2.5 text-sm font-medium text-[#f8f4ed] transition-colors hover:bg-[#184947] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#205c5a] dark:border-[#79b7ab]/30 dark:bg-[#79b7ab] dark:text-[#102624] dark:hover:bg-[#8cc4b9]"
+                      className="text-[#205c5a] dark:text-[#79b7ab] hover:opacity-75 transition-opacity"
                     >
-                      Music Map
+                      Open music
                     </button>
                     <button
                       onClick={() => updateSection('CREATION')}
-                      className="rounded-full border border-[#d8cfbe] px-4 py-2.5 text-sm font-medium text-[#696257] transition-colors hover:border-[#205c5a] hover:text-[#205c5a] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#205c5a] dark:border-[#342f25] dark:text-[#a89d88] dark:hover:border-[#79b7ab] dark:hover:text-[#79b7ab]"
+                      className="text-[#696257] dark:text-[#a89d88] hover:text-[#205c5a] dark:hover:text-[#79b7ab] transition-colors"
                     >
                       Creation
                     </button>
                     <button
                       onClick={() => updateSection('CONSUMPTION')}
-                      className="rounded-full border border-[#d8cfbe] px-4 py-2.5 text-sm font-medium text-[#696257] transition-colors hover:border-[#205c5a] hover:text-[#205c5a] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#205c5a] dark:border-[#342f25] dark:text-[#a89d88] dark:hover:border-[#79b7ab] dark:hover:text-[#79b7ab]"
+                      className="text-[#696257] dark:text-[#a89d88] hover:text-[#205c5a] dark:hover:text-[#79b7ab] transition-colors"
                     >
                       Consumption
                     </button>
+                    <button
+                      onClick={() => updateSection('CONTACT')}
+                      className="text-[#696257] dark:text-[#a89d88] hover:text-[#205c5a] dark:hover:text-[#79b7ab] transition-colors"
+                    >
+                      Contact
+                    </button>
                   </div>
                 </div>
-              </div>
-
-              <div className="grid gap-4 md:grid-cols-2">
-                {SECTION_ORDER.map((sectionId) => (
-                  <button
-                    key={sectionId}
-                    onClick={() => updateSection(sectionId)}
-                    className="surface-panel group rounded-[1.6rem] p-5 md:p-6 text-left transition-all duration-300 hover:-translate-y-1 hover:border-[#205c5a]/45 hover:shadow-[0_20px_45px_rgba(18,14,8,0.08)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#205c5a] dark:hover:border-[#79b7ab]/45 dark:hover:shadow-[0_20px_45px_rgba(0,0,0,0.26)]"
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <p className="text-xs uppercase tracking-[0.16em] text-[#8a8378] dark:text-[#8f8575]">
-                          {SECTION_META[sectionId].eyebrow}
-                        </p>
-                        <h2 className="mt-2 font-display text-2xl md:text-3xl tracking-tight">
-                          {SECTION_META[sectionId].title}
-                        </h2>
-                      </div>
-                      <span className="rounded-full border border-[#d8cfbe] px-2.5 py-1 text-[11px] uppercase tracking-[0.14em] text-[#696257] dark:border-[#342f25] dark:text-[#a89d88]">
-                        {SECTION_META[sectionId].stat}
-                      </span>
-                    </div>
-                    <p className="mt-4 max-w-2xl text-base leading-7 text-[#696257] dark:text-[#a89d88]">
-                      {SECTION_META[sectionId].homeDescription}
-                    </p>
-                    <span className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-[#205c5a] transition-transform duration-200 group-hover:translate-x-1 dark:text-[#79b7ab]">
-                      Open section
-                      <span aria-hidden="true">→</span>
-                    </span>
-                  </button>
-                ))}
               </div>
 
               <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
@@ -242,7 +217,7 @@ const App: React.FC = () => {
 
           {activeSectionDetails && (
             <div className="surface-panel rounded-[1.9rem] p-5 md:p-8 space-y-6 md:space-y-8 shadow-[0_14px_36px_rgba(18,14,8,0.06)] dark:shadow-[0_14px_36px_rgba(0,0,0,0.22)]">
-              <header className="space-y-5 border-b border-[#d8cfbe] dark:border-[#342f25] pb-5">
+              <header className="space-y-4 border-b border-[#d8cfbe] dark:border-[#342f25] pb-5">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                   <div className="max-w-3xl space-y-3">
                     <p className="text-xs uppercase tracking-[0.18em] text-[#8a8378] dark:text-[#8f8575]">
@@ -263,23 +238,6 @@ const App: React.FC = () => {
                     <span aria-hidden="true">←</span>
                     Back home
                   </button>
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                  {SECTION_ORDER.map((sectionId) => (
-                    <button
-                      key={sectionId}
-                      onClick={() => updateSection(sectionId)}
-                      aria-pressed={activeSection === sectionId}
-                      className={`rounded-full border px-3.5 py-2 text-sm transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#205c5a] ${
-                        activeSection === sectionId
-                          ? 'border-[#205c5a] bg-[#205c5a]/10 text-[#205c5a] dark:border-[#79b7ab] dark:bg-[#79b7ab]/10 dark:text-[#79b7ab]'
-                          : 'border-[#d8cfbe] text-[#696257] hover:border-[#205c5a]/45 hover:text-[#205c5a] dark:border-[#342f25] dark:text-[#a89d88] dark:hover:border-[#79b7ab]/45 dark:hover:text-[#79b7ab]'
-                      }`}
-                    >
-                      {SECTION_META[sectionId].title}
-                    </button>
-                  ))}
                 </div>
               </header>
 
