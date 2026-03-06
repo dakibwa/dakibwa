@@ -27,10 +27,10 @@ const SECTION_ORDER: ContentSection[] = ['CREATION', 'CONSUMPTION', 'CONSCIOUSNE
 const SECTION_META: Record<ContentSection, SectionMeta> = {
   CREATION: {
     title: 'Creation',
-    eyebrow: 'Music and essays',
-    homeDescription: 'The music constellation plus the small amount of writing that is actually worth opening right now.',
-    longDescription: 'The live music map sits at the center of this section, with writing orbiting around it rather than a pile of half-finished tools.',
-    stat: '1 essay in progress · 1 live experience',
+    eyebrow: 'Essays and music',
+    homeDescription: 'Writing and a small music application built to externalise useful ideas.',
+    longDescription: 'The music map and the small amount of writing that has made it into public view.',
+    stat: 'Music map · essay draft',
     cta: 'Open creation',
     hash: '#creation',
   },
@@ -62,12 +62,6 @@ const SECTION_META: Record<ContentSection, SectionMeta> = {
     hash: '#contact',
   },
 };
-
-const START_HERE_STEPS = [
-  'Open the music map first if you want the clearest interactive part of the site.',
-  'Open Consumption to see the books, albums, and films that sit behind the work.',
-  'Use Contact when there is a collaboration, role, or thoughtful conversation to start.',
-];
 
 const getSectionFromHash = (hash: string): SectionId => {
   const normalizedHash = hash.replace('#', '').trim().toLowerCase();
@@ -118,7 +112,7 @@ const App: React.FC = () => {
   useEffect(() => {
     document.title = activeSectionDetails
       ? `Akibwa | ${activeSectionDetails.title}`
-      : 'Akibwa | Music, consumption, and consciousness';
+      : 'Akibwa | Creation, consumption, and consciousness';
   }, [activeSectionDetails]);
 
   const updateSection = (nextSection: SectionId) => {
@@ -165,92 +159,40 @@ const App: React.FC = () => {
         <section key={activeSection || 'home'} className="animate-[fadeIn_.35s_ease-out]">
           {activeSection === '' && (
             <div className="space-y-8 md:space-y-10">
-              <div className="surface-panel relative overflow-hidden rounded-[2rem] p-6 md:p-10 lg:p-12 shadow-[0_28px_70px_rgba(18,14,8,0.08)] dark:shadow-[0_28px_70px_rgba(0,0,0,0.32)]">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(32,92,90,0.16),transparent_36%),radial-gradient(circle_at_bottom_right,rgba(181,132,64,0.14),transparent_30%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(121,183,171,0.18),transparent_36%),radial-gradient(circle_at_bottom_right,rgba(214,171,108,0.08),transparent_28%)]" />
+              <div className="surface-panel rounded-[2rem] p-6 md:p-10 lg:p-12 shadow-[0_28px_70px_rgba(18,14,8,0.08)] dark:shadow-[0_28px_70px_rgba(0,0,0,0.32)]">
+                <div className="space-y-6 md:space-y-7">
+                  <p className="text-xs uppercase tracking-[0.18em] text-[#8a8378] dark:text-[#8f8575]">
+                    Dakibwa
+                  </p>
+                  <h1 className="font-display text-4xl md:text-6xl tracking-tight leading-[1.04] text-[#1c1a16] dark:text-[#ece3d0] max-w-4xl">
+                    A digital notebook for making things.
+                  </h1>
+                  <p className="text-lg md:text-xl leading-relaxed max-w-3xl text-[#696257] dark:text-[#a89d88]">
+                    A place I made to nudge my actions towards creation, acting as a counterweight to consumption, and a public slither of consciousness.
+                  </p>
 
-                <div className="relative grid gap-6 lg:grid-cols-[1.25fr_0.75fr] lg:items-end">
-                  <div className="space-y-5">
-                    <p className="text-xs uppercase tracking-[0.22em] text-[#8a8378] dark:text-[#8f8575]">
-                      Dakibwa
-                    </p>
-                    <h1 className="font-display text-4xl md:text-6xl tracking-tight leading-[1.02] text-[#1c1a16] dark:text-[#ece3d0] max-w-4xl">
-                      A public notebook for making more than I consume.
-                    </h1>
-                    <p className="text-lg md:text-xl leading-relaxed max-w-3xl text-[#696257] dark:text-[#a89d88]">
-                      Music, influences, and unfinished questions arranged so it is obvious where to start and easy to keep exploring.
-                    </p>
-
-                    <div className="flex flex-wrap gap-2.5 text-sm text-[#4f4a42] dark:text-[#c5b9a4]">
-                      <span className="rounded-full border border-[#cfbea4] bg-[#faf7ef]/80 px-3 py-1.5 dark:border-[#4a4133] dark:bg-[#211d18]/75">
-                        1 essay in progress
-                      </span>
-                      <span className="rounded-full border border-[#cfbea4] bg-[#faf7ef]/80 px-3 py-1.5 dark:border-[#4a4133] dark:bg-[#211d18]/75">
-                        1 music constellation
-                      </span>
-                      <span className="rounded-full border border-[#cfbea4] bg-[#faf7ef]/80 px-3 py-1.5 dark:border-[#4a4133] dark:bg-[#211d18]/75">
-                        Live location updates
-                      </span>
-                    </div>
-
-                    <div className="flex flex-wrap gap-3 pt-1">
-                      <button
-                        onClick={() => setIsMusicOpen(true)}
-                        className="rounded-full border border-[#205c5a]/25 bg-[#205c5a] px-4 py-2.5 text-sm font-medium text-[#f8f4ed] transition-transform duration-200 hover:-translate-y-0.5 hover:bg-[#184947] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#205c5a] dark:border-[#79b7ab]/30 dark:bg-[#79b7ab] dark:text-[#102624] dark:hover:bg-[#8cc4b9]"
-                      >
-                        Open the music map
-                      </button>
-                      {['CONSUMPTION', 'CONTACT'].map((sectionId) => (
-                        <button
-                          key={sectionId}
-                          onClick={() => updateSection(sectionId as ContentSection)}
-                          className="rounded-full border border-[#205c5a]/25 bg-[#205c5a] px-4 py-2.5 text-sm font-medium text-[#f8f4ed] transition-transform duration-200 hover:-translate-y-0.5 hover:bg-[#184947] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#205c5a] dark:border-[#79b7ab]/30 dark:bg-[#79b7ab] dark:text-[#102624] dark:hover:bg-[#8cc4b9]"
-                        >
-                          {SECTION_META[sectionId as ContentSection].cta}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="rounded-[1.6rem] border border-[#d8cfbe] bg-[#faf7ef]/78 p-5 md:p-6 backdrop-blur-sm dark:border-[#342f25] dark:bg-[#1d1a15]/78">
-                    <p className="text-xs uppercase tracking-[0.18em] text-[#8a8378] dark:text-[#8f8575]">
-                      Start here
-                    </p>
-                    <div className="mt-4 space-y-3.5">
-                      {START_HERE_STEPS.map((step, index) => (
-                        <div key={step} className="flex items-start gap-3">
-                          <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[#cfbea4] text-xs font-semibold text-[#205c5a] dark:border-[#4a4133] dark:text-[#79b7ab]">
-                            {index + 1}
-                          </span>
-                    <p className="text-sm leading-6 text-[#5e5649] dark:text-[#b5aa96]">{step}</p>
-                        </div>
-                      ))}
-                    </div>
+                  <div className="flex flex-wrap gap-3 pt-1">
+                    <button
+                      onClick={() => setIsMusicOpen(true)}
+                      className="rounded-full border border-[#205c5a]/25 bg-[#205c5a] px-4 py-2.5 text-sm font-medium text-[#f8f4ed] transition-colors hover:bg-[#184947] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#205c5a] dark:border-[#79b7ab]/30 dark:bg-[#79b7ab] dark:text-[#102624] dark:hover:bg-[#8cc4b9]"
+                    >
+                      Music Map
+                    </button>
+                    <button
+                      onClick={() => updateSection('CREATION')}
+                      className="rounded-full border border-[#d8cfbe] px-4 py-2.5 text-sm font-medium text-[#696257] transition-colors hover:border-[#205c5a] hover:text-[#205c5a] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#205c5a] dark:border-[#342f25] dark:text-[#a89d88] dark:hover:border-[#79b7ab] dark:hover:text-[#79b7ab]"
+                    >
+                      Creation
+                    </button>
+                    <button
+                      onClick={() => updateSection('CONSUMPTION')}
+                      className="rounded-full border border-[#d8cfbe] px-4 py-2.5 text-sm font-medium text-[#696257] transition-colors hover:border-[#205c5a] hover:text-[#205c5a] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#205c5a] dark:border-[#342f25] dark:text-[#a89d88] dark:hover:border-[#79b7ab] dark:hover:text-[#79b7ab]"
+                    >
+                      Consumption
+                    </button>
                   </div>
                 </div>
               </div>
-
-              <button
-                onClick={() => setIsMusicOpen(true)}
-                className="surface-panel group rounded-[1.85rem] p-6 md:p-7 text-left transition-all duration-300 hover:-translate-y-1 hover:border-[#205c5a]/45 hover:shadow-[0_20px_45px_rgba(18,14,8,0.08)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#205c5a] dark:hover:border-[#79b7ab]/45 dark:hover:shadow-[0_20px_45px_rgba(0,0,0,0.26)]"
-              >
-                <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-                  <div className="max-w-3xl">
-                    <p className="text-xs uppercase tracking-[0.18em] text-[#8a8378] dark:text-[#8f8575]">
-                      Featured experience
-                    </p>
-                    <h2 className="mt-2 font-display text-3xl md:text-4xl tracking-tight">
-                      We Have the Right to Music
-                    </h2>
-                    <p className="mt-4 text-base leading-7 text-[#696257] dark:text-[#a89d88]">
-                      A constellation view of listening history designed to show what dominates taste, what bridges clusters, and which artists actually sit at the center.
-                    </p>
-                  </div>
-                  <span className="inline-flex items-center gap-2 text-sm font-medium text-[#205c5a] transition-transform duration-200 group-hover:translate-x-1 dark:text-[#79b7ab]">
-                    Open music map
-                    <span aria-hidden="true">→</span>
-                  </span>
-                </div>
-              </button>
 
               <div className="grid gap-4 md:grid-cols-2">
                 {SECTION_ORDER.map((sectionId) => (
