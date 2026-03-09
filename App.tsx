@@ -31,7 +31,7 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    document.title = isMusicOpen ? 'Akibwa | We Have the Right to Music' : 'Akibwa | Consumption';
+    document.title = isMusicOpen ? 'Akibwa | Music Map' : 'Akibwa | Consumption';
 
     const description = document.querySelector('meta[name="description"]');
     if (description) {
@@ -75,7 +75,7 @@ const App: React.FC = () => {
               onClick={showMusic}
               className="text-sm text-[#205c5a] transition-colors hover:text-[#163f3d] dark:text-[#79b7ab] dark:hover:text-[#9fd0c6]"
             >
-              Open the music constellation
+              Open Music Map
             </button>
           </div>
         </header>
