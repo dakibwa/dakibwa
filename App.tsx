@@ -1,187 +1,320 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './src_styles.css';
-import ArtistDetail from './components/ArtistDetail';
-import ConstellationCanvas from './components/ConstellationCanvas';
-import { buildConstellationGraph } from './lib/constellation';
-import { fetchListeningSnapshot } from './lib/lastfm';
-import type { ListeningSnapshot } from './types';
+import FamilyTree from './components/FamilyTree';
+import PersonPanel from './components/PersonPanel';
+import PersonRecordPage from './components/PersonRecordPage';
+import {
+  defaultPersonId,
+  familyBranches,
+  familyPeople,
+  getBranchById,
+  getFamilyPersonById,
+  primaryBranches,
+} from './data/familyTree';
 
-const DEFAULT_USERNAME = 'akibwa';
+type ViewMode = 'tree' | 'record';
+
+interface RouteState {
+  personId: string;
+  view: ViewMode;
+}
+
+const readRoute = (): RouteState => {
+  const params = new URLSearchParams(window.location.search);
+  const requestedPersonId = params.get('person') || defaultPersonId;
+  const personId = getFamilyPersonById(requestedPersonId)?.id || defaultPersonId;
+  const view = params.get('view') === 'record' ? 'record' : 'tree';
+  return { personId, view };
+};
+
+const writeRoute = (nextRoute: RouteState, mode: 'push' | 'replace') => {
+  const url = new URL(window.location.href);
+  url.searchParams.set('person', nextRoute.personId);
+
+  if (nextRoute.view === 'record') {
+    url.searchParams.set('view', 'record');
+  } else {
+    url.searchParams.delete('view');
+  }
+
+  const method = mode === 'replace' ? 'replaceState' : 'pushState';
+  window.history[method]({}, '', `${url.pathname}${url.search}`);
+};
 
 const App: React.FC = () => {
-  const [snapshot, setSnapshot] = useState<ListeningSnapshot | null>(null);
-  const [selectedId, setSelectedId] = useState<string>('');
+  const [route, setRoute] = useState<RouteState>(() => readRoute());
 
   useEffect(() => {
-    document.title = 'Dakibwa — a music constellation';
+    const nextRoute = readRoute();
+    writeRoute(nextRoute, 'replace');
+
+    const handlePopState = () => setRoute(readRoute());
+    window.addEventListener('popstate', handlePopState);
+
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  const selectedPerson = getFamilyPersonById(route.personId) || familyPeople[0];
+  const selectedBranch = getBranchById(selectedPerson.branch) || familyBranches[0];
+  const uniquePlaces = new Set(primaryBranches.flatMap((branch) => branch.places));
+  const recordCount = familyPeople.reduce((count, person) => count + person.records.length, 0);
+
+  useEffect(() => {
+    const title =
+      route.view === 'record'
+        ? `${selectedPerson.name} | Dakibwa Family Tree`
+        : 'Dakibwa Family Tree | Atkinson and Broadbent';
+    document.title = title;
+
     const description = document.querySelector('meta[name="description"]');
     if (description) {
       description.setAttribute(
         'content',
-        'Dakibwa is a music constellation: a Last.fm-first portrait of Daniel Atkinson’s listening world, arranged like a small night sky.'
+        route.view === 'record'
+          ? `${selectedPerson.name} on the Dakibwa family tree, a first public record view spanning the Atkinson and Broadbent branches.`
+          : 'Dakibwa is a public family-tree site for akibwa.com: a polished first pass through the Atkinson and Broadbent branches, with clickable records and room to grow.'
       );
     }
 
-    fetchListeningSnapshot(DEFAULT_USERNAME).then((nextSnapshot) => {
-      setSnapshot(nextSnapshot);
-      setSelectedId(nextSnapshot.artists[0]?.name || '');
-    });
-  }, []);
+    const themeColor = document.querySelector('meta[name="theme-color"]');
+    if (themeColor) {
+      themeColor.setAttribute('content', '#f4ede2');
+    }
+  }, [route.view, selectedPerson]);
 
-  const graph = useMemo(() => (snapshot ? buildConstellationGraph(snapshot) : null), [snapshot]);
-  const selectedArtist = snapshot?.artists.find((artist) => artist.name === selectedId) || snapshot?.artists[0] || null;
+  const navigate = (nextRoute: RouteState, mode: 'push' | 'replace' = 'push') => {
+    const current = `${route.view}:${route.personId}`;
+    const next = `${nextRoute.view}:${nextRoute.personId}`;
+    if (current === next && mode !== 'replace') return;
 
-  if (!snapshot || !graph || !selectedArtist) {
+    writeRoute(nextRoute, mode);
+    setRoute(nextRoute);
+  };
+
+  const handleSelect = (personId: string) => {
+    navigate({ personId, view: route.view });
+  };
+
+  const openRecord = (personId: string) => {
+    navigate({ personId, view: 'record' });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const openTree = (personId: string) => {
+    navigate({ personId, view: 'tree' });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  if (route.view === 'record') {
     return (
-      <div className="loading-wrap">
-        <div className="loading-card shell-card">
-          <div className="loading-pulse" />
-          <h1>Charting the sky…</h1>
-          <p className="data-note">Pulling together a few years of listening drift, favourites, and bridge artists.</p>
-        </div>
+      <div className="site-shell">
+        <a className="skip-link" href="#main-content">
+          Skip to content
+        </a>
+
+        <header className="site-header">
+          <div className="site-brand">
+            <span className="site-brand-mark">Dakibwa</span>
+            <span className="site-brand-copy">Family Tree / Public V1</span>
+          </div>
+
+          <div className="site-nav">
+            <button type="button" className="nav-button" onClick={() => openTree(selectedPerson.id)}>
+              Tree view
+            </button>
+            <a className="nav-link" href="/?person=daniel-atkinson">
+              Root record
+            </a>
+          </div>
+        </header>
+
+        <PersonRecordPage person={selectedPerson} branches={familyBranches} onBack={openTree} onSelect={openRecord} />
       </div>
     );
   }
 
-  const clusterSummary = Array.from(new Set(snapshot.artists.map((artist) => `${artist.clusterLabel}|${artist.color}`))).map((entry) => {
-    const [label, color] = entry.split('|');
-    return { label, color };
-  });
-
-  const strongestArtist = [...snapshot.artists].sort((left, right) => right.playcount - left.playcount)[0];
-  const bridgeArtist = snapshot.artists.find((artist) => artist.similar.length >= 3) || strongestArtist;
-
   return (
-    <div className="app-shell">
-      <a className="skip-link" href="#main-content">Skip to content</a>
+    <div className="site-shell">
+      <a className="skip-link" href="#main-content">
+        Skip to content
+      </a>
+
+      <header className="site-header">
+        <div className="site-brand">
+          <span className="site-brand-mark">Dakibwa</span>
+          <span className="site-brand-copy">Family Tree / Public V1</span>
+        </div>
+
+        <nav className="site-nav" aria-label="Primary">
+          <a className="nav-link" href="#tree">
+            Family tree
+          </a>
+          <a className="nav-link" href="#branches">
+            Branches
+          </a>
+          <button type="button" className="nav-button" onClick={() => openRecord(selectedPerson.id)}>
+            Selected record
+          </button>
+        </nav>
+      </header>
+
       <main id="main-content">
-        <section className="hero shell-card">
-          <div>
-            <div className="eyebrow">Dakibwa / listening cosmos</div>
-            <h1>A small night sky built from real listening.</h1>
+        <section className="hero-panel panel">
+          <div className="hero-copy-block">
+            <p className="section-kicker">Akibwa.com / first public release</p>
+            <h1>A proper first pass at the family tree, set out cleanly and ready to grow.</h1>
             <p className="hero-copy">
-              This is Daniel Atkinson&apos;s taste map: less portfolio, more constellation. Last.fm provides the signal; the interface turns it into something you can drift through — reflective electronics, strange songwriters, foggy guitars, and left-field rap, all in relation.
+              Dakibwa now opens straight onto a public family-tree experience: both the Atkinson and Broadbent branches, a clickable pedigree, and person records that feel like pages rather than placeholders.
+            </p>
+            <p className="hero-copy hero-copy-soft">
+              It is static for now, on purpose. V1 proves the structure, the tone, and the public-facing presentation; private editing and fuller sourcing can land later without replacing the site all over again.
             </p>
 
             <div className="hero-actions">
-              <a className="pill primary" href="#constellation">Enter the constellation</a>
-              <a className="pill" href="https://www.last.fm/user/akibwa" target="_blank" rel="noreferrer">Open Last.fm profile</a>
+              <a className="button button-primary" href="#tree">
+                Browse the tree
+              </a>
+              <button type="button" className="button button-secondary" onClick={() => openRecord(defaultPersonId)}>
+                Open Daniel&apos;s record
+              </button>
             </div>
-
-            <p className="hero-note">
-              {snapshot.source === 'lastfm'
-                ? `Live from Last.fm for ${snapshot.username}.`
-                : 'Using an embedded taste snapshot while Last.fm credentials are missing or resting.'}
-            </p>
           </div>
 
           <div className="hero-side">
-            <div className="meta-pill">
-              <span className="meta-label">Primary source</span>
-              <div className="meta-value">Last.fm scrobbles, artist tags, top releases</div>
+            <div className="status-card">
+              <span className="status-label">Current focus</span>
+              <strong>{selectedPerson.name}</strong>
+              <p>{selectedBranch.strapline}</p>
             </div>
-            <div className="meta-pill">
-              <span className="meta-label">Current north stars</span>
-              <div className="meta-value">Jon Hopkins, Cameron Winter, Geese, DJ Koze, Nala Sinephro</div>
+            <div className="status-card">
+              <span className="status-label">Coverage</span>
+              <strong>Both branches included</strong>
+              <p>Atkinson and Broadbent lines are present in the same public-first dataset.</p>
             </div>
-            <div className="meta-pill">
-              <span className="meta-label">Method</span>
-              <div className="meta-value">Real listening data first, editorial interpretation second.</div>
-            </div>
-          </div>
-        </section>
-
-        <section className="section">
-          <div className="stats-grid">
-            <div className="stat-card">
-              <small>Artists mapped</small>
-              <strong>{snapshot.artists.length}</strong>
-              <span className="card-copy">enough detail to show shape, not so much that it turns into sludge</span>
-            </div>
-            <div className="stat-card">
-              <small>Constellation links</small>
-              <strong>{graph.links.length}</strong>
-              <span className="card-copy">a mix of neighbour lines, similarity, and a few deliberate bridges</span>
-            </div>
-            <div className="stat-card">
-              <small>Brightest object</small>
-              <strong>{strongestArtist.name}</strong>
-              <span className="card-copy">currently the densest recurring signal in the field</span>
-            </div>
-            <div className="stat-card">
-              <small>Bridge artist</small>
-              <strong>{bridgeArtist.name}</strong>
-              <span className="card-copy">one of the names helping separate regions speak to each other</span>
+            <div className="status-card">
+              <span className="status-label">Next phase</span>
+              <strong>User-only editing later</strong>
+              <p>This build stays static and tidy while the richer archive is assembled.</p>
             </div>
           </div>
         </section>
 
-        <section className="section" id="constellation">
-          <div className="section-header">
+        <section className="stats-grid">
+          <article className="stat-card">
+            <span className="fact-label">People in V1</span>
+            <strong>{familyPeople.length}</strong>
+            <p>Enough to make the tree feel like a real site, not a draft diagram.</p>
+          </article>
+          <article className="stat-card">
+            <span className="fact-label">Main branches</span>
+            <strong>{primaryBranches.length}</strong>
+            <p>Both family sides are visible from the first screen rather than hidden away.</p>
+          </article>
+          <article className="stat-card">
+            <span className="fact-label">Generations shown</span>
+            <strong>4</strong>
+            <p>Great-grandparents through to the current household.</p>
+          </article>
+          <article className="stat-card">
+            <span className="fact-label">Record notes</span>
+            <strong>{recordCount}</strong>
+            <p>Short archive markers that can grow into fuller records later on.</p>
+          </article>
+        </section>
+
+        <section className="explorer-grid" id="tree">
+          <section className="tree-panel panel">
+            <div className="panel-head">
+              <div>
+                <p className="section-kicker">Family tree</p>
+                <h2>Clickable pedigree</h2>
+                <p className="panel-copy">
+                  The left side carries the Atkinson line, the right side the Broadbent line, and the present-day household sits where the two meet.
+                </p>
+              </div>
+              <div className="tree-key">
+                <span className="key-item key-item--atkinson">Atkinson branch</span>
+                <span className="key-item key-item--broadbent">Broadbent branch</span>
+                <span className="key-item key-item--shared">Shared household</span>
+              </div>
+            </div>
+
+            <FamilyTree people={familyPeople} selectedId={selectedPerson.id} onSelect={handleSelect} />
+          </section>
+
+          <PersonPanel
+            selectedPerson={selectedPerson}
+            branches={familyBranches}
+            onSelect={handleSelect}
+            onOpenRecord={openRecord}
+            onReset={() => handleSelect(defaultPersonId)}
+            showReset={selectedPerson.id !== defaultPersonId}
+          />
+        </section>
+
+        <section className="branch-section" id="branches">
+          <div className="panel-head">
             <div>
-              <h2>The constellation</h2>
-              <p>Click a star to inspect it. The colours are moods of gravity, not strict genres.</p>
+              <p className="section-kicker">Branch overview</p>
+              <h2>Both sides, kept legible</h2>
+              <p className="panel-copy">
+                This first public structure already carries the two main lines. Later work can deepen sources, add households, and refine dates without disturbing the overall shape.
+              </p>
             </div>
           </div>
 
-          <div className="constellation-layout">
-            <div className="canvas-card shell-card">
-              <ConstellationCanvas graph={graph} selectedId={selectedArtist.name} onSelect={setSelectedId} />
-              <div className="legend">
-                {clusterSummary.map((cluster) => (
-                  <div className="legend-item" key={cluster.label}>
-                    <span className="swatch" style={{ color: cluster.color, background: cluster.color }} />
-                    {cluster.label}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <ArtistDetail artist={selectedArtist} snapshot={snapshot} />
-          </div>
-        </section>
-
-        <section className="section listening-grid">
-          <div className="albums-panel shell-card">
-            <div className="section-header">
-              <div>
-                <h3>Listening ledger</h3>
-                <p>A few anchor releases sitting underneath the map.</p>
-              </div>
-            </div>
-            {snapshot.albums.length ? snapshot.albums.map((album) => (
-              <div className="album-card" key={`${album.artist}-${album.name}`}>
-                <strong>{album.name}</strong>
-                <small>{album.artist} · {album.playcount.toLocaleString()} plays</small>
-              </div>
-            )) : <div className="empty-note">No album data came back from Last.fm just yet.</div>}
-          </div>
-
-          <div className="insights-panel shell-card">
-            <div className="section-header">
-              <div>
-                <h3>Reading the sky</h3>
-                <p>What the current graph is trying to say.</p>
-              </div>
-            </div>
-            <div className="insight-card">
-              <strong>Pulse → Drift</strong>
-              <small>Electronic work in this orbit tends to blur into meditation rather than pure functionality.</small>
-            </div>
-            <div className="insight-card">
-              <strong>Hearth</strong>
-              <small>Songwriters and bands arrive when the texture needs to stay human, messy, or embodied.</small>
-            </div>
-            <div className="insight-card">
-              <strong>Veil</strong>
-              <small>Rap and nocturnal pop arrive as contour: sharper edges, stronger silhouettes, less haze.</small>
-            </div>
+          <div className="branch-context-grid">
+            {primaryBranches.map((branch) => (
+              <article key={branch.id} className={`branch-card branch-card--${branch.id}`}>
+                <span className="branch-card-label">{branch.label}</span>
+                <strong>{branch.strapline}</strong>
+                <p>{branch.description}</p>
+                <div className="place-row">
+                  {branch.places.map((place) => (
+                    <span key={place} className="place-pill">
+                      {place}
+                    </span>
+                  ))}
+                </div>
+              </article>
+            ))}
           </div>
         </section>
 
-        <p className="footer-note">
-          Built as a Last.fm-first portrait rather than a generic media dashboard. Quietly alive, easy to read, and ready to grow.
-        </p>
+        <section className="register-panel panel">
+          <div className="panel-head">
+            <div>
+              <p className="section-kicker">Family register</p>
+              <h2>Every person still gets a proper entry point</h2>
+              <p className="panel-copy">
+                The tree is the main event, but the records are meant to stand on their own as well. Open any profile directly and the branch context stays intact.
+              </p>
+            </div>
+          </div>
+
+          <div className="register-grid">
+            {familyPeople.map((person) => (
+              <button
+                key={person.id}
+                type="button"
+                className={`register-card branch-${person.branch} ${person.id === selectedPerson.id ? 'is-selected' : ''}`}
+                onClick={() => openRecord(person.id)}
+              >
+                <span className="register-role">{person.role}</span>
+                <strong>{person.name}</strong>
+                <span className="register-years">{person.years}</span>
+                <p>{person.location}</p>
+              </button>
+            ))}
+          </div>
+        </section>
+
+        <footer className="site-footer">
+          <p>
+            Public V1 for akibwa.com. Clean enough to replace the old landing page now, and structured so the private editor and deeper archive can follow without another rebuild.
+          </p>
+          <p>{uniquePlaces.size} Yorkshire places already represented in the first-pass data model.</p>
+        </footer>
       </main>
     </div>
   );
