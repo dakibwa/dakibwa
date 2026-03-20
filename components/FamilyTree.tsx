@@ -9,14 +9,13 @@ interface FamilyTreeProps {
 }
 
 const TREE_WIDTH = 880;
-const TREE_HEIGHT = 720;
+const TREE_HEIGHT = 560;
 const NODE_WIDTH = 104;
 const NODE_HEIGHT = 76;
 
 const generationRows = [
-  { label: 'Great-grandparents', y: 0.12 },
-  { label: 'Grandparents', y: 0.34 },
-  { label: 'Parents', y: 0.58 },
+  { label: 'Grandparents', y: 0.18 },
+  { label: 'Parents', y: 0.5 },
   { label: 'Current', y: 0.82 },
 ];
 
@@ -62,7 +61,7 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ people, selectedId, onSelect })
       <div className="tree-scroll">
         <div className="tree-stage" style={{ width: TREE_WIDTH, height: TREE_HEIGHT }}>
           <div className="tree-ribbon tree-ribbon--atkinson" />
-          <div className="tree-ribbon tree-ribbon--broadbent" />
+          <div className="tree-ribbon tree-ribbon--nealon" />
           <div className="tree-ribbon tree-ribbon--shared" />
 
           {generationRows.map((row) => (

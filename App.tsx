@@ -56,14 +56,12 @@ const App: React.FC = () => {
 
   const selectedPerson = getFamilyPersonById(route.personId) || familyPeople[0];
   const selectedBranch = getBranchById(selectedPerson.branch) || familyBranches[0];
-  const uniquePlaces = new Set(primaryBranches.flatMap((branch) => branch.places));
-  const recordCount = familyPeople.reduce((count, person) => count + person.records.length, 0);
 
   useEffect(() => {
     const title =
       route.view === 'record'
-        ? `${selectedPerson.name} | Dakibwa Family Tree`
-        : 'Dakibwa Family Tree | Atkinson and Broadbent';
+        ? `${selectedPerson.name} | Dakibwa Family Archive`
+        : 'Dakibwa | Atkinson Family Archive';
     document.title = title;
 
     const description = document.querySelector('meta[name="description"]');
@@ -71,8 +69,8 @@ const App: React.FC = () => {
       description.setAttribute(
         'content',
         route.view === 'record'
-          ? `${selectedPerson.name} on the Dakibwa family tree, a first public record view spanning the Atkinson and Broadbent branches.`
-          : 'Dakibwa is a public family-tree site for akibwa.com: a polished first pass through the Atkinson and Broadbent branches, with clickable records and room to grow.'
+          ? `${selectedPerson.name} on the Dakibwa family archive — Atkinson and Nealon family lines.`
+          : 'Dakibwa is a family archive for the Atkinson line. Names confirmed, connections made, details to follow.'
       );
     }
 
@@ -115,7 +113,7 @@ const App: React.FC = () => {
         <header className="site-header">
           <div className="site-brand">
             <span className="site-brand-mark">Dakibwa</span>
-            <span className="site-brand-copy">Family Tree / Public V1</span>
+            <span className="site-brand-copy">Family Archive</span>
           </div>
 
           <div className="site-nav">
@@ -142,7 +140,7 @@ const App: React.FC = () => {
       <header className="site-header">
         <div className="site-brand">
           <span className="site-brand-mark">Dakibwa</span>
-          <span className="site-brand-copy">Family Tree / Public V1</span>
+          <span className="site-brand-copy">Family Archive</span>
         </div>
 
         <nav className="site-nav" aria-label="Primary">
@@ -161,13 +159,13 @@ const App: React.FC = () => {
       <main id="main-content">
         <section className="hero-panel panel">
           <div className="hero-copy-block">
-            <p className="section-kicker">Akibwa.com / first public release</p>
-            <h1>A proper first pass at the family tree, set out cleanly and ready to grow.</h1>
+            <p className="section-kicker">Atkinson family archive</p>
+            <h1>The Atkinson family.</h1>
             <p className="hero-copy">
-              Dakibwa now opens straight onto a public family-tree experience: both the Atkinson and Broadbent branches, a clickable pedigree, and person records that feel like pages rather than placeholders.
+              A first honest record — names confirmed, connections made. Details will be added as research continues.
             </p>
             <p className="hero-copy hero-copy-soft">
-              It is static for now, on purpose. V1 proves the structure, the tone, and the public-facing presentation; private editing and fuller sourcing can land later without replacing the site all over again.
+              Sparse by intention. Better to begin with what is known than to fill the gaps with guesswork.
             </p>
 
             <div className="hero-actions">
@@ -187,39 +185,16 @@ const App: React.FC = () => {
               <p>{selectedBranch.strapline}</p>
             </div>
             <div className="status-card">
-              <span className="status-label">Coverage</span>
-              <strong>Both branches included</strong>
-              <p>Atkinson and Broadbent lines are present in the same public-first dataset.</p>
+              <span className="status-label">Archive state</span>
+              <strong>Beginning honestly</strong>
+              <p>Names confirmed. Dates, records, and histories to follow as research grows.</p>
             </div>
             <div className="status-card">
-              <span className="status-label">Next phase</span>
-              <strong>User-only editing later</strong>
-              <p>This build stays static and tidy while the richer archive is assembled.</p>
+              <span className="status-label">Family lines</span>
+              <strong>Atkinson and Nealon</strong>
+              <p>Ian's side from Otley; Elizabeth's from Ireland and Otley.</p>
             </div>
           </div>
-        </section>
-
-        <section className="stats-grid">
-          <article className="stat-card">
-            <span className="fact-label">People in V1</span>
-            <strong>{familyPeople.length}</strong>
-            <p>Enough to make the tree feel like a real site, not a draft diagram.</p>
-          </article>
-          <article className="stat-card">
-            <span className="fact-label">Main branches</span>
-            <strong>{primaryBranches.length}</strong>
-            <p>Both family sides are visible from the first screen rather than hidden away.</p>
-          </article>
-          <article className="stat-card">
-            <span className="fact-label">Generations shown</span>
-            <strong>4</strong>
-            <p>Great-grandparents through to the current household.</p>
-          </article>
-          <article className="stat-card">
-            <span className="fact-label">Record notes</span>
-            <strong>{recordCount}</strong>
-            <p>Short archive markers that can grow into fuller records later on.</p>
-          </article>
         </section>
 
         <section className="explorer-grid" id="tree">
@@ -227,14 +202,14 @@ const App: React.FC = () => {
             <div className="panel-head">
               <div>
                 <p className="section-kicker">Family tree</p>
-                <h2>Clickable pedigree</h2>
+                <h2>Three generations</h2>
                 <p className="panel-copy">
-                  The left side carries the Atkinson line, the right side the Broadbent line, and the present-day household sits where the two meet.
+                  The Atkinson line on the left, the Nealon line on the right, and the present-day household where the two meet.
                 </p>
               </div>
               <div className="tree-key">
-                <span className="key-item key-item--atkinson">Atkinson branch</span>
-                <span className="key-item key-item--broadbent">Broadbent branch</span>
+                <span className="key-item key-item--atkinson">Atkinson</span>
+                <span className="key-item key-item--nealon">Nealon</span>
                 <span className="key-item key-item--shared">Shared household</span>
               </div>
             </div>
@@ -258,7 +233,7 @@ const App: React.FC = () => {
               <p className="section-kicker">Branch overview</p>
               <h2>Both sides, kept legible</h2>
               <p className="panel-copy">
-                This first public structure already carries the two main lines. Later work can deepen sources, add households, and refine dates without disturbing the overall shape.
+                What is known is here. What is unknown is left blank, ready to be filled in properly.
               </p>
             </div>
           </div>
@@ -269,13 +244,15 @@ const App: React.FC = () => {
                 <span className="branch-card-label">{branch.label}</span>
                 <strong>{branch.strapline}</strong>
                 <p>{branch.description}</p>
-                <div className="place-row">
-                  {branch.places.map((place) => (
-                    <span key={place} className="place-pill">
-                      {place}
-                    </span>
-                  ))}
-                </div>
+                {branch.places.length > 0 && (
+                  <div className="place-row">
+                    {branch.places.map((place) => (
+                      <span key={place} className="place-pill">
+                        {place}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </article>
             ))}
           </div>
@@ -285,9 +262,9 @@ const App: React.FC = () => {
           <div className="panel-head">
             <div>
               <p className="section-kicker">Family register</p>
-              <h2>Every person still gets a proper entry point</h2>
+              <h2>{familyPeople.length} people in this archive</h2>
               <p className="panel-copy">
-                The tree is the main event, but the records are meant to stand on their own as well. Open any profile directly and the branch context stays intact.
+                Every person with a confirmed place in the tree. Open any record to see what is known and what is still to come.
               </p>
             </div>
           </div>
@@ -302,8 +279,8 @@ const App: React.FC = () => {
               >
                 <span className="register-role">{person.role}</span>
                 <strong>{person.name}</strong>
-                <span className="register-years">{person.years}</span>
-                <p>{person.location}</p>
+                <span className="register-years">{person.generation}</span>
+                {person.location ? <p>{person.location}</p> : null}
               </button>
             ))}
           </div>
@@ -311,9 +288,8 @@ const App: React.FC = () => {
 
         <footer className="site-footer">
           <p>
-            Public V1 for akibwa.com. Clean enough to replace the old landing page now, and structured so the private editor and deeper archive can follow without another rebuild.
+            Dakibwa — a family archive, started honestly. Two branches, eight names, and room to grow.
           </p>
-          <p>{uniquePlaces.size} Yorkshire places already represented in the first-pass data model.</p>
         </footer>
       </main>
     </div>

@@ -20,6 +20,11 @@ const PersonRecordPage: React.FC<PersonRecordPageProps> = ({ person, branches, o
   ].filter((group) => group.people.length > 0);
   const branchCards = person.branch === 'shared' ? primaryBranches : [branch];
 
+  const recordNote =
+    person.recordState === 'placeholder'
+      ? 'A living-person record, kept intentionally spare.'
+      : 'Name and relationships confirmed. Further detail will be added as research continues.';
+
   return (
     <main id="main-content" className="record-view">
       <section className="record-hero panel">
@@ -32,9 +37,8 @@ const PersonRecordPage: React.FC<PersonRecordPageProps> = ({ person, branches, o
         </div>
 
         <div className="record-hero-copy">
-          <p className="section-kicker">Person record</p>
+          <p className="section-kicker">{person.generation} · Person record</p>
           <h1>{person.name}</h1>
-          <p>{person.summary}</p>
         </div>
 
         <div className="record-meta-grid">
@@ -44,15 +48,11 @@ const PersonRecordPage: React.FC<PersonRecordPageProps> = ({ person, branches, o
           </div>
           <div className="fact-card">
             <span className="fact-label">Years</span>
-            <strong>{person.years}</strong>
+            <strong>{person.years || '—'}</strong>
           </div>
           <div className="fact-card">
             <span className="fact-label">Place</span>
-            <strong>{person.location}</strong>
-          </div>
-          <div className="fact-card">
-            <span className="fact-label">Occupation</span>
-            <strong>{person.occupation}</strong>
+            <strong>{person.location || '—'}</strong>
           </div>
         </div>
       </section>
@@ -61,33 +61,9 @@ const PersonRecordPage: React.FC<PersonRecordPageProps> = ({ person, branches, o
         <div className="record-main">
           <section className="panel record-section">
             <div className="block-heading">
-              <h2>Profile note</h2>
-              <p>This page is public-facing and intentionally calm on private detail.</p>
+              <h2>About this record</h2>
             </div>
-            <p className="archive-copy">{person.archiveNote}</p>
-            <div className="tag-row">
-              {person.tags.map((tag) => (
-                <span key={tag} className="tag-chip">
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </section>
-
-          <section className="panel record-section">
-            <div className="block-heading">
-              <h2>Archive trail</h2>
-              <p>First-pass notes showing how fuller documents and memories will sit in later versions.</p>
-            </div>
-            <div className="timeline-list">
-              {person.records.map((record) => (
-                <article key={`${person.id}-${record.year}-${record.label}`} className="timeline-card">
-                  <span className="note-year">{record.year}</span>
-                  <strong>{record.label}</strong>
-                  <p>{record.detail}</p>
-                </article>
-              ))}
-            </div>
+            <p className="archive-copy">{recordNote}</p>
           </section>
         </div>
 
@@ -96,7 +72,6 @@ const PersonRecordPage: React.FC<PersonRecordPageProps> = ({ person, branches, o
             <section className="panel record-section">
               <div className="block-heading">
                 <h2>Family links</h2>
-                <p>Move between related records without leaving the public view.</p>
               </div>
               <div className="relation-groups">
                 {relationGroups.map((group) => (
@@ -118,7 +93,6 @@ const PersonRecordPage: React.FC<PersonRecordPageProps> = ({ person, branches, o
           <section className="panel record-section">
             <div className="block-heading">
               <h2>Branch context</h2>
-              <p>Both family branches stay visible, even when a single record is open.</p>
             </div>
             <div className="branch-context-grid">
               {branchCards.map((branchCard) => (
@@ -126,13 +100,15 @@ const PersonRecordPage: React.FC<PersonRecordPageProps> = ({ person, branches, o
                   <span className="branch-card-label">{branchCard.label}</span>
                   <strong>{branchCard.strapline}</strong>
                   <p>{branchCard.description}</p>
-                  <div className="place-row">
-                    {branchCard.places.map((place) => (
-                      <span key={place} className="place-pill">
-                        {place}
-                      </span>
-                    ))}
-                  </div>
+                  {branchCard.places.length > 0 && (
+                    <div className="place-row">
+                      {branchCard.places.map((place) => (
+                        <span key={place} className="place-pill">
+                          {place}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </article>
               ))}
             </div>
