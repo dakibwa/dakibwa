@@ -11,7 +11,14 @@ interface PersonPanelProps {
   showReset: boolean;
 }
 
-const PersonPanel: React.FC<PersonPanelProps> = ({ selectedPerson, branches, onSelect, onOpenRecord, onReset, showReset }) => {
+const PersonPanel: React.FC<PersonPanelProps> = ({
+  selectedPerson,
+  branches,
+  onSelect,
+  onOpenRecord,
+  onReset,
+  showReset,
+}) => {
   const branch = getBranchById(selectedPerson.branch) || branches[0];
   const relations = getFamilyRelations(selectedPerson.id);
 
@@ -20,63 +27,62 @@ const PersonPanel: React.FC<PersonPanelProps> = ({ selectedPerson, branches, onS
     { label: 'Spouse', people: relations.spouses },
     { label: 'Children', people: relations.children },
     { label: 'Siblings', people: relations.siblings },
-  ].filter((group) => group.people.length > 0);
+  ].filter((g) => g.people.length > 0);
+
+  const metaParts: string[] = [];
+  if (selectedPerson.location) metaParts.push(selectedPerson.location);
+  if (selectedPerson.years) metaParts.push(selectedPerson.years);
 
   return (
-    <aside className="detail-panel panel" aria-live="polite" aria-labelledby="selected-person-heading">
-      <div className="panel-eyebrow-row">
-        <span className={`branch-pill branch-pill--${selectedPerson.branch}`}>{branch.label}</span>
-        <span className="record-state-pill">{recordStateLabel[selectedPerson.recordState]}</span>
-      </div>
+    <aside className="person-panel" aria-live="polite" aria-labelledby="panel-person-name">
+      <span className="person-panel-tag">
+        {selectedPerson.generation} · {recordStateLabel[selectedPerson.recordState]}
+      </span>
 
-      <div className="detail-heading">
-        <p className="section-kicker">Selected record</p>
-        <h2 id="selected-person-heading">{selectedPerson.name}</h2>
-      </div>
+      <p className="person-panel-name" id="panel-person-name">
+        {selectedPerson.name}
+      </p>
 
-      <div className="fact-grid">
-        <div className="fact-card">
-          <span className="fact-label">Role</span>
-          <strong>{selectedPerson.role}</strong>
-        </div>
-        <div className="fact-card">
-          <span className="fact-label">Years</span>
-          <strong>{selectedPerson.years || '—'}</strong>
-        </div>
-        <div className="fact-card">
-          <span className="fact-label">Place</span>
-          <strong>{selectedPerson.location || '—'}</strong>
-        </div>
-      </div>
+      <p className="person-panel-meta">
+        {selectedPerson.role}
+        {metaParts.length > 0 ? ` · ${metaParts.join(' · ')}` : ''}
+      </p>
 
-      {relationGroups.length ? (
-        <div className="panel-block">
-          <div className="block-heading">
-            <h3>Connected people</h3>
-          </div>
-          <div className="relation-groups">
-            {relationGroups.map((group) => (
-              <div key={group.label} className="relation-group">
-                <span className="relation-label">{group.label}</span>
-                <div className="relation-row">
-                  {group.people.map((person) => (
-                    <button key={person.id} type="button" className="relation-chip" onClick={() => onSelect(person.id)}>
-                      {person.name}
-                    </button>
-                  ))}
-                </div>
+      {relationGroups.length > 0 ? (
+        <>
+          <hr className="person-panel-divider" />
+
+          {relationGroups.map((group) => (
+            <div key={group.label} className="relation-group">
+              <span className="relation-label">{group.label}</span>
+              <div className="relation-list">
+                {group.people.map((person) => (
+                  <button
+                    key={person.id}
+                    type="button"
+                    className="relation-btn"
+                    onClick={() => onSelect(person.id)}
+                  >
+                    {person.name}
+                  </button>
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
+          ))}
+        </>
       ) : null}
 
-      <div className="panel-actions">
-        <button type="button" className="button button-primary" onClick={() => onOpenRecord(selectedPerson.id)}>
-          Open full record
+      <div className="person-panel-actions">
+        <button
+          type="button"
+          className="btn btn-primary"
+          onClick={() => onOpenRecord(selectedPerson.id)}
+        >
+          Open record
         </button>
+
         {showReset ? (
-          <button type="button" className="button button-ghost" onClick={onReset}>
+          <button type="button" className="btn btn-ghost" onClick={onReset}>
             Return to Daniel
           </button>
         ) : null}

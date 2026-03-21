@@ -9,15 +9,23 @@ interface PersonRecordPageProps {
   onSelect: (id: string) => void;
 }
 
+const branchAccentColor: Record<string, string> = {
+  atkinson: '#2f5d50',
+  nealon: '#99633d',
+  shared: '#345061',
+};
+
 const PersonRecordPage: React.FC<PersonRecordPageProps> = ({ person, branches, onBack, onSelect }) => {
   const branch = getBranchById(person.branch) || branches[0];
   const relations = getFamilyRelations(person.id);
+
   const relationGroups = [
     { label: 'Parents', people: relations.parents },
     { label: 'Spouse', people: relations.spouses },
     { label: 'Children', people: relations.children },
     { label: 'Siblings', people: relations.siblings },
-  ].filter((group) => group.people.length > 0);
+  ].filter((g) => g.people.length > 0);
+
   const branchCards = person.branch === 'shared' ? primaryBranches : [branch];
 
   const recordNote =
@@ -26,95 +34,89 @@ const PersonRecordPage: React.FC<PersonRecordPageProps> = ({ person, branches, o
       : 'Name and relationships confirmed. Further detail will be added as research continues.';
 
   return (
-    <main id="main-content" className="record-view">
-      <section className="record-hero panel">
-        <div className="record-topline">
-          <button type="button" className="button button-ghost" onClick={() => onBack(person.id)}>
-            Back to tree
-          </button>
-          <span className={`branch-pill branch-pill--${person.branch}`}>{branch.label}</span>
-          <span className="record-state-pill">{recordStateLabel[person.recordState]}</span>
-        </div>
+    <main id="main-content">
+      <button type="button" className="record-back btn-ghost btn" onClick={() => onBack(person.id)}>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M10 12L6 8l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+        Back to tree
+      </button>
 
-        <div className="record-hero-copy">
-          <p className="section-kicker">{person.generation} · Person record</p>
-          <h1>{person.name}</h1>
-        </div>
+      <div className="record-header">
+        <p className="record-eyebrow">
+          {person.generation} · {branch.label} · {recordStateLabel[person.recordState]}
+        </p>
 
-        <div className="record-meta-grid">
-          <div className="fact-card">
-            <span className="fact-label">Role</span>
-            <strong>{person.role}</strong>
+        <h1 className="record-name">{person.name}</h1>
+
+        <div className="record-facts">
+          <div>
+            <p className="record-fact-label">Role</p>
+            <p className="record-fact-value">{person.role}</p>
           </div>
-          <div className="fact-card">
-            <span className="fact-label">Years</span>
-            <strong>{person.years || '—'}</strong>
+
+          <div>
+            <p className="record-fact-label">Place</p>
+            <p className={`record-fact-value${person.location ? '' : ' record-fact-value--empty'}`}>
+              {person.location || 'Unknown'}
+            </p>
           </div>
-          <div className="fact-card">
-            <span className="fact-label">Place</span>
-            <strong>{person.location || '—'}</strong>
+
+          <div>
+            <p className="record-fact-label">Years</p>
+            <p className={`record-fact-value${person.years ? '' : ' record-fact-value--empty'}`}>
+              {person.years || 'Unknown'}
+            </p>
           </div>
         </div>
-      </section>
+      </div>
 
-      <section className="record-layout">
-        <div className="record-main">
-          <section className="panel record-section">
-            <div className="block-heading">
-              <h2>About this record</h2>
-            </div>
-            <p className="archive-copy">{recordNote}</p>
-          </section>
+      <div className="record-layout">
+        <div>
+          <p className="record-section-label">About this record</p>
+          <p className="record-about-text">{recordNote}</p>
         </div>
 
-        <aside className="record-sidebar">
-          {relationGroups.length ? (
-            <section className="panel record-section">
-              <div className="block-heading">
-                <h2>Family links</h2>
-              </div>
-              <div className="relation-groups">
-                {relationGroups.map((group) => (
-                  <div key={group.label} className="relation-group">
-                    <span className="relation-label">{group.label}</span>
-                    <div className="relation-row">
-                      {group.people.map((relative) => (
-                        <button key={relative.id} type="button" className="relation-chip" onClick={() => onSelect(relative.id)}>
-                          {relative.name}
-                        </button>
-                      ))}
-                    </div>
+        <div>
+          {relationGroups.length > 0 ? (
+            <div className="record-sidebar-section">
+              <p className="record-section-label">Family</p>
+              {relationGroups.map((group) => (
+                <div key={group.label} className="record-relation-group">
+                  <p className="record-relation-label">{group.label}</p>
+                  <div className="record-relation-list">
+                    {group.people.map((relative) => (
+                      <button
+                        key={relative.id}
+                        type="button"
+                        className="record-relation-btn"
+                        onClick={() => onSelect(relative.id)}
+                      >
+                        {relative.name}
+                      </button>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </section>
-          ) : null}
-
-          <section className="panel record-section">
-            <div className="block-heading">
-              <h2>Branch context</h2>
-            </div>
-            <div className="branch-context-grid">
-              {branchCards.map((branchCard) => (
-                <article key={branchCard.id} className={`branch-card branch-card--${branchCard.id}`}>
-                  <span className="branch-card-label">{branchCard.label}</span>
-                  <strong>{branchCard.strapline}</strong>
-                  <p>{branchCard.description}</p>
-                  {branchCard.places.length > 0 && (
-                    <div className="place-row">
-                      {branchCard.places.map((place) => (
-                        <span key={place} className="place-pill">
-                          {place}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </article>
+                </div>
               ))}
             </div>
-          </section>
-        </aside>
-      </section>
+          ) : null}
+
+          <div className="record-sidebar-section">
+            <p className="record-section-label">Branch</p>
+            {branchCards.map((bc) => (
+              <div key={bc.id} className="record-branch-item">
+                <div
+                  className="record-branch-accent"
+                  style={{ background: branchAccentColor[bc.id] || '#888' }}
+                />
+                <p className="record-branch-name">{bc.label}</p>
+                <p className="record-branch-strapline">{bc.strapline}</p>
+                <p className="record-branch-desc">{bc.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </main>
   );
 };
