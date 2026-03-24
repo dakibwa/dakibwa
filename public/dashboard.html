@@ -711,7 +711,7 @@ const CREDS = {
     redirectUri:  'http://127.0.0.1:8787/callback',
     authUrl:      'https://api.prod.whoop.com/oauth/oauth2/auth',
     tokenUrl:     'https://api.prod.whoop.com/oauth/oauth2/token',
-    apiBase:      'https://api.prod.whoop.com/developer/v1',
+    apiBase:      'https://api.prod.whoop.com/developer/v2',
     scopes:       'read:recovery read:cycles read:sleep read:workout read:profile read:body_measurement'
   },
   lastfm: { apiKey: '59ebdb7b79a9305078dea983ea32a3f6', username: 'akibwa' }
@@ -999,21 +999,33 @@ async function silentWhoopRefresh(saved) {
 
 async function fetchWhoopData() {
   if (!A.whoop.token) return;
-  const h = { Authorization: 'Bearer ' + A.whoop.token };
   try {
-    // Fetch last 7 days of recovery, latest cycle, and last sleep
-    const [recRes, cycRes, slpRes] = await Promise.all([
-      fetch(`${CREDS.whoop.apiBase}/recovery?limit=7`, { headers: h }),
-      fetch(`${CREDS.whoop.apiBase}/cycle?limit=1`,    { headers: h }),
-      fetch(`${CREDS.whoop.apiBase}/activity/sleep?limit=1`, { headers: h })
-    ]);
-    const [recData, cycData, slpData] = await Promise.all([recRes.json(), cycRes.json(), slpRes.json()]);
+    let recData, cycData, slpData;
+    if (IS_LOCAL) {
+      // Local dev: call Whoop API directly (no CORS restriction on localhost)
+      const h = { Authorization: 'Bearer ' + A.whoop.token };
+      const base = CREDS.whoop.apiBase;
+      const [rR, cR, sR] = await Promise.all([
+        fetch(base + '/recovery?limit=7',       { headers: h }),
+        fetch(base + '/cycle?limit=1',          { headers: h }),
+        fetch(base + '/activity/sleep?limit=1', { headers: h }),
+      ]);
+      [recData, cycData, slpData] = await Promise.all([rR.json(), cR.json(), sR.json()]);
+    } else {
+      // Production: proxy through Worker - Whoop blocks direct browser calls (CORS)
+      const r = await fetch(WORKER_URL + '/whoop/data', {
+        headers: { 'x-whoop-token': A.whoop.token }
+      });
+      if (!r.ok) throw new Error('whoop proxy ' + r.status);
+      const d = await r.json();
+      recData = d.recovery; cycData = d.cycle; slpData = d.sleep;
+    }
     A.whoop.recovery = recData.records?.[0] || null;
     A.whoop.cycle    = cycData.records?.[0] || null;
     A.whoop.sleep    = slpData.records?.[0] || null;
     renderWhoop();
-    if (A.runs.length) renderToday(); // refresh with recovery data
-  } catch { /* non-critical */ }
+    if (A.runs.length) renderToday();
+  } catch(e) { console.warn('Whoop data fetch failed:', e.message); }
 }
 
 function renderWhoop() {
