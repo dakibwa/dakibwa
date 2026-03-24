@@ -848,13 +848,25 @@ async function refreshStravaToken(saved) {
   }
 }
 
-// ─── WHOOP NUDGE TOAST ────────────────────────────────────────
+// ─── WHOOP NUDGE TOAST ────────────────────────────────────────────
 function showWhoopNudge() {
   if (document.getElementById('whoopNudge')) return;
   const n = document.createElement('div');
   n.id = 'whoopNudge';
   n.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#1e1e2e;border:1px solid #3b3b5e;border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:10px;z-index:999;box-shadow:0 4px 24px rgba(0,0,0,0.5);font-size:0.85rem;color:#cdd6f4;max-width:340px';
-  n.innerHTML = '<span style="font-size:1.2rem">💪</span><span>Connect <strong>Whoop</strong> to see recovery &amp; HRV alongside your runs</span><button onclick="doWhoopAuth()" style="background:#7c3aed;border:none;color:#fff;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:0.8rem;white-space:nowrap;flex-shrink:0">Connect</button><button onclick="document.getElementById('whoopNudge').remove()" style="background:none;border:none;color:#6c7086;cursor:pointer;font-size:1.3rem;line-height:1;flex-shrink:0;padding:0 2px">×</button>';
+  const icon = document.createElement('span');
+  icon.style.fontSize = '1.2rem'; icon.textContent = '💪';
+  const text = document.createElement('span');
+  text.innerHTML = 'Connect <strong>Whoop</strong> to see recovery &amp; HRV alongside your runs';
+  const connectBtn = document.createElement('button');
+  connectBtn.textContent = 'Connect';
+  connectBtn.style.cssText = 'background:#7c3aed;border:none;color:#fff;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:0.8rem;white-space:nowrap;flex-shrink:0';
+  connectBtn.onclick = doWhoopAuth;
+  const closeBtn = document.createElement('button');
+  closeBtn.textContent = '×';
+  closeBtn.style.cssText = 'background:none;border:none;color:#6c7086;cursor:pointer;font-size:1.3rem;line-height:1;flex-shrink:0;padding:0 2px';
+  closeBtn.onclick = function() { n.remove(); };
+  n.append(icon, text, connectBtn, closeBtn);
   document.body.appendChild(n);
 }
 
