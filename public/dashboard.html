@@ -848,6 +848,16 @@ async function refreshStravaToken(saved) {
   }
 }
 
+// ─── WHOOP NUDGE TOAST ────────────────────────────────────────
+function showWhoopNudge() {
+  if (document.getElementById('whoopNudge')) return;
+  const n = document.createElement('div');
+  n.id = 'whoopNudge';
+  n.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#1e1e2e;border:1px solid #3b3b5e;border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:10px;z-index:999;box-shadow:0 4px 24px rgba(0,0,0,0.5);font-size:0.85rem;color:#cdd6f4;max-width:340px';
+  n.innerHTML = '<span style="font-size:1.2rem">💪</span><span>Connect <strong>Whoop</strong> to see recovery &amp; HRV alongside your runs</span><button onclick="doWhoopAuth()" style="background:#7c3aed;border:none;color:#fff;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:0.8rem;white-space:nowrap;flex-shrink:0">Connect</button><button onclick="document.getElementById('whoopNudge').remove()" style="background:none;border:none;color:#6c7086;cursor:pointer;font-size:1.3rem;line-height:1;flex-shrink:0;padding:0 2px">×</button>';
+  document.body.appendChild(n);
+}
+
 // ─── WHOOP AUTH ───────────────────────────────────────────────
 function doWhoopAuth() {
   if (!IS_LOCAL) {
@@ -1011,6 +1021,7 @@ async function fetchRuns() {
     setConnected('dStrava','lStrava','pStrava','Strava · ' + A.runs.length + ' runs');
     hideLoading();
     render();
+    if (!localStorage.getItem('whoop_refresh') && !A.whoop.ok) showWhoopNudge();
   } catch {
     localStorage.removeItem('strava_refresh');
     hideLoading();
