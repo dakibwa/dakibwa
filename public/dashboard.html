@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dan · 5K Training Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+/* ─── RESET & ROOT ─────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:        #07070f;
+  --surface:   #0e0e1c;
+  --surface2:  #141428;
+  --border:    rgba(255,255,255,0.06);
+  --border2:   rgba(255,255,255,0.10);
+  --orange:    #FF4500;
+  --orange2:   #FF6B35;
+  --purple:    #9B5DE5;
+  --purple2:   #C77DFF;
+  --teal:      #00D9A3;
+  --blue:      #00B4FF;
+  --red:       #FF3B5C;
+  --yellow:    #FFD166;
+  --text:      #F0F0FA;
+  --text2:     #9BA3B8;
+  --text3:     #5A6480;
+  --r-sm:      10px;
+  --r-md:      16px;
+  --r-lg:      22px;
+  font-size: 15px;
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 99px; }
+
+/* ─── LAYOUT ───────────────────────────────────────────────── */
+.wrap { max-width: 1140px; margin: 0 auto; padding: 0 22px 60px; }
+
+/* ─── HEADER ───────────────────────────────────────────────── */
+header {
+  padding: 26px 0 0;
+  margin-bottom: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+.logo { display: flex; align-items: center; gap: 12px; }
+.logo-icon {
+  width: 42px; height: 42px;
+  background: linear-gradient(135deg, var(--orange), var(--orange2));
+  border-radius: 13px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+}
+.logo-text { font-size: 1.1rem; font-weight: 700; letter-spacing: -0.3px; }
+.logo-sub { font-size: 0.75rem; color: var(--text3); margin-top: 1px; }
+.header-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.pill {
+  display: flex; align-items: center; gap: 7px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 99px;
+  padding: 7px 14px;
+  font-size: 0.78rem;
+  color: var(--text3);
+  font-weight: 500;
+  transition: all 0.3s;
+}
+.pill.ok { border-color: rgba(0,217,163,0.35); color: var(--text2); }
+.pill-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text3); transition: all 0.3s; flex-shrink: 0; }
+.pill.ok .pill-dot { background: var(--teal); box-shadow: 0 0 6px var(--teal); }
+.hbtn {
+  background: var(--orange);
+  color: #fff; border: none;
+  border-radius: 99px;
+  padding: 8px 18px;
+  font-size: 0.8rem; font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+}
+.hbtn:hover { opacity: 0.85; transform: translateY(-1px); }
+
+/* ─── FIRST-RUN SCREEN ───────────────────────────────────────── */
+.first-run {
+  position: fixed; inset: 0; z-index: 100;
+  background: var(--bg);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 16px; text-align: center;
+  padding: 30px;
+}
+.first-run .logo-big { font-size: 3rem; margin-bottom: 8px; }
+.first-run h1 { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.5px; }
+.first-run p { font-size: 0.9rem; color: var(--text2); max-width: 340px; line-height: 1.6; }
+.first-run .countdown-msg { font-size: 0.8rem; color: var(--text3); margin-top: 4px; }
+.approve-btn {
+  margin-top: 8px;
+  display: flex; align-items: center; gap: 10px;
+  background: #FC4C02; color: #fff;
+  border: none; border-radius: 12px;
+  padding: 14px 28px; font-size: 0.95rem; font-weight: 700;
+  cursor: pointer; transition: opacity 0.2s, transform 0.15s;
+  font-family: inherit;
+}
+.approve-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+.approve-btn svg { width: 20px; height: 20px; fill: #fff; }
+.skip-link { font-size: 0.78rem; color: var(--text3); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.skip-link:hover { color: var(--text2); }
+.loading-screen {
+  position: fixed; inset: 0; z-index: 99;
+  background: var(--bg);
+  display: none; flex-direction: column;
+  align-items: center; justify-content: center; gap: 14px;
+}
+.loading-screen .spin-big { width: 36px; height: 36px; border: 3px solid rgba(255,255,255,0.08); border-top-color: var(--orange); border-radius: 50%; animation: spin 0.8s linear infinite; }
+.loading-screen p { font-size: 0.88rem; color: var(--text2); }
+.msg { font-size: 0.78rem; margin-top: 9px; display: none; }
+.err { color: var(--red); } .ok { color: var(--teal); }
+
+/* ─── GOALS HERO ─────────────────────────────────────────────── */
+.goals { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; }
+@media(max-width:580px){ .goals{ grid-template-columns:1fr; } }
+.goal-card {
+  border-radius: var(--r-lg); padding: 26px 28px;
+  position: relative; overflow: hidden;
+}
+.goal-card.apr { background: linear-gradient(135deg, rgba(255,69,0,0.13), rgba(255,107,53,0.05)); border: 1px solid rgba(255,69,0,0.22); }
+.goal-card.aug { background: linear-gradient(135deg, rgba(155,93,229,0.13), rgba(199,125,255,0.05)); border: 1px solid rgba(155,93,229,0.22); }
+.goal-label {
+  font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.9px; display: flex; align-items: center; gap: 8px;
+  margin-bottom: 18px;
+}
+.apr .goal-label { color: var(--orange2); }
+.aug .goal-label { color: var(--purple2); }
+.goal-tag { padding: 2px 9px; border-radius: 99px; font-size: 0.66rem; }
+.apr .goal-tag { background: rgba(255,69,0,0.18); }
+.aug .goal-tag { background: rgba(155,93,229,0.18); }
+.goal-row { display: flex; align-items: flex-end; gap: 18px; margin-bottom: 20px; }
+.goal-time { font-size: 3.6rem; font-weight: 800; line-height: 1; letter-spacing: -2px; }
+.apr .goal-time { color: var(--orange2); }
+.aug .goal-time { color: var(--purple2); }
+.goal-countdown { padding-bottom: 4px; }
+.goal-countdown .num { font-size: 2.2rem; font-weight: 800; line-height: 1; letter-spacing: -1px; }
+.goal-countdown .lbl { font-size: 0.68rem; color: var(--text3); margin-top: 1px; }
+.goal-prog-row { display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text3); margin-bottom: 7px; }
+.goal-prog-bg { background: rgba(255,255,255,0.07); border-radius: 99px; height: 4px; overflow: hidden; margin-bottom: 16px; }
+.goal-prog-fill { height: 100%; border-radius: 99px; transition: width 1.2s cubic-bezier(.4,0,.2,1); }
+.apr .goal-prog-fill { background: linear-gradient(90deg, var(--orange), var(--yellow)); }
+.aug .goal-prog-fill { background: linear-gradient(90deg, var(--purple), var(--purple2)); }
+.goal-insight {
+  display: flex; gap: 10px; align-items: flex-start;
+  background: rgba(255,255,255,0.04); border-radius: 11px;
+  padding: 12px 14px; font-size: 0.8rem; line-height: 1.55; color: var(--text2);
+}
+.goal-insight .ico { flex-shrink: 0; font-size: 0.95rem; }
+.goal-insight strong { color: var(--text); }
+
+/* ─── TODAY CARD ─────────────────────────────────────────────── */
+.today-card {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: var(--r-md);
+  padding: 20px 24px;
+  margin-bottom: 18px;
+  display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+}
+.today-emo { font-size: 2.2rem; flex-shrink: 0; }
+.today-body { flex: 1; min-width: 180px; }
+.today-eyebrow { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px; color: var(--text3); margin-bottom: 4px; }
+.today-title { font-size: 1rem; font-weight: 700; margin-bottom: 3px; }
+.today-desc { font-size: 0.82rem; color: var(--text2); line-height: 1.5; }
+
+/* ─── STATS ──────────────────────────────────────────────────── */
+.stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 18px; }
+@media(max-width:700px){ .stats{ grid-template-columns:repeat(2,1fr); } }
+.stat {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-md); padding: 18px 20px;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.stat:hover { border-color: var(--border2); transform: translateY(-1px); }
+.stat-lbl { font-size: 0.7rem; color: var(--text3); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 10px; }
+.stat-val { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; line-height: 1; }
+.c-or { color: var(--orange2); } .c-tl { color: var(--teal); } .c-bl { color: var(--blue); } .c-yl { color: var(--yellow); }
+.stat-sub { font-size: 0.72rem; color: var(--text3); margin-top: 5px; }
+
+/* ─── CHARTS ─────────────────────────────────────────────────── */
+.charts { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 18px; }
+@media(max-width:720px){ .charts{ grid-template-columns:1fr; } }
+.chart-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: 22px;
+}
+.chart-hd { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 18px; }
+.chart-hd h3 { font-size: 0.88rem; font-weight: 700; }
+.chart-hd p { font-size: 0.72rem; color: var(--text3); margin-top: 2px; }
+.legend { display: flex; gap: 12px; flex-wrap: wrap; }
+.leg { display: flex; align-items: center; gap: 5px; font-size: 0.7rem; color: var(--text2); }
+.leg-dot { width: 8px; height: 8px; border-radius: 50%; }
+.leg-dash { width: 16px; height: 2px; border-radius: 1px; }
+.chart-wrap { position: relative; }
+
+/* ─── GEAR ───────────────────────────────────────────────────── */
+.section-lbl {
+  font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.9px; color: var(--text3); margin-bottom: 13px;
+}
+.gear { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 18px; }
+@media(max-width:700px){ .gear{ grid-template-columns:1fr; } }
+.gear-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-md); padding: 20px; position: relative;
+  transition: border-color 0.2s;
+}
+.gear-card.cur { border-color: rgba(0,217,163,0.3); }
+.gear-card.rec { border-color: rgba(155,93,229,0.3); }
+.gear-badge {
+  position: absolute; top: 14px; right: 14px;
+  font-size: 0.64rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px;
+  padding: 3px 9px; border-radius: 99px;
+}
+.b-cur { background: rgba(0,217,163,0.14); color: var(--teal); }
+.b-com { background: rgba(255,213,102,0.14); color: var(--yellow); }
+.b-rec { background: rgba(155,93,229,0.14); color: var(--purple2); }
+.gear-ico { font-size: 1.9rem; margin-bottom: 11px; }
+.gear-name { font-size: 0.95rem; font-weight: 700; margin-bottom: 1px; }
+.gear-sub { font-size: 0.76rem; color: var(--text3); margin-bottom: 12px; }
+.gear-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
+.gear-chip { font-size: 0.68rem; padding: 3px 9px; border-radius: 99px; background: rgba(255,255,255,0.06); color: var(--text2); }
+.gear-note { font-size: 0.79rem; color: var(--text2); line-height: 1.5; }
+.gear-note strong { color: var(--text); }
+.km-row { display: flex; align-items: center; gap: 8px; margin-top: 11px; }
+.km-input { background: var(--surface2); border: 1px solid var(--border2); border-radius: 7px; padding: 6px 10px; color: var(--text); font-size: 0.8rem; width: 75px; outline: none; font-family: inherit; }
+.km-lbl { font-size: 0.76rem; color: var(--text3); }
+.km-warn { font-size: 0.72rem; color: var(--yellow); margin-top: 6px; display: none; }
+
+/* ─── RUNS ───────────────────────────────────────────────────── */
+.runs { display: flex; flex-direction: column; gap: 9px; margin-bottom: 18px; }
+.run-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-md); overflow: hidden; transition: border-color 0.2s;
+}
+.run-card:hover { border-color: var(--border2); }
+.run-main {
+  padding: 15px 20px;
+  display: grid; grid-template-columns: 44px 1fr auto;
+  gap: 15px; align-items: center;
+}
+.run-dt { text-align: center; }
+.run-dt .d { font-size: 1.25rem; font-weight: 800; line-height: 1; }
+.run-dt .m { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text3); }
+.run-name { font-size: 0.9rem; font-weight: 600; margin-bottom: 6px; }
+.run-chips { display: flex; gap: 7px; flex-wrap: wrap; }
+.rchip { font-size: 0.72rem; padding: 2px 9px; border-radius: 99px; background: rgba(255,255,255,0.05); color: var(--text2); }
+.rchip.fast { background: rgba(0,217,163,0.1); color: var(--teal); }
+.rchip.mid  { background: rgba(255,213,102,0.1); color: var(--yellow); }
+.rchip.easy { background: rgba(0,180,255,0.1); color: var(--blue); }
+.run-right { text-align: right; }
+.run-dist { font-size: 1.05rem; font-weight: 700; }
+.run-time2 { font-size: 0.76rem; color: var(--text3); margin-top: 2px; }
+.run-music { border-top: 1px solid var(--border); padding: 9px 20px; display: none; }
+.run-music.vis { display: block; }
+.music-inner { display: flex; gap: 7px; align-items: center; flex-wrap: wrap; }
+.music-lbl { font-size: 0.68rem; color: var(--text3); flex-shrink: 0; }
+.tpill { display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.04); border-radius: 99px; padding: 3px 10px 3px 5px; font-size: 0.72rem; }
+.tart { width: 18px; height: 18px; border-radius: 3px; object-fit: cover; background: #222; flex-shrink: 0; }
+.tname { color: var(--text2); max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.more-t { font-size: 0.68rem; color: var(--text3); }
+
+/* ─── PLAN ───────────────────────────────────────────────────── */
+.plan-tabs { display: flex; gap: 6px; margin-bottom: 14px; }
+.ptab { padding: 7px 16px; border-radius: 99px; border: 1px solid var(--border2); background: transparent; color: var(--text2); font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+.ptab.active { background: var(--surface2); color: var(--text); border-color: transparent; }
+.week-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 8px; }
+@media(max-width:760px){ .week-grid{ grid-template-columns:repeat(4,1fr); } }
+@media(max-width:480px){ .week-grid{ grid-template-columns:repeat(2,1fr); } }
+.wday { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 13px 11px; }
+.wday.hl { border-color: rgba(255,69,0,0.35); }
+.wday-name { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text3); margin-bottom: 7px; font-weight: 700; }
+.wday-type { font-size: 0.68rem; font-weight: 700; padding: 2px 8px; border-radius: 99px; display: inline-block; margin-bottom: 7px; }
+.t-int { background: rgba(255,213,102,0.14); color: var(--yellow); }
+.t-tem { background: rgba(255,69,0,0.14); color: var(--orange2); }
+.t-eas { background: rgba(0,180,255,0.11); color: var(--blue); }
+.t-lon { background: rgba(0,217,163,0.11); color: var(--teal); }
+.t-res { background: rgba(255,255,255,0.05); color: var(--text3); }
+.wday-desc { font-size: 0.73rem; color: var(--text2); line-height: 1.4; }
+.plan-full { display: none; }
+.plan-full.vis { display: block; }
+.plan-cur { display: block; }
+.plan-cur.hid { display: none; }
+.weeks-list { display: flex; flex-direction: column; gap: 20px; }
+.week-hd { font-size: 0.82rem; font-weight: 700; color: var(--text2); margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.week-hd span { font-size: 0.7rem; color: var(--text3); font-weight: 400; }
+
+/* ─── ZONES ──────────────────────────────────────────────────── */
+.zones { display: grid; grid-template-columns: repeat(5,1fr); gap: 10px; margin-bottom: 30px; }
+@media(max-width:700px){ .zones{ grid-template-columns:repeat(3,1fr); } }
+.zone { background: var(--surface); border-radius: var(--r-sm); padding: 14px; border-top: 3px solid; }
+.z-name { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.z-pace { font-size: 0.92rem; font-weight: 700; margin-bottom: 3px; }
+.z-desc { font-size: 0.68rem; color: var(--text3); line-height: 1.3; }
+
+/* ─── WHOOP RECOVERY ─────────────────────────────────────────── */
+.whoop-row {
+  display: grid;
+  grid-template-columns: auto 1fr 1fr 1fr 1fr;
+  gap: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 20px 24px;
+  margin-bottom: 18px;
+  align-items: center;
+}
+@media(max-width:760px){ .whoop-row{ grid-template-columns: 1fr 1fr; } }
+.whoop-score-wrap { display: flex; align-items: center; gap: 16px; }
+.whoop-ring {
+  width: 72px; height: 72px; flex-shrink: 0;
+  border-radius: 50%; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  border: 4px solid;
+  transition: border-color 0.4s;
+}
+.whoop-ring .num { font-size: 1.45rem; font-weight: 800; line-height: 1; }
+.whoop-ring .lbl { font-size: 0.56rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text3); margin-top: 1px; }
+.whoop-ring.green { border-color: var(--teal); }
+.whoop-ring.green .num { color: var(--teal); }
+.whoop-ring.yellow { border-color: var(--yellow); }
+.whoop-ring.yellow .num { color: var(--yellow); }
+.whoop-ring.red { border-color: var(--red); }
+.whoop-ring.red .num { color: var(--red); }
+.whoop-ring.grey { border-color: var(--border2); }
+.whoop-ring.grey .num { color: var(--text3); }
+.whoop-score-label .title { font-size: 0.88rem; font-weight: 700; }
+.whoop-score-label .sub { font-size: 0.75rem; color: var(--text2); margin-top: 2px; line-height: 1.4; }
+.whoop-metric { text-align: center; }
+.whoop-metric .val { font-size: 1.3rem; font-weight: 700; }
+.whoop-metric .key { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text3); margin-top: 4px; }
+.whoop-connect-hint { font-size: 0.8rem; color: var(--text3); }
+.whoop-connect-hint button {
+  background: none; border: none; color: var(--purple2);
+  font-size: 0.8rem; cursor: pointer; font-family: inherit;
+  text-decoration: underline; text-underline-offset: 3px; padding: 0;
+}
+
+/* ─── MISC ───────────────────────────────────────────────────── */
+.empty { text-align: center; padding: 36px; color: var(--text3); font-size: 0.86rem; }
+.spinner { display: inline-block; width: 15px; height: 15px; border: 2px solid rgba(255,255,255,0.08); border-top-color: var(--orange); border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 8px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.mb18 { margin-bottom: 18px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ══════════════════════════════════════════════
+     HEADER
+══════════════════════════════════════════════ -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">🏃</div>
+    <div>
+      <div class="logo-text">Dan · 5K Training</div>
+      <div class="logo-sub">Pegasus 41 GTX · Targeting sub-17 by August</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="pill" id="pStrava"><div class="pill-dot" id="dStrava"></div><span id="lStrava">Strava</span></div>
+    <div class="pill" id="pWhoop"><div class="pill-dot" id="dWhoop"></div><span id="lWhoop">Whoop</span></div>
+    <div class="pill" id="pLfm"><div class="pill-dot" id="dLfm"></div><span id="lLfm">Last.fm</span></div>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════════
+     FIRST-RUN SCREEN (only shown once ever)
+══════════════════════════════════════════════ -->
+<div id="firstRun" class="first-run" style="display:none">
+  <div class="logo-big">🏃</div>
+  <h1>Dan's 5K Dashboard</h1>
+  <p>One-time setup. Approve Strava and Whoop access and you'll never see this screen again — everything loads automatically from now on.</p>
+  <button class="approve-btn" onclick="doStravaAuth()">
+    <svg viewBox="0 0 24 24"><path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/></svg>
+    Approve Strava Access
+  </button>
+  <button class="approve-btn" style="background:#2d2d2d;margin-top:4px" onclick="doWhoopAuth()">
+    💪 Approve Whoop Access
+  </button>
+  <span class="skip-link" onclick="loadDemo()">Skip — use demo data instead</span>
+</div>
+
+<!-- Loading screen -->
+<div id="loadingScreen" class="loading-screen">
+  <div class="spin-big"></div>
+  <p id="loadingMsg">Loading your runs…</p>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     GOALS HERO
+══════════════════════════════════════════════ -->
+<div class="goals">
+
+  <div class="goal-card apr">
+    <div class="goal-label">Goal 1 <span class="goal-tag">30 April 2026</span></div>
+    <div class="goal-row">
+      <div class="goal-time">18:00</div>
+      <div class="goal-countdown">
+        <div class="num" id="daysApr">—</div>
+        <div class="lbl">days left</div>
+      </div>
+    </div>
+    <div class="goal-prog-row">
+      <span id="aprCurLabel">Your best</span>
+      <span>18:00 target</span>
+    </div>
+    <div class="goal-prog-bg"><div class="goal-prog-fill" id="barApr" style="width:0%"></div></div>
+    <div class="goal-insight">
+      <span class="ico">⚡</span>
+      <span id="insApr">Load your data to see a personalised week-by-week breakdown.</span>
+    </div>
+  </div>
+
+  <div class="goal-card aug">
+    <div class="goal-label">Goal 2 <span class="goal-tag">31 August 2026</span></div>
+    <div class="goal-row">
+      <div class="goal-time">Sub 17</div>
+      <div class="goal-countdown">
+        <div class="num" id="daysAug">—</div>
+        <div class="lbl">days left</div>
+      </div>
+    </div>
+    <div class="goal-prog-row">
+      <span>After April goal</span>
+      <span>16:59 target</span>
+    </div>
+    <div class="goal-prog-bg"><div class="goal-prog-fill" id="barAug" style="width:0%"></div></div>
+    <div class="goal-insight">
+      <span class="ico">🎯</span>
+      <span id="insAug">18:00 → sub-17 is <strong>61 seconds</strong> over ~123 days after April. That's just <strong>3–4 sec/week</strong> — very achievable with consistent volume and one quality session weekly.</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════
+     WHOOP RECOVERY
+══════════════════════════════════════════════ -->
+<div class="whoop-row" id="whoopRow">
+  <div class="whoop-score-wrap">
+    <div class="whoop-ring grey" id="whoopRing">
+      <span class="num" id="whoopScore">—</span>
+      <span class="lbl">Recovery</span>
+    </div>
+    <div class="whoop-score-label">
+      <div class="title" id="whoopStatus">Whoop</div>
+      <div class="sub" id="whoopSub" class="whoop-connect-hint">
+        <button onclick="doWhoopAuth()">Connect Whoop</button> to see recovery, HRV &amp; strain
+      </div>
+    </div>
+  </div>
+  <div class="whoop-metric">
+    <div class="val" id="whoopHrv" style="color:var(--purple2)">—</div>
+    <div class="key">HRV (ms)</div>
+  </div>
+  <div class="whoop-metric">
+    <div class="val" id="whoopRhr" style="color:var(--red)">—</div>
+    <div class="key">Resting HR</div>
+  </div>
+  <div class="whoop-metric">
+    <div class="val" id="whoopSleep" style="color:var(--blue)">—</div>
+    <div class="key">Sleep Score</div>
+  </div>
+  <div class="whoop-metric">
+    <div class="val" id="whoopStrain" style="color:var(--yellow)">—</div>
+    <div class="key">Day Strain</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     TODAY'S FOCUS
+══════════════════════════════════════════════ -->
+<div class="today-card">
+  <div class="today-emo" id="todayEmo">📋</div>
+  <div class="today-body">
+    <div class="today-eyebrow">Today's Focus</div>
+    <div class="today-title" id="todayTitle">Connect your data to get a personalised recommendation</div>
+    <div class="today-desc" id="todayDesc">Your training insight will appear here once Strava is connected or demo data is loaded.</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     STATS
+══════════════════════════════════════════════ -->
+<div class="stats">
+  <div class="stat">
+    <div class="stat-lbl">Current Best 5K</div>
+    <div class="stat-val c-or" id="sBest">—</div>
+    <div class="stat-sub" id="sBestSub">No data yet</div>
+  </div>
+  <div class="stat">
+    <div class="stat-lbl">Runs Logged</div>
+    <div class="stat-val c-bl" id="sRuns">—</div>
+    <div class="stat-sub">last 90 days</div>
+  </div>
+  <div class="stat">
+    <div class="stat-lbl">This Week</div>
+    <div class="stat-val c-tl" id="sWeek">—</div>
+    <div class="stat-sub">km so far</div>
+  </div>
+  <div class="stat">
+    <div class="stat-lbl">Avg Pace</div>
+    <div class="stat-val c-yl" id="sPace">—</div>
+    <div class="stat-sub">min/km all runs</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     CHARTS
+══════════════════════════════════════════════ -->
+<div class="charts">
+  <div class="chart-card">
+    <div class="chart-hd">
+      <div><h3>Pace Trajectory</h3><p>Every run — with April &amp; August goal lines</p></div>
+      <div class="legend">
+        <div class="leg"><div class="leg-dot" style="background:var(--orange2)"></div>Runs</div>
+        <div class="leg"><div class="leg-dash" style="background:var(--orange2)"></div>18:00</div>
+        <div class="leg"><div class="leg-dash" style="background:var(--purple2)"></div>Sub-17</div>
+      </div>
+    </div>
+    <div class="chart-wrap" style="height:220px"><canvas id="paceChart"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-hd"><div><h3>Weekly Volume</h3><p>km per week</p></div></div>
+    <div class="chart-wrap" style="height:220px"><canvas id="volChart"></canvas></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     GEAR LOCKER
+══════════════════════════════════════════════ -->
+<div class="section-lbl">Gear Locker</div>
+<div class="gear">
+
+  <div class="gear-card cur">
+    <div class="gear-badge b-cur">Current</div>
+    <div class="gear-ico">👟</div>
+    <div class="gear-name">Nike Pegasus 41 GTX</div>
+    <div class="gear-sub">All-weather daily trainer</div>
+    <div class="gear-chips">
+      <span class="gear-chip">Gore-Tex</span>
+      <span class="gear-chip">ReactX foam</span>
+      <span class="gear-chip">Tempo · Intervals</span>
+      <span class="gear-chip">Long runs</span>
+    </div>
+    <div class="gear-note">Versatile workhorse — great for all your quality sessions. The GTX keeps you going in spring rain without ruining your workout.</div>
+    <div class="km-row">
+      <input class="km-input" type="number" placeholder="0" oninput="checkKm(this,'kwarn')">
+      <span class="km-lbl">km on them</span>
+    </div>
+    <div class="km-warn" id="kwarn">⚠️ Nearing replacement range — consider fresh pair before August goal</div>
+  </div>
+
+  <div class="gear-card">
+    <div class="gear-badge b-com">Coming Soon</div>
+    <div class="gear-ico">👟</div>
+    <div class="gear-name">Nike Pegasus 42</div>
+    <div class="gear-sub">Expected mid-2026</div>
+    <div class="gear-chips">
+      <span class="gear-chip">ReactX update</span>
+      <span class="gear-chip">Refreshed upper</span>
+      <span class="gear-chip">Versatile</span>
+    </div>
+    <div class="gear-note">A solid step up from your current pair — but don't rush it. <strong>Wait for reviews before buying.</strong> The generational jump from Peg 41→42 is usually modest. If your 41s still have life in them, hold off until reviews land and your August build ramps up.</div>
+  </div>
+
+  <div class="gear-card rec">
+    <div class="gear-badge b-rec">Recommended Add</div>
+    <div class="gear-ico">☁️</div>
+    <div class="gear-name">Nike Vomero 18</div>
+    <div class="gear-sub">Max-cushion recovery trainer</div>
+    <div class="gear-chips">
+      <span class="gear-chip">ZoomX foam</span>
+      <span class="gear-chip">Max cushion</span>
+      <span class="gear-chip">Easy days only</span>
+    </div>
+    <div class="gear-note"><strong>This is the smarter buy right now.</strong> For sub-17 training your legs absorb heavy load — the Vomero on easy and recovery days protects them so you can hit intervals at full intensity. Keep the Pegasus for workouts. Add a <strong>Vaporfly 3</strong> for race day time trials and you have the perfect 3-shoe rotation.</div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════
+     RECENT RUNS
+══════════════════════════════════════════════ -->
+<div class="section-lbl">Recent Runs</div>
+<div class="runs" id="runsList">
+  <div class="empty">Connect Strava or load demo data to see your runs</div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     TRAINING PLAN
+══════════════════════════════════════════════ -->
+<div class="section-lbl mb18">8-Week Plan to 18:00 · April 30</div>
+<div class="plan-tabs">
+  <button class="ptab active" onclick="showPlan('cur',this)">This Week</button>
+  <button class="ptab" onclick="showPlan('full',this)">Full 8 Weeks</button>
+</div>
+<div class="plan-cur" id="planCur"><div class="week-grid" id="wGrid"></div></div>
+<div class="plan-full" id="planFull"><div class="weeks-list" id="wList"></div></div>
+
+<div style="height:24px"></div>
+
+<!-- ══════════════════════════════════════════════
+     TRAINING ZONES
+══════════════════════════════════════════════ -->
+<div class="section-lbl">Training Zones <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3);font-size:0.75rem">· based on current best 5K</span></div>
+<div class="zones" id="zonesEl"></div>
+
+</div><!-- /wrap -->
+
+<script>
+'use strict';
+
+// ─── GOALS ────────────────────────────────────────────────────
+const G = {
+  apr: { date: new Date('2026-04-30'), secs: 18*60 },
+  aug: { date: new Date('2026-08-31'), secs: 17*60-1 }
+};
+const NOW = new Date();
+
+// ─── APP STATE ────────────────────────────────────────────────
+const A = {
+  token:  null,
+  runs:   [],
+  lfm:    { key: null, user: null, ok: false, cache: {} },
+  whoop:  { token: null, ok: false, recovery: null, sleep: null, cycle: null }
+};
+
+// ─── CHART REFS ───────────────────────────────────────────────
+const CH = {};
+
+// ─── ENVIRONMENT DETECTION ────────────────────────────────────
+// When running locally (via launch.py) secrets live here.
+// When deployed to akibwa.com all OAuth flows go through the
+// Cloudflare Worker — no secrets ever reach the browser.
+const IS_LOCAL = location.hostname === '127.0.0.1' || location.hostname === 'localhost';
+
+// ▸ After deploying the Worker, paste its URL here:
+//   e.g. 'https://running-dashboard-api.YOUR_SUBDOMAIN.workers.dev'
+//   or   'https://api.akibwa.com'  if you set a custom domain
+const WORKER_URL = 'https://running-dashboard-api.dakibwa.workers.dev';
+
+// ─── LOCAL CREDENTIALS (only used when IS_LOCAL === true) ─────
+const CREDS = {
+  strava: {
+    clientId:     '211823',
+    clientSecret: '7b3616eb034433b32cb8cbe244c1d29e9df140a7',
+    redirectUri:  'http://127.0.0.1:8787/callback'
+  },
+  whoop: {
+    clientId:     '887c7614-5f98-4227-9c19-1109e58f0a5d',
+    clientSecret: '694d63c77f760852d677c6bc4d4635e2ab9129fc30226df98a6cdd96599d0f4e',
+    redirectUri:  'http://127.0.0.1:8787/callback',
+    authUrl:      'https://api.prod.whoop.com/oauth/oauth2/auth',
+    tokenUrl:     'https://api.prod.whoop.com/oauth/oauth2/token',
+    apiBase:      'https://api.prod.whoop.com/developer/v1',
+    scopes:       'read:recovery read:cycles read:sleep read:workout read:profile read:body_measurement'
+  },
+  lastfm: { apiKey: '59ebdb7b79a9305078dea983ea32a3f6', username: 'akibwa' }
+};
+
+// ─── BOOT ─────────────────────────────────────────────────────
+window.addEventListener('load', async () => {
+  countdown();
+  buildPlan();
+  buildZones(null);
+
+  // Always connect Last.fm silently in background
+  silentLfmConnect();
+
+  // Always try Whoop silently if saved token exists
+  const savedWhoop = localStorage.getItem('whoop_refresh');
+  if (savedWhoop) silentWhoopRefresh(savedWhoop);
+
+  const params = new URLSearchParams(location.search);
+  const code        = params.get('code');
+  const state       = params.get('state');
+  const authError   = params.get('auth_error');
+
+  // Worker passes tokens directly in URL params (web deployment)
+  const stravaAT    = params.get('strava_access_token');
+  const stravaRT    = params.get('strava_refresh_token');
+  const stravaExp   = params.get('strava_expires_at');
+  const whoopAT     = params.get('whoop_access_token');
+  const whoopRT     = params.get('whoop_refresh_token');
+
+  history.replaceState({}, '', location.pathname); // always clean URL
+
+  // Case 1a: Worker returned Strava tokens in URL
+  if (stravaAT && stravaRT) {
+    localStorage.setItem('strava_refresh', stravaRT);
+    if (stravaExp) localStorage.setItem('strava_expires_at', stravaExp);
+    A.token = stravaAT;
+    showLoading('Loading your runs…');
+    await fetchRuns();
+    return;
+  }
+
+  // Case 1b: Worker returned Whoop tokens in URL
+  if (whoopAT && whoopRT) {
+    localStorage.setItem('whoop_refresh', whoopRT);
+    A.whoop.token = whoopAT;
+    A.whoop.ok = true;
+    setConnected('dWhoop', 'lWhoop', 'pWhoop', 'Whoop');
+    await fetchWhoopData();
+    const savedStrava2 = localStorage.getItem('strava_refresh');
+    if (savedStrava2 && !A.runs.length) {
+      showLoading('Loading your runs…');
+      await refreshStravaToken(savedStrava2);
+    } else if (!A.runs.length) {
+      hideLoading();
+      document.getElementById('firstRun').style.display = 'flex';
+    } else {
+      hideLoading();
+    }
+    return;
+  }
+
+  // Case 1c: local OAuth callback (code in URL, local server exchanged nothing yet)
+  if (code) {
+    if (state === 'whoop') {
+      showLoading('Connecting Whoop…');
+      await exchangeWhoopCode(code);
+    } else {
+      showLoading('Connecting Strava…');
+      await exchangeStravaCode(code);
+    }
+    return;
+  }
+
+  // Case 1d: auth error from Worker
+  if (authError) {
+    hideLoading();
+    document.getElementById('firstRun').style.display = 'flex';
+    document.getElementById('firstRun').querySelector('p').textContent = 'Auth error: ' + decodeURIComponent(authError);
+    return;
+  }
+
+  // Case 2: have a saved Strava refresh token
+  const savedStrava = localStorage.getItem('strava_refresh');
+  if (savedStrava) {
+    showLoading('Loading your runs…');
+    await refreshStravaToken(savedStrava);
+    return;
+  }
+
+  // Case 3: first time — show one-time approval screen
+  document.getElementById('firstRun').style.display = 'flex';
+});
+
+function setConnected(dotId, labelId, pillId, text) {
+  const pill = document.getElementById(pillId);
+  pill.classList.add('ok');
+  document.getElementById(dotId).style.background = 'var(--teal)';
+  document.getElementById(dotId).style.boxShadow = '0 0 6px var(--teal)';
+  document.getElementById(labelId).textContent = text;
+}
+
+function msg(id, text, isErr) {
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.className = 'msg ' + (isErr ? 'err' : 'ok');
+  el.style.display = 'block';
+}
+
+// ─── COUNTDOWN ────────────────────────────────────────────────
+function countdown() {
+  document.getElementById('daysApr').textContent = Math.max(0, Math.ceil((G.apr.date - NOW) / 86400000));
+  document.getElementById('daysAug').textContent = Math.max(0, Math.ceil((G.aug.date - NOW) / 86400000));
+}
+
+// ─── STRAVA AUTH ──────────────────────────────────────────────
+function doStravaAuth() {
+  if (!IS_LOCAL) {
+    // Web deployment: redirect to Worker which handles the full OAuth dance
+    location.href = `${WORKER_URL}/strava/auth`;
+    return;
+  }
+  // Local: direct OAuth with baked-in credentials
+  const redir = encodeURIComponent(CREDS.strava.redirectUri);
+  location.href = `https://www.strava.com/oauth/authorize?client_id=${CREDS.strava.clientId}&redirect_uri=${redir}&response_type=code&scope=activity:read_all&state=strava`;
+}
+
+async function exchangeStravaCode(code) {
+  try {
+    const r = await fetch('https://www.strava.com/oauth/token', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ client_id: CREDS.strava.clientId, client_secret: CREDS.strava.clientSecret, code, grant_type: 'authorization_code' })
+    });
+    const d = await r.json();
+    if (!d.access_token) throw new Error(d.message || 'Strava auth failed');
+    localStorage.setItem('strava_refresh', d.refresh_token);
+    A.token = d.access_token;
+    await fetchRuns();
+  } catch(e) {
+    hideLoading();
+    document.getElementById('firstRun').style.display = 'flex';
+    document.getElementById('firstRun').querySelector('p').textContent = 'Something went wrong: ' + e.message;
+  }
+}
+
+async function refreshStravaToken(saved) {
+  try {
+    let d;
+    if (IS_LOCAL) {
+      // Local: exchange directly (secrets are safe in launch.py context)
+      const r = await fetch('https://www.strava.com/oauth/token', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ client_id: CREDS.strava.clientId, client_secret: CREDS.strava.clientSecret, refresh_token: saved, grant_type: 'refresh_token' })
+      });
+      d = await r.json();
+    } else {
+      // Web: delegate refresh to Worker — no secrets in browser
+      const r = await fetch(`${WORKER_URL}/strava/refresh`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refresh_token: saved })
+      });
+      d = await r.json();
+    }
+    if (!d.access_token) throw new Error('Refresh failed');
+    localStorage.setItem('strava_refresh', d.refresh_token);
+    if (d.expires_at) localStorage.setItem('strava_expires_at', d.expires_at);
+    A.token = d.access_token;
+    await fetchRuns();
+  } catch {
+    localStorage.removeItem('strava_refresh');
+    hideLoading();
+    document.getElementById('firstRun').style.display = 'flex';
+  }
+}
+
+// ─── WHOOP AUTH ───────────────────────────────────────────────
+function doWhoopAuth() {
+  if (!IS_LOCAL) {
+    // Web deployment: Worker handles the full OAuth dance
+    location.href = `${WORKER_URL}/whoop/auth`;
+    return;
+  }
+  // Local: direct OAuth with baked-in credentials
+  const redir  = encodeURIComponent(CREDS.whoop.redirectUri);
+  const scopes = encodeURIComponent(CREDS.whoop.scopes);
+  location.href = `${CREDS.whoop.authUrl}?client_id=${CREDS.whoop.clientId}&redirect_uri=${redir}&response_type=code&scope=${scopes}&state=whoop`;
+}
+
+async function exchangeWhoopCode(code) {
+  try {
+    const body = new URLSearchParams({
+      grant_type:    'authorization_code',
+      code,
+      client_id:     CREDS.whoop.clientId,
+      client_secret: CREDS.whoop.clientSecret,
+      redirect_uri:  CREDS.whoop.redirectUri
+    });
+    const r = await fetch(CREDS.whoop.tokenUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body
+    });
+    const d = await r.json();
+    if (!d.access_token) throw new Error(d.error_description || 'Whoop auth failed');
+    localStorage.setItem('whoop_refresh', d.refresh_token);
+    A.whoop.token = d.access_token;
+    A.whoop.ok = true;
+    setConnected('dWhoop', 'lWhoop', 'pWhoop', 'Whoop');
+    await fetchWhoopData();
+    // Now also load Strava if not done yet
+    const savedStrava = localStorage.getItem('strava_refresh');
+    if (savedStrava && !A.runs.length) {
+      showLoading('Loading your runs…');
+      await refreshStravaToken(savedStrava);
+    } else if (!A.runs.length) {
+      hideLoading();
+      document.getElementById('firstRun').style.display = 'flex';
+    } else {
+      hideLoading();
+    }
+  } catch(e) {
+    hideLoading();
+    document.getElementById('firstRun').style.display = 'flex';
+    document.getElementById('firstRun').querySelector('p').textContent = 'Whoop error: ' + e.message;
+  }
+}
+
+async function silentWhoopRefresh(saved) {
+  try {
+    let d;
+    if (IS_LOCAL) {
+      const body = new URLSearchParams({
+        grant_type:    'refresh_token',
+        refresh_token: saved,
+        client_id:     CREDS.whoop.clientId,
+        client_secret: CREDS.whoop.clientSecret
+      });
+      const r = await fetch(CREDS.whoop.tokenUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body
+      });
+      d = await r.json();
+    } else {
+      // Web: delegate to Worker
+      const r = await fetch(`${WORKER_URL}/whoop/refresh`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refresh_token: saved })
+      });
+      d = await r.json();
+    }
+    if (!d.access_token) throw new Error('Refresh failed');
+    localStorage.setItem('whoop_refresh', d.refresh_token);
+    A.whoop.token = d.access_token;
+    A.whoop.ok = true;
+    setConnected('dWhoop', 'lWhoop', 'pWhoop', 'Whoop');
+    await fetchWhoopData();
+  } catch {
+    localStorage.removeItem('whoop_refresh');
+  }
+}
+
+async function fetchWhoopData() {
+  if (!A.whoop.token) return;
+  const h = { Authorization: 'Bearer ' + A.whoop.token };
+  try {
+    // Fetch last 7 days of recovery, latest cycle, and last sleep
+    const [recRes, cycRes, slpRes] = await Promise.all([
+      fetch(`${CREDS.whoop.apiBase}/recovery?limit=7`, { headers: h }),
+      fetch(`${CREDS.whoop.apiBase}/cycle?limit=1`,    { headers: h }),
+      fetch(`${CREDS.whoop.apiBase}/activity/sleep?limit=1`, { headers: h })
+    ]);
+    const [recData, cycData, slpData] = await Promise.all([recRes.json(), cycRes.json(), slpRes.json()]);
+    A.whoop.recovery = recData.records?.[0] || null;
+    A.whoop.cycle    = cycData.records?.[0] || null;
+    A.whoop.sleep    = slpData.records?.[0] || null;
+    renderWhoop();
+    if (A.runs.length) renderToday(); // refresh with recovery data
+  } catch { /* non-critical */ }
+}
+
+function renderWhoop() {
+  const rec = A.whoop.recovery;
+  const cyc = A.whoop.cycle;
+  const slp = A.whoop.sleep;
+
+  if (!rec) return;
+
+  const score = rec.score?.recovery_score ?? null;
+  const hrv   = rec.score?.hrv_rmssd_milli != null ? Math.round(rec.score.hrv_rmssd_milli) : null;
+  const rhr   = rec.score?.resting_heart_rate != null ? Math.round(rec.score.resting_heart_rate) : null;
+  const strain = cyc?.score?.strain != null ? cyc.score.strain.toFixed(1) : null;
+  const sleepPct = slp?.score?.sleep_performance_percentage != null
+    ? Math.round(slp.score.sleep_performance_percentage) + '%' : null;
+
+  // Recovery ring colour
+  const ring = document.getElementById('whoopRing');
+  const cls  = score == null ? 'grey' : score >= 67 ? 'green' : score >= 34 ? 'yellow' : 'red';
+  ring.className = `whoop-ring ${cls}`;
+  document.getElementById('whoopScore').textContent = score != null ? score + '%' : '—';
+
+  // Status label
+  const statusMap = { green: 'Ready to push', yellow: 'Moderate readiness', red: 'Recovery needed', grey: '—' };
+  const subMap    = { green: 'Good day for a hard session', yellow: 'Keep intensity moderate today', red: 'Prioritise easy running or rest', grey: '' };
+  document.getElementById('whoopStatus').textContent = statusMap[cls];
+  document.getElementById('whoopSub').textContent    = subMap[cls];
+
+  document.getElementById('whoopHrv').textContent    = hrv    != null ? hrv + ' ms' : '—';
+  document.getElementById('whoopRhr').textContent    = rhr    != null ? rhr + ' bpm' : '—';
+  document.getElementById('whoopSleep').textContent  = sleepPct || '—';
+  document.getElementById('whoopStrain').textContent = strain  || '—';
+}
+
+function showLoading(msg) {
+  document.getElementById('loadingScreen').style.display = 'flex';
+  document.getElementById('loadingMsg').textContent = msg;
+}
+function hideLoading() {
+  document.getElementById('loadingScreen').style.display = 'none';
+}
+
+async function fetchRuns() {
+  try {
+    let all = [];
+    for (let page = 1; page <= 4; page++) {
+      showLoading(`Loading runs… (page ${page})`);
+      const r = await fetch(`https://www.strava.com/api/v3/athlete/activities?per_page=50&page=${page}`,
+        { headers: { Authorization: 'Bearer ' + A.token }});
+      if (!r.ok) throw new Error('Strava auth expired');
+      const d = await r.json();
+      if (!d.length) break;
+      all = all.concat(d);
+    }
+    A.runs = all.filter(a => a.type === 'Run' || a.sport_type === 'Run');
+    setConnected('dStrava','lStrava','pStrava','Strava · ' + A.runs.length + ' runs');
+    hideLoading();
+    render();
+  } catch {
+    localStorage.removeItem('strava_refresh');
+    hideLoading();
+    document.getElementById('firstRun').style.display = 'flex';
+  }
+}
+
+// ─── DEMO DATA ────────────────────────────────────────────────
+function loadDemo() {
+  const ago = n => new Date(Date.now() - n*86400000).toISOString();
+  A.runs = [
+    // Improving pace over time — current best ~19:45 5K, targeting 18:00
+    { name:'Morning Intervals 800m×6',  distance:6400,  moving_time:1902, average_speed:3.365, start_date:ago(2),  average_heartrate:175, total_elevation_gain:20 },
+    { name:'Easy Recovery',             distance:5100,  moving_time:1836, average_speed:2.778, start_date:ago(4),  average_heartrate:134, total_elevation_gain:12 },
+    { name:'5K Time Trial',             distance:5000,  moving_time:1185, average_speed:4.219, start_date:ago(7),  average_heartrate:183, total_elevation_gain:7  },
+    { name:'Threshold Run 5km',         distance:5200,  moving_time:1495, average_speed:3.478, start_date:ago(9),  average_heartrate:167, total_elevation_gain:14 },
+    { name:'Long Easy Run',             distance:10500, moving_time:3780, average_speed:2.778, start_date:ago(11), average_heartrate:138, total_elevation_gain:52 },
+    { name:'Easy Jog',                  distance:5000,  moving_time:1800, average_speed:2.778, start_date:ago(15), average_heartrate:130, total_elevation_gain:10 },
+    { name:'1km Repeats ×4',            distance:7200,  moving_time:2100, average_speed:3.429, start_date:ago(16), average_heartrate:179, total_elevation_gain:22 },
+    { name:'Parkrun 5K',                distance:5000,  moving_time:1201, average_speed:4.163, start_date:ago(21), average_heartrate:181, total_elevation_gain:6  },
+    { name:'Tempo Run',                 distance:5000,  moving_time:1440, average_speed:3.472, start_date:ago(23), average_heartrate:163, total_elevation_gain:11 },
+    { name:'Long Run',                  distance:11000, moving_time:3960, average_speed:2.778, start_date:ago(25), average_heartrate:141, total_elevation_gain:58 },
+    { name:'Recovery Run',              distance:4800,  moving_time:1728, average_speed:2.778, start_date:ago(30), average_heartrate:129, total_elevation_gain:8  },
+    { name:'400m Repeats ×8',           distance:6000,  moving_time:1800, average_speed:3.333, start_date:ago(32), average_heartrate:178, total_elevation_gain:18 },
+    { name:'5K Time Trial',             distance:5000,  moving_time:1218, average_speed:4.107, start_date:ago(35), average_heartrate:182, total_elevation_gain:6  },
+    { name:'Tempo 6km',                 distance:6000,  moving_time:1764, average_speed:3.401, start_date:ago(37), average_heartrate:161, total_elevation_gain:15 },
+    { name:'Long Sunday Run',           distance:12000, moving_time:4320, average_speed:2.778, start_date:ago(39), average_heartrate:144, total_elevation_gain:68 },
+    { name:'Easy Run',                  distance:5500,  moving_time:1980, average_speed:2.778, start_date:ago(46), average_heartrate:132, total_elevation_gain:14 },
+    { name:'Parkrun 5K',                distance:5000,  moving_time:1236, average_speed:4.045, start_date:ago(49), average_heartrate:179, total_elevation_gain:7  },
+    { name:'800m Repeats ×5',           distance:5800,  moving_time:1764, average_speed:3.288, start_date:ago(51), average_heartrate:174, total_elevation_gain:16 },
+    { name:'Easy Long Run',             distance:9500,  moving_time:3420, average_speed:2.778, start_date:ago(60), average_heartrate:136, total_elevation_gain:40 },
+    { name:'5K Time Trial',             distance:5000,  moving_time:1260, average_speed:3.968, start_date:ago(65), average_heartrate:180, total_elevation_gain:6  },
+  ];
+  setConnected('dStrava','lStrava','pStrava','Strava · demo');
+  document.getElementById('firstRun').style.display = 'none';
+  hideLoading();
+  render();
+}
+
+// ─── HELPERS ──────────────────────────────────────────────────
+const fPace  = mps => { const m=(1000/mps)/60, mi=Math.floor(m), s=Math.round((m-mi)*60); return `${mi}:${String(s).padStart(2,'0')}`; };
+const fTime  = s   => { const m=Math.floor(s/60); return `${m}:${String(s%60).padStart(2,'0')}`; };
+const fDist  = m   => (m/1000).toFixed(2)+' km';
+const fMinKm = v   => { const m=Math.floor(v), s=Math.round((v-m)*60); return `${m}:${String(s).padStart(2,'0')}`; };
+const esc    = s   => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+function best5kMs() {
+  const fives = A.runs.filter(r => r.distance >= 4800 && r.distance <= 5200);
+  return (fives.length ? fives : A.runs).reduce((a,b) => a.average_speed > b.average_speed ? a : b).average_speed;
+}
+function best5kSecs() { return Math.round(5000 / best5kMs()); }
+
+// ─── MASTER RENDER ────────────────────────────────────────────
+function render() {
+  renderStats();
+  renderGoals();
+  renderToday();
+  renderCharts();
+  renderRuns();
+  buildZones(best5kMs());
+}
+
+// ─── STATS ────────────────────────────────────────────────────
+function renderStats() {
+  const best = best5kSecs();
+  document.getElementById('sBest').textContent    = fTime(best);
+  document.getElementById('sBestSub').textContent = 'Need '+ fTime(Math.max(0, best - G.apr.secs)) +' off for April goal';
+  document.getElementById('sRuns').textContent    = A.runs.length;
+  const wStart = new Date(); wStart.setDate(wStart.getDate() - ((wStart.getDay()+6)%7));
+  const wKm = A.runs.filter(r => new Date(r.start_date) >= wStart).reduce((s,r) => s+r.distance,0)/1000;
+  document.getElementById('sWeek').textContent    = wKm.toFixed(1)+' km';
+  const avg = A.runs.reduce((s,r) => s+r.average_speed,0)/A.runs.length;
+  document.getElementById('sPace').textContent    = fPace(avg)+' /km';
+}
+
+// ─── GOALS ────────────────────────────────────────────────────
+function renderGoals() {
+  const best = best5kSecs();
+  // April progress
+  const earliest  = [...A.runs].sort((a,b)=>new Date(a.start_date)-new Date(b.start_date))[0];
+  const startSecs = Math.round(5000/earliest.average_speed);
+  const totalGain = Math.max(1, startSecs - G.apr.secs);
+  const achieved  = Math.max(0, startSecs - best);
+  const aprPct    = Math.min(100, Math.round(achieved/totalGain*100));
+  document.getElementById('barApr').style.width   = aprPct + '%';
+  document.getElementById('aprCurLabel').textContent = 'Best: ' + fTime(best);
+  const weeksLeft  = Math.max(1, Math.ceil((G.apr.date - NOW)/604800000));
+  const secNeeded  = Math.max(0, best - G.apr.secs);
+  const spw        = Math.ceil(secNeeded/weeksLeft);
+  document.getElementById('insApr').innerHTML = secNeeded <= 0
+    ? '🎉 <strong>Goal already smashed!</strong> You\'re ready for August.'
+    : `You need <strong>${secNeeded}s faster</strong> in <strong>${weeksLeft} weeks</strong> — roughly <strong>${spw}s/week</strong>. Hit one interval session and one tempo every week and you\'re on track.`;
+
+  // August progress (from april goal → sub-17)
+  const augGap  = G.apr.secs - G.aug.secs;
+  const augDone = Math.max(0, G.apr.secs - best);
+  document.getElementById('barAug').style.width = Math.min(100, Math.round(augDone/augGap*100)) + '%';
+}
+
+// ─── TODAY (Whoop-aware) ──────────────────────────────────────
+function renderToday() {
+  const p     = weekPlan()[NOW.getDay()];
+  const score = A.whoop.recovery?.score?.recovery_score ?? null;
+
+  let emoji = p.emoji;
+  let title = p.title;
+  let desc  = p.desc;
+
+  // Override with recovery-aware recommendation if we have Whoop data
+  if (score != null) {
+    if (score >= 67 && p.type === 'int') {
+      emoji = '🟢'; title = 'Green light — go hard';
+      desc  = `Recovery at ${score}% — your body is ready. ${p.desc}`;
+    } else if (score >= 67 && p.type === 'tem') {
+      emoji = '🟢'; title = 'Strong recovery — tempo day';
+      desc  = `Recovery at ${score}% — great day to push the tempo. ${p.desc}`;
+    } else if (score >= 34 && score < 67 && p.type === 'int') {
+      emoji = '🟡'; title = 'Moderate recovery — soften the intervals';
+      desc  = `Recovery at ${score}% — still do the session, but hold back ~10% on effort. ${p.desc}`;
+    } else if (score < 34 && (p.type === 'int' || p.type === 'tem')) {
+      emoji = '🔴'; title = 'Low recovery — swap to easy today';
+      desc  = `Recovery at ${score}% — skip the hard session. Replace with 30–40 min easy to protect adaptation. Your body is rebuilding right now.`;
+    } else if (score >= 67 && p.type === 'res') {
+      emoji = '🟢'; title = 'High recovery — optional easy bonus';
+      desc  = `Recovery at ${score}% — rest day on plan, but if you feel great a short easy jog won't hurt.`;
+    }
+  }
+
+  document.getElementById('todayEmo').textContent   = emoji;
+  document.getElementById('todayTitle').textContent  = title;
+  document.getElementById('todayDesc').textContent   = desc;
+}
+
+// ─── CHARTS ───────────────────────────────────────────────────
+const cBase = {
+  responsive:true, maintainAspectRatio:false,
+  plugins:{ legend:{display:false}, tooltip:{ backgroundColor:'#1a1a2c', titleColor:'#F0F0FA', bodyColor:'#9BA3B8', padding:12, cornerRadius:10, borderColor:'rgba(255,255,255,0.08)', borderWidth:1 } },
+  scales:{
+    x:{ grid:{color:'rgba(255,255,255,0.04)'}, ticks:{color:'#5A6480',font:{size:11},maxTicksLimit:7} },
+    y:{ grid:{color:'rgba(255,255,255,0.04)'}, ticks:{color:'#5A6480',font:{size:11}} }
+  }
+};
+
+function renderCharts() {
+  // Only include serious running sessions — filter out anything slower than 6:00/km
+  const MIN_SPEED = 1000 / (6 * 60); // 2.778 m/s
+  const sorted = [...A.runs]
+    .filter(r => r.average_speed >= MIN_SPEED)
+    .sort((a,b)=>new Date(a.start_date)-new Date(b.start_date));
+  const labels = sorted.map(r => new Date(r.start_date).toLocaleDateString('en-GB',{day:'2-digit',month:'short'}));
+  const paces  = sorted.map(r => parseFloat(((1000/r.average_speed)/60).toFixed(3)));
+  const aprLine = parseFloat((18/5).toFixed(3));   // 3.600 min/km
+  const augLine = parseFloat((16.99/5).toFixed(3)); // 3.398 min/km
+
+  Object.values(CH).forEach(c=>c.destroy()); for (const k in CH) delete CH[k];
+
+  CH.pace = new Chart(document.getElementById('paceChart'), {
+    type:'line',
+    data:{ labels, datasets:[
+      { data:paces, borderColor:'#FF6B35', backgroundColor:'rgba(255,107,53,0.07)', borderWidth:2.5, pointRadius:5, pointBackgroundColor:'#FF6B35', pointBorderColor:'#07070f', pointBorderWidth:2, tension:0.38, fill:true },
+      { data:Array(labels.length).fill(aprLine), borderColor:'rgba(255,107,53,0.55)', borderDash:[6,4], borderWidth:1.5, pointRadius:0, fill:false },
+      { data:Array(labels.length).fill(augLine), borderColor:'rgba(199,125,255,0.55)', borderDash:[6,4], borderWidth:1.5, pointRadius:0, fill:false },
+    ]},
+    options:{ ...cBase, scales:{ ...cBase.scales, y:{ ...cBase.scales.y, reverse:true, ticks:{ ...cBase.scales.y.ticks, callback:v=>{const m=Math.floor(v),s=Math.round((v-m)*60);return `${m}:${String(s).padStart(2,'0')}`;} } } } }
+  });
+
+  const weeks={};
+  sorted.forEach(r=>{ const d=new Date(r.start_date),mon=new Date(d); mon.setDate(d.getDate()-((d.getDay()+6)%7)); const k=mon.toISOString().split('T')[0]; weeks[k]=(weeks[k]||0)+r.distance/1000; });
+  const wks = Object.keys(weeks).sort().slice(-12);
+  CH.vol = new Chart(document.getElementById('volChart'), {
+    type:'bar',
+    data:{ labels:wks.map(k=>k.slice(5)), datasets:[{ data:wks.map(k=>+weeks[k].toFixed(1)), backgroundColor:'rgba(0,180,255,0.45)', borderColor:'#00B4FF', borderWidth:1.5, borderRadius:7, borderSkipped:false }] },
+    options:{ ...cBase }
+  });
+}
+
+// ─── RUNS LIST ────────────────────────────────────────────────
+async function renderRuns() {
+  const runs = [...A.runs].sort((a,b)=>new Date(b.start_date)-new Date(a.start_date)).slice(0,12);
+  const el = document.getElementById('runsList');
+  el.innerHTML = runs.map((r,i) => {
+    const date = new Date(r.start_date);
+    const pace = (1000/r.average_speed)/60;
+    const pc = pace < 4.0 ? 'fast' : pace < 5.2 ? 'mid' : 'easy';
+    const hr  = r.average_heartrate ? `<span class="rchip">♥ ${Math.round(r.average_heartrate)} bpm</span>` : '';
+    const elev= r.total_elevation_gain ? `<span class="rchip">↑ ${Math.round(r.total_elevation_gain)}m</span>` : '';
+    return `<div class="run-card">
+      <div class="run-main">
+        <div class="run-dt"><div class="d">${date.getDate()}</div><div class="m">${date.toLocaleString('en',{month:'short'})}</div></div>
+        <div><div class="run-name">${esc(r.name)}</div><div class="run-chips"><span class="rchip ${pc}">${fPace(r.average_speed)} /km</span>${hr}${elev}</div></div>
+        <div class="run-right"><div class="run-dist">${fDist(r.distance)}</div><div class="run-time2">${fTime(r.moving_time)}</div></div>
+      </div>
+      <div class="run-music" id="rm${i}"></div>
+    </div>`;
+  }).join('');
+
+  if (A.lfm.ok) {
+    for (let i=0; i<runs.length; i++) {
+      const tracks = await tracksForRun(runs[i]);
+      const mel = document.getElementById('rm'+i);
+      if (!mel || !tracks.length) continue;
+      const pills = tracks.slice(0,5).map(t => {
+        const img = t.image?.find(x=>x.size==='small')?.['#text']||'';
+        return `<div class="tpill">${img?`<img class="tart" src="${img}" onerror="this.style.display='none'">`:'<div class="tart"></div>'}<span class="tname">${esc(t.name)}</span></div>`;
+      }).join('');
+      const more = tracks.length>5?`<span class="more-t">+${tracks.length-5} more</span>`:'';
+      mel.innerHTML = `<div class="music-inner"><span class="music-lbl">🎵</span>${pills}${more}</div>`;
+      mel.classList.add('vis');
+    }
+  }
+}
+
+// ─── LAST.FM — silent auto-connect on load ────────────────────
+async function silentLfmConnect() {
+  try {
+    const r = await fetch(`https://ws.audioscrobbler.com/2.0/?method=user.getinfo&user=${encodeURIComponent(CREDS.lastfm.username)}&api_key=${CREDS.lastfm.apiKey}&format=json`);
+    const d = await r.json();
+    if (d.error) return;
+    A.lfm = { key: CREDS.lastfm.apiKey, user: CREDS.lastfm.username, ok:true, cache:{} };
+    setConnected('dLfm','lLfm','pLfm','Last.fm · akibwa');
+    if (A.runs.length) renderRuns();
+  } catch { /* silent fail — non-critical */ }
+}
+
+async function tracksForRun(run) {
+  if (!A.lfm.ok) return [];
+  const k = run.start_date;
+  if (A.lfm.cache[k]) return A.lfm.cache[k];
+  const from = Math.floor(new Date(run.start_date).getTime()/1000);
+  const to   = from + run.moving_time;
+  try {
+    const r = await fetch(`https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${encodeURIComponent(A.lfm.user)}&from=${from}&to=${to}&api_key=${A.lfm.key}&format=json&limit=50`);
+    const d = await r.json();
+    const t = (d.recenttracks?.track||[]).filter(t=>!t['@attr']?.nowplaying);
+    return A.lfm.cache[k] = t;
+  } catch { return []; }
+}
+
+// ─── TRAINING PLAN ────────────────────────────────────────────
+function weekPlan() {
+  return [
+    { day:'Sun', type:'res', emoji:'😴', title:'Rest Day',              desc:'Full recovery. Light stretching or yoga. Sleep is your best performance tool — protect it.' },
+    { day:'Mon', type:'eas', emoji:'🌿', title:'Easy Aerobic Run',      desc:'45–50 min at easy conversational pace. Pegasus 41 GTX. You should be able to speak full sentences.' },
+    { day:'Tue', type:'int', emoji:'⚡', title:'800m Repeats × 5–6',    desc:'Warm up 1.5km. 800m at strong 5K effort with 90s jog recovery. Cool down 1.5km. Key speed session for April.' },
+    { day:'Wed', type:'eas', emoji:'💧', title:'Recovery Run',          desc:'30–35 min very easy. Slower than feels right. This flushes Tuesday\'s fatigue and sets up Thursday.' },
+    { day:'Thu', type:'tem', emoji:'🔥', title:'Tempo Run',             desc:'10 min easy + 20 min at comfortably hard — about 3:45–3:50/km. Can say 2–3 words only. Most important session of the week.' },
+    { day:'Fri', type:'res', emoji:'😴', title:'Rest or Cross-Train',   desc:'Rest completely, or 30 min easy cycling. Legs should feel fresh for Saturday\'s effort.' },
+    { day:'Sat', type:'int', emoji:'🏁', title:'5K Time Trial / Parkrun', desc:'Full effort 5K — use this as your benchmark. Every second off your PB brings April\'s 18:00 closer.' },
+  ];
+}
+
+function buildPlan() {
+  const plan = weekPlan();
+  const dow  = NOW.getDay();
+  const tmap = { res:'t-res', eas:'t-eas', int:'t-int', tem:'t-tem' };
+
+  document.getElementById('wGrid').innerHTML = plan.map((d,i) => `
+    <div class="wday${i===dow?' hl':''}">
+      <div class="wday-name">${d.day}${i===dow?' · Today':''}</div>
+      <div class="wday-type ${tmap[d.type]||'t-res'}">${capitalize(d.type==='int'?'Intervals':d.type==='tem'?'Tempo':d.type==='eas'?'Easy':'Rest')}</div>
+      <div class="wday-desc">${d.desc.slice(0,90)}${d.desc.length>90?'…':''}</div>
+    </div>`).join('');
+
+  const w8 = [
+    { label:'Week 1 — Foundation', focus:'Build aerobic base, introduce intervals', days:[{d:'Mon',t:'eas',w:'Easy 5km'},{d:'Tue',t:'int',w:'6×400m @ 5K effort'},{d:'Wed',t:'eas',w:'Easy 4km recovery'},{d:'Thu',t:'tem',w:'Tempo 3km'},{d:'Fri',t:'res',w:'Rest'},{d:'Sat',t:'int',w:'5K time trial'},{d:'Sun',t:'eas',w:'Long easy 8km'}] },
+    { label:'Week 2 — Building',    focus:'Longer intervals, more weekly volume',   days:[{d:'Mon',t:'eas',w:'Easy 6km'},{d:'Tue',t:'int',w:'5×800m @ 5K effort'},{d:'Wed',t:'eas',w:'Easy 5km'},{d:'Thu',t:'tem',w:'Tempo 4km'},{d:'Fri',t:'res',w:'Rest'},{d:'Sat',t:'int',w:'5K time trial'},{d:'Sun',t:'eas',w:'Long easy 9km'}] },
+    { label:'Week 3 — Intensity',   focus:'1km repeats + longer tempo',            days:[{d:'Mon',t:'eas',w:'Easy 6km'},{d:'Tue',t:'int',w:'4×1km @ 5K effort'},{d:'Wed',t:'eas',w:'Easy 5km'},{d:'Thu',t:'tem',w:'Tempo 5km'},{d:'Fri',t:'res',w:'Rest'},{d:'Sat',t:'int',w:'5K time trial'},{d:'Sun',t:'eas',w:'Long easy 10km'}] },
+    { label:'Week 4 — Recovery',    focus:'Drop volume, keep sharpness',           days:[{d:'Mon',t:'eas',w:'Easy 4km'},{d:'Tue',t:'int',w:'4×400m @ 5K effort'},{d:'Wed',t:'eas',w:'Easy 4km'},{d:'Thu',t:'tem',w:'Easy tempo 3km'},{d:'Fri',t:'res',w:'Rest'},{d:'Sat',t:'int',w:'5K relaxed effort'},{d:'Sun',t:'eas',w:'Easy 7km'}] },
+    { label:'Week 5 — Peak Load',   focus:'Hardest week — trust the process',     days:[{d:'Mon',t:'eas',w:'Easy 7km'},{d:'Tue',t:'int',w:'3×1.5km @ threshold'},{d:'Wed',t:'eas',w:'Easy 5km'},{d:'Thu',t:'tem',w:'Tempo 6km'},{d:'Fri',t:'res',w:'Rest'},{d:'Sat',t:'int',w:'5K time trial — push'},{d:'Sun',t:'eas',w:'Long easy 11km'}] },
+    { label:'Week 6 — Sharpen',     focus:'Faster, shorter — speed over volume',  days:[{d:'Mon',t:'eas',w:'Easy 5km + strides'},{d:'Tue',t:'int',w:'8×400m faster than 5K pace'},{d:'Wed',t:'eas',w:'Easy 5km'},{d:'Thu',t:'tem',w:'Controlled tempo 4km'},{d:'Fri',t:'res',w:'Rest'},{d:'Sat',t:'int',w:'5K time trial'},{d:'Sun',t:'eas',w:'Easy 8km'}] },
+    { label:'Week 7 — Taper',       focus:'Freshen up, trust your fitness',       days:[{d:'Mon',t:'eas',w:'Easy 4km'},{d:'Tue',t:'int',w:'4×400m easy effort'},{d:'Wed',t:'eas',w:'Easy 3km'},{d:'Thu',t:'eas',w:'Easy 20 min jog'},{d:'Fri',t:'res',w:'Rest'},{d:'Sat',t:'eas',w:'15 min easy + 4 strides'},{d:'Sun',t:'res',w:'Rest'}] },
+    { label:'Week 8 — Race Week 🏁', focus:'April 30 — everything you\'ve built',  days:[{d:'Mon',t:'eas',w:'Easy 3km shake-out'},{d:'Tue',t:'int',w:'3×200m at goal pace'},{d:'Wed',t:'res',w:'Rest'},{d:'Thu',t:'eas',w:'10 min easy jog'},{d:'Fri',t:'res',w:'Rest'},{d:'Sat',t:'res',w:'Rest — early night'},{d:'Sun',t:'int',w:'🏁 RACE — Go for 18:00!'}] },
+  ];
+
+  document.getElementById('wList').innerHTML = w8.map(w => `
+    <div>
+      <div class="week-hd">${w.label} <span>${w.focus}</span></div>
+      <div class="week-grid">${w.days.map(d=>`
+        <div class="wday">
+          <div class="wday-name">${d.d}</div>
+          <div class="wday-type ${tmap[d.t]||'t-res'}">${capitalize(d.t==='int'?'Intervals':d.t==='tem'?'Tempo':d.t==='eas'?'Easy':'Rest')}</div>
+          <div class="wday-desc">${d.w}</div>
+        </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function showPlan(tab, btn) {
+  document.querySelectorAll('.ptab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('planCur').className  = 'plan-cur'  + (tab==='cur'  ? '' : ' hid');
+  document.getElementById('planFull').className = 'plan-full' + (tab==='full' ? ' vis' : '');
+}
+
+// ─── ZONES ────────────────────────────────────────────────────
+function buildZones(bestMs) {
+  const ref = bestMs || (5000/(19.75*60/5)); // default ~19:45 5K
+  const refMinKm = (1000/ref)/60;
+  const zones = [
+    { name:'Z1 · Recovery', mult:[1.40,1.55], color:'#00B4FF', desc:'Very easy, can sing' },
+    { name:'Z2 · Easy',     mult:[1.20,1.40], color:'#00D9A3', desc:'Conversational pace' },
+    { name:'Z3 · Tempo',    mult:[1.06,1.20], color:'#FFD166', desc:'Comfortably hard' },
+    { name:'Z4 · Threshold',mult:[1.00,1.06], color:'#FF6B35', desc:'Hard, few words' },
+    { name:'Z5 · Max',      mult:[0.90,1.00], color:'#FF3B5C', desc:'Race pace+, all out' },
+  ];
+  document.getElementById('zonesEl').innerHTML = zones.map(z => {
+    const lo = fMinKm(refMinKm*z.mult[0]), hi = fMinKm(refMinKm*z.mult[1]);
+    return `<div class="zone" style="border-top-color:${z.color}">
+      <div class="z-name" style="color:${z.color}">${z.name}</div>
+      <div class="z-pace">${hi} – ${lo}</div>
+      <div class="z-desc">${z.desc}</div>
+    </div>`;
+  }).join('');
+}
+
+// ─── GEAR KM ──────────────────────────────────────────────────
+function checkKm(el, warnId) {
+  document.getElementById(warnId).style.display = (parseFloat(el.value)||0) >= 550 ? 'block' : 'none';
+}
+
+const capitalize = s => s.charAt(0).toUpperCase()+s.slice(1);
+</script>
+</body>
+</html>
