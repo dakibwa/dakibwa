@@ -359,6 +359,45 @@ header {
 .spinner { display: inline-block; width: 15px; height: 15px; border: 2px solid rgba(255,255,255,0.08); border-top-color: var(--orange); border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 8px; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .mb18 { margin-bottom: 18px; }
+
+/* ─── VISUAL POLISH ──────────────────────────────────────────── */
+:root { font-size: 16px; }
+.wrap { padding: 0 28px 80px; max-width: 1160px; }
+
+/* Header */
+header { padding: 34px 0 30px; margin-bottom: 0; border-bottom: 1px solid var(--border); }
+.logo-icon { width: 46px; height: 46px; border-radius: 14px; font-size: 22px; box-shadow: 0 2px 12px rgba(255,69,0,0.25); }
+.logo-text { font-size: 1.12rem; letter-spacing: -0.4px; }
+.logo-sub { font-size: 0.74rem; letter-spacing: 0.1px; margin-top: 3px; }
+.pill { padding: 6px 14px; font-size: 0.74rem; }
+
+/* Section spacing */
+.goals { gap: 20px; margin-bottom: 28px; margin-top: 28px; }
+.today-card { padding: 22px 26px; margin-bottom: 28px; }
+.stats { gap: 16px; margin-bottom: 28px; }
+.charts { gap: 18px; margin-bottom: 28px; }
+.gear { gap: 16px; margin-bottom: 28px; }
+.whoop-row { padding: 22px 28px; margin-bottom: 28px; }
+.runs { gap: 10px; margin-bottom: 28px; }
+.zones { gap: 12px; margin-bottom: 36px; }
+.section-lbl { margin-bottom: 16px; letter-spacing: 1px; }
+
+/* Card polish — subtle shadow + extra padding */
+.stat { padding: 20px 22px; box-shadow: 0 1px 1px rgba(255,255,255,0.03) inset, 0 4px 20px rgba(0,0,0,0.28); }
+.stat-val { font-size: 1.75rem; }
+.stat-lbl { margin-bottom: 12px; }
+.chart-card { padding: 26px; box-shadow: 0 4px 20px rgba(0,0,0,0.28); }
+.goal-card { padding: 28px 30px; box-shadow: 0 4px 24px rgba(0,0,0,0.3); }
+.goal-time { font-size: 3.9rem; letter-spacing: -2.5px; }
+.gear-card { padding: 22px; box-shadow: 0 4px 16px rgba(0,0,0,0.22); }
+.run-card { box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+.run-main { padding: 16px 22px; }
+.whoop-row { box-shadow: 0 4px 20px rgba(0,0,0,0.28); }
+.goal-insight { padding: 13px 16px; border-radius: 12px; background: rgba(255,255,255,0.05); }
+
+/* First-run screen refinements */
+.first-run h1 { font-size: 1.5rem; letter-spacing: -0.5px; }
+.approve-btn { border-radius: 14px; padding: 15px 30px; letter-spacing: 0.1px; }
 </style>
 </head>
 <body>
