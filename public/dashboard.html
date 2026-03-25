@@ -660,6 +660,28 @@ body {
   gap: 12px;
 }
 
+.sync-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.9);
+  box-shadow: 0 8px 20px rgba(17,17,14,0.05);
+  color: var(--text2);
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+.sync-chip[data-tone="live"] {
+  color: var(--text);
+}
+
+.sync-chip[data-tone="warn"] {
+  color: var(--red);
+}
+
 .status-pills {
   display: flex;
   flex-wrap: wrap;
@@ -941,6 +963,10 @@ body {
     justify-content: space-between;
     align-items: center;
   }
+
+  .sync-chip {
+    order: 3;
+  }
 }
 
 @media (max-width: 620px) {
@@ -959,6 +985,10 @@ body {
   .header-right {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .sync-chip {
+    justify-content: center;
   }
 
   .status-pills {
@@ -1006,6 +1036,7 @@ body {
     </a>
   </div>
   <div class="header-right">
+    <div class="sync-chip" id="syncChip" hidden></div>
     <div class="status-pills">
       <div class="pill" id="pStrava"><div class="pill-dot" id="dStrava"></div><span id="lStrava">Strava</span></div>
       <div class="pill" id="pWhoop"><div class="pill-dot" id="dWhoop"></div><span id="lWhoop">Whoop</span></div>
@@ -1263,6 +1294,7 @@ const IS_LOCAL = Boolean(LOCAL_CONFIG);
 //   e.g. 'https://running-dashboard-api.YOUR_SUBDOMAIN.workers.dev'
 //   or   'https://api.akibwa.com'  if you set a custom domain
 const WORKER_URL = 'https://running-dashboard-api.dakibwa.workers.dev';
+const DASHBOARD_CACHE_KEY = 'dakibwa.dashboard.cache.v1';
 
 // ─── LOCAL CREDENTIALS (blank in Git, injected at runtime locally) ─────
 const DEFAULT_CREDS = {
@@ -1289,11 +1321,80 @@ const CREDS = LOCAL_CONFIG ? {
   lastfm: { ...DEFAULT_CREDS.lastfm, ...(LOCAL_CONFIG.lastfm || {}) }
 } : DEFAULT_CREDS;
 
+function formatRelativeTime(value) {
+  const diffMs = Math.max(0, Date.now() - new Date(value).getTime());
+  const diffMin = Math.round(diffMs / 60000);
+  if (diffMin < 1) return 'just now';
+  if (diffMin === 1) return '1 min ago';
+  if (diffMin < 60) return `${diffMin} mins ago`;
+  const diffHr = Math.round(diffMin / 60);
+  if (diffHr === 1) return '1 hr ago';
+  if (diffHr < 24) return `${diffHr} hrs ago`;
+  const diffDay = Math.round(diffHr / 24);
+  return diffDay === 1 ? '1 day ago' : `${diffDay} days ago`;
+}
+
+function setSyncStatus(text = '', tone = 'muted') {
+  const el = document.getElementById('syncChip');
+  if (!el) return;
+  if (!text) {
+    el.hidden = true;
+    el.textContent = '';
+    el.removeAttribute('data-tone');
+    return;
+  }
+  el.hidden = false;
+  el.textContent = text;
+  el.setAttribute('data-tone', tone);
+}
+
+function persistDashboardCache() {
+  try {
+    localStorage.setItem(DASHBOARD_CACHE_KEY, JSON.stringify({
+      savedAt: new Date().toISOString(),
+      runs: A.runs,
+      whoop: {
+        recovery: A.whoop.recovery,
+        recoveries: A.whoop.recoveries || [],
+        cycle: A.whoop.cycle,
+        cycles: A.whoop.cycles || [],
+        sleep: A.whoop.sleep,
+      },
+    }));
+  } catch {}
+}
+
+function hydrateDashboardCache() {
+  try {
+    const raw = localStorage.getItem(DASHBOARD_CACHE_KEY);
+    if (!raw) return false;
+    const cached = JSON.parse(raw);
+    if (!cached || !Array.isArray(cached.runs) || !cached.runs.length) return false;
+
+    A.runs = cached.runs;
+    if (cached.whoop) {
+      A.whoop.recovery = cached.whoop.recovery || null;
+      A.whoop.recoveries = cached.whoop.recoveries || [];
+      A.whoop.cycle = cached.whoop.cycle || null;
+      A.whoop.cycles = cached.whoop.cycles || [];
+      A.whoop.sleep = cached.whoop.sleep || null;
+    }
+
+    render();
+    if (A.whoop.recovery || (A.whoop.recoveries || []).length) renderWhoop();
+    setSyncStatus(`Showing saved data from ${formatRelativeTime(cached.savedAt)}`, 'muted');
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 // ─── BOOT ─────────────────────────────────────────────────────
 window.addEventListener('load', async () => {
   countdown();
   buildPlan();
   buildZones(null);
+  const hasCachedDashboard = hydrateDashboardCache();
 
   // Always connect Last.fm silently in background
   silentLfmConnect();
@@ -1321,8 +1422,9 @@ window.addEventListener('load', async () => {
     localStorage.setItem('strava_refresh', stravaRT);
     if (stravaExp) localStorage.setItem('strava_expires_at', stravaExp);
     A.token = stravaAT;
-    showLoading('Loading your runs…');
-    await fetchRuns();
+    if (!hasCachedDashboard) showLoading('Loading your runs…');
+    else setSyncStatus('Refreshing Strava…', 'live');
+    await fetchRuns({ blocking: !hasCachedDashboard });
     return;
   }
 
@@ -1335,9 +1437,9 @@ window.addEventListener('load', async () => {
     await fetchWhoopData();
     const savedStrava2 = localStorage.getItem('strava_refresh');
     if (savedStrava2 && !A.runs.length) {
-      showLoading('Loading your runs…');
-      await refreshStravaToken(savedStrava2);
-    } else if (!A.runs.length) {
+      if (!hasCachedDashboard) showLoading('Loading your runs…');
+      await refreshStravaToken(savedStrava2, { blocking: !hasCachedDashboard });
+    } else if (!A.runs.length && !hasCachedDashboard) {
       hideLoading();
       document.getElementById('firstRun').style.display = 'flex';
     } else {
@@ -1369,12 +1471,14 @@ window.addEventListener('load', async () => {
   // Case 2: have a saved Strava refresh token
   const savedStrava = localStorage.getItem('strava_refresh');
   if (savedStrava) {
-    showLoading('Loading your runs…');
-    await refreshStravaToken(savedStrava);
+    if (!hasCachedDashboard) showLoading('Loading your runs…');
+    else setSyncStatus('Refreshing Strava…', 'live');
+    await refreshStravaToken(savedStrava, { blocking: !hasCachedDashboard });
     return;
   }
 
   // Case 3: first time — show one-time approval screen
+  if (hasCachedDashboard) return;
   document.getElementById('firstRun').style.display = 'flex';
 });
 
@@ -1429,7 +1533,8 @@ async function exchangeStravaCode(code) {
   }
 }
 
-async function refreshStravaToken(saved) {
+async function refreshStravaToken(saved, options = {}) {
+  const { blocking = true } = options;
   try {
     let d;
     if (IS_LOCAL) {
@@ -1451,11 +1556,15 @@ async function refreshStravaToken(saved) {
     localStorage.setItem('strava_refresh', d.refresh_token);
     if (d.expires_at) localStorage.setItem('strava_expires_at', d.expires_at);
     A.token = d.access_token;
-    await fetchRuns();
+    await fetchRuns({ blocking });
   } catch {
     localStorage.removeItem('strava_refresh');
-    hideLoading();
-    document.getElementById('firstRun').style.display = 'flex';
+    if (blocking || !A.runs.length) {
+      hideLoading();
+      document.getElementById('firstRun').style.display = 'flex';
+    } else {
+      setSyncStatus('Showing saved data. Strava refresh failed.', 'warn');
+    }
   }
 }
 
@@ -1697,6 +1806,7 @@ async function fetchWhoopData() {
     applyWhoopBundle(bundle);
     renderWhoop();
     if (A.runs.length) renderToday();
+    persistDashboardCache();
   } catch(e) {
     console.warn('Whoop data fetch failed:', e.message);
     // Show the error visibly in the recovery panel
@@ -1804,11 +1914,13 @@ function hideLoading() {
   document.getElementById('loadingScreen').style.display = 'none';
 }
 
-async function fetchRuns() {
+async function fetchRuns(options = {}) {
+  const { blocking = true } = options;
   try {
     let all = [];
+    if (!blocking) setSyncStatus('Refreshing Strava…', 'live');
     for (let page = 1; page <= 4; page++) {
-      showLoading(`Loading runs… (page ${page})`);
+      if (blocking) showLoading(`Loading runs… (page ${page})`);
       const r = await fetch(`https://www.strava.com/api/v3/athlete/activities?per_page=50&page=${page}`,
         { headers: { Authorization: 'Bearer ' + A.token }});
       if (!r.ok) throw new Error('Strava auth expired');
@@ -1818,13 +1930,19 @@ async function fetchRuns() {
     }
     A.runs = all.filter(a => a.type === 'Run' || a.sport_type === 'Run');
     setConnected('dStrava','lStrava','pStrava','Strava · ' + A.runs.length + ' runs');
-    hideLoading();
+    if (blocking) hideLoading();
     render();
+    persistDashboardCache();
+    setSyncStatus(`Updated ${formatRelativeTime(Date.now())}`, 'live');
     if (!localStorage.getItem('whoop_refresh') && !A.whoop.ok) showWhoopNudge();
   } catch {
     localStorage.removeItem('strava_refresh');
-    hideLoading();
-    document.getElementById('firstRun').style.display = 'flex';
+    if (blocking || !A.runs.length) {
+      hideLoading();
+      document.getElementById('firstRun').style.display = 'flex';
+    } else {
+      setSyncStatus('Showing saved data. Strava refresh failed.', 'warn');
+    }
   }
 }
 
@@ -1858,6 +1976,8 @@ function loadDemo() {
   document.getElementById('firstRun').style.display = 'none';
   hideLoading();
   render();
+  persistDashboardCache();
+  setSyncStatus('Showing demo data', 'muted');
 }
 
 // ─── HELPERS ──────────────────────────────────────────────────
@@ -2026,7 +2146,7 @@ function renderGoals() {
 // ─── TODAY (Whoop-aware) ──────────────────────────────────────
 function renderToday() {
   const p     = weekPlan()[NOW.getDay()];
-  const score = A.whoop.recovery?.score?.recovery_score ?? null;
+  const score = findLatestScoredRecovery(A.whoop.recovery, A.whoop.recoveries || [])?.score?.recovery_score ?? null;
 
   let emoji = p.emoji;
   let title = p.title;
@@ -2104,6 +2224,10 @@ function renderCharts() {
 async function renderRuns() {
   const runs = [...A.runs].sort((a,b)=>new Date(b.start_date)-new Date(a.start_date)).slice(0,12);
   const el = document.getElementById('runsList');
+  if (!runs.length) {
+    el.innerHTML = '<div class="empty">Connect Strava or load demo data to see your runs</div>';
+    return;
+  }
   el.innerHTML = runs.map((r,i) => {
     const date = new Date(r.start_date);
     const pace = (1000/r.average_speed)/60;
