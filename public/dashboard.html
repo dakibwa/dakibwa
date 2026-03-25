@@ -1247,7 +1247,7 @@ const A = {
   token:  null,
   runs:   [],
   lfm:    { key: null, user: null, ok: false, cache: {} },
-  whoop:  { token: null, ok: false, recovery: null, sleep: null, cycle: null }
+  whoop:  { token: null, ok: false, recovery: null, sleep: null, cycle: null, cycles: [] }
 };
 
 // ─── CHART REFS ───────────────────────────────────────────────
@@ -1278,7 +1278,7 @@ const DEFAULT_CREDS = {
     authUrl:      'https://api.prod.whoop.com/oauth/oauth2/auth',
     tokenUrl:     'https://api.prod.whoop.com/oauth/oauth2/token',
     apiBase:      'https://api.prod.whoop.com/developer/v2',
-    scopes:       'read:recovery read:cycles read:sleep read:workout read:profile read:body_measurement'
+    scopes:       'offline read:recovery read:cycles read:sleep read:workout read:profile read:body_measurement'
   },
   lastfm: { apiKey: '59ebdb7b79a9305078dea983ea32a3f6', username: 'akibwa' }
 };
@@ -1541,7 +1541,8 @@ async function silentWhoopRefresh(saved) {
         grant_type:    'refresh_token',
         refresh_token: saved,
         client_id:     CREDS.whoop.clientId,
-        client_secret: CREDS.whoop.clientSecret
+        client_secret: CREDS.whoop.clientSecret,
+        scope:         'offline'
       });
       const r = await fetch(CREDS.whoop.tokenUrl, {
         method: 'POST',
@@ -1583,27 +1584,50 @@ async function whoopFetchJson(url, options = {}) {
   return data;
 }
 
+function findLatestScoredRecovery(primaryRecovery, recoveries) {
+  const seen = new Set();
+  const candidates = [primaryRecovery, ...(recoveries || [])].filter(Boolean).filter((entry) => {
+    if (seen.has(entry.id)) return false;
+    seen.add(entry.id);
+    return true;
+  });
+
+  return candidates.find((entry) => {
+    const state = entry.score_state || 'SCORED';
+    return state === 'SCORED' && entry.score?.recovery_score != null;
+  }) || null;
+}
+
+async function findLatestSleepForCycles(base, headers, cycles) {
+  for (const cycle of cycles || []) {
+    if (cycle?.id == null) continue;
+    const sleep = await whoopFetchJson(`${base}/cycle/${cycle.id}/sleep`, { headers });
+    if (sleep) return sleep;
+  }
+  return null;
+}
+
 async function fetchWhoopBundleDirect() {
   const headers = { Authorization: 'Bearer ' + A.whoop.token };
   const base = CREDS.whoop.apiBase;
   const [cycleCollection, recoveryCollection] = await Promise.all([
-    whoopFetchJson(`${base}/cycle?limit=1`, { headers }),
+    whoopFetchJson(`${base}/cycle?limit=7`, { headers }),
     whoopFetchJson(`${base}/recovery?limit=7`, { headers }),
   ]);
 
-  const cycle = cycleCollection?.records?.[0] || null;
+  const cycles = cycleCollection?.records || [];
+  const cycle = cycles[0] || null;
   let recovery = null;
-  let sleep = null;
 
   if (cycle?.id != null) {
-    [recovery, sleep] = await Promise.all([
-      whoopFetchJson(`${base}/cycle/${cycle.id}/recovery`, { headers }),
-      whoopFetchJson(`${base}/cycle/${cycle.id}/sleep`, { headers }),
-    ]);
+    recovery = await whoopFetchJson(`${base}/cycle/${cycle.id}/recovery`, { headers });
   }
+
+  const sleep = await findLatestSleepForCycles(base, headers, cycles);
 
   return {
     cycle,
+    cycles,
     recovery,
     recoveries: recoveryCollection?.records || [],
     sleep,
@@ -1611,10 +1635,37 @@ async function fetchWhoopBundleDirect() {
 }
 
 function applyWhoopBundle(bundle) {
-  A.whoop.cycle = bundle.cycle || null;
-  A.whoop.recovery = bundle.recovery || null;
-  A.whoop.recoveries = bundle.recoveries || [];
-  A.whoop.sleep = bundle.sleep || null;
+  const cycle =
+    bundle.latest_cycle ||
+    bundle.latest_scored_cycle ||
+    bundle.cycle?.records?.[0] ||
+    bundle.cycle ||
+    null;
+  const recovery =
+    bundle.latest_recovery ||
+    bundle.latest_scored_recovery ||
+    bundle.recovery?.records?.[0] ||
+    bundle.recovery ||
+    null;
+  const sleep =
+    bundle.latest_sleep ||
+    bundle.sleep?.records?.[0] ||
+    bundle.sleep ||
+    null;
+  const recoveries =
+    bundle.recoveries ||
+    bundle.recovery?.records ||
+    (recovery ? [recovery] : []);
+  const cycles =
+    bundle.cycles?.records ||
+    bundle.cycles ||
+    (cycle ? [cycle] : []);
+
+  A.whoop.cycle = cycle;
+  A.whoop.recovery = recovery;
+  A.whoop.recoveries = recoveries;
+  A.whoop.sleep = sleep;
+  A.whoop.cycles = cycles;
 }
 
 async function fetchWhoopData() {
@@ -1681,13 +1732,19 @@ function renderWhoop() {
   const cyc = A.whoop.cycle;
   const slp = A.whoop.sleep;
   const recs = A.whoop.recoveries || [];
+  const cycles = A.whoop.cycles || [];
+  const displayRec = findLatestScoredRecovery(rec, recs);
+  const displayCycle = cyc?.score?.strain != null
+    ? cyc
+    : cycles.find((entry) => entry?.score?.strain != null) || cyc;
   const scoreState = rec?.score_state || null;
-  const strain = cyc?.score?.strain != null ? cyc.score.strain.toFixed(1) : null;
+  const isFallbackRecovery = Boolean(displayRec && displayRec !== rec);
+  const strain = displayCycle?.score?.strain != null ? displayCycle.score.strain.toFixed(1) : null;
   const sleepPct = slp?.score?.sleep_performance_percentage != null
     ? Math.round(slp.score.sleep_performance_percentage) + '%' : null;
   const ring = document.getElementById('whoopRing');
 
-  if (!rec || scoreState !== 'SCORED') {
+  if (!displayRec) {
     ring.className = 'whoop-ring grey';
     document.getElementById('whoopScore').textContent = '—';
 
@@ -1715,9 +1772,9 @@ function renderWhoop() {
     return;
   }
 
-  const score = rec.score?.recovery_score ?? null;
-  const hrv   = rec.score?.hrv_rmssd_milli != null ? Math.round(rec.score.hrv_rmssd_milli) : null;
-  const rhr   = rec.score?.resting_heart_rate != null ? Math.round(rec.score.resting_heart_rate) : null;
+  const score = displayRec.score?.recovery_score ?? null;
+  const hrv   = displayRec.score?.hrv_rmssd_milli != null ? Math.round(displayRec.score.hrv_rmssd_milli) : null;
+  const rhr   = displayRec.score?.resting_heart_rate != null ? Math.round(displayRec.score.resting_heart_rate) : null;
 
   // Recovery ring colour
   const cls  = score == null ? 'grey' : score >= 67 ? 'green' : score >= 34 ? 'yellow' : 'red';
@@ -1727,8 +1784,10 @@ function renderWhoop() {
   // Status label
   const statusMap = { green: 'Ready to push', yellow: 'Moderate readiness', red: 'Recovery needed', grey: '—' };
   const subMap    = { green: 'Good day for a hard session', yellow: 'Keep intensity moderate today', red: 'Prioritise easy running or rest', grey: '' };
-  document.getElementById('whoopStatus').textContent = statusMap[cls];
-  document.getElementById('whoopSub').textContent    = subMap[cls];
+  document.getElementById('whoopStatus').textContent = isFallbackRecovery ? 'Latest scored recovery' : statusMap[cls];
+  document.getElementById('whoopSub').textContent    = isFallbackRecovery
+    ? 'Showing your most recent scored recovery while WHOOP finishes the latest cycle.'
+    : subMap[cls];
 
   document.getElementById('whoopHrv').textContent    = hrv    != null ? hrv + ' ms' : '—';
   document.getElementById('whoopRhr').textContent    = rhr    != null ? rhr + ' bpm' : '—';

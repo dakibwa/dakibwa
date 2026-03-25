@@ -30,7 +30,7 @@ const STRAVA_TOKEN_URL = 'https://www.strava.com/oauth/token';
 const WHOOP_AUTH_URL   = 'https://api.prod.whoop.com/oauth/oauth2/auth';
 const WHOOP_TOKEN_URL  = 'https://api.prod.whoop.com/oauth/oauth2/token';
 const WHOOP_API_BASE   = 'https://api.prod.whoop.com/developer/v2';
-const WHOOP_SCOPES     = 'read:recovery read:cycles read:sleep read:workout read:profile read:body_measurement';
+const WHOOP_SCOPES     = 'offline read:recovery read:cycles read:sleep read:workout read:profile read:body_measurement';
 
 // CORS headers — allow the dashboard origin to call the worker
 const CORS = {
@@ -94,30 +94,58 @@ async function fetchOptionalWhoopJson(url, headers) {
   return payload;
 }
 
+function findLatestScoredRecovery(primaryRecovery, recoveries) {
+  const seen = new Set();
+  const candidates = [primaryRecovery, ...(recoveries || [])].filter(Boolean).filter((entry) => {
+    if (seen.has(entry.id)) return false;
+    seen.add(entry.id);
+    return true;
+  });
+
+  return candidates.find((entry) => {
+    const state = entry.score_state || 'SCORED';
+    return state === 'SCORED' && entry.score?.recovery_score != null;
+  }) || null;
+}
+
+async function findLatestSleepForCycles(headers, cycles) {
+  for (const cycle of cycles || []) {
+    if (cycle?.id == null) continue;
+    const sleep = await fetchOptionalWhoopJson(`${WHOOP_API_BASE}/cycle/${cycle.id}/sleep`, headers);
+    if (sleep) return sleep;
+  }
+  return null;
+}
+
 async function fetchWhoopBundle(token) {
   const headers = { Authorization: `Bearer ${token}` };
 
   const [cycleCollection, recoveryCollection] = await Promise.all([
-    fetchRequiredWhoopJson(`${WHOOP_API_BASE}/cycle?limit=1`, headers),
+    fetchRequiredWhoopJson(`${WHOOP_API_BASE}/cycle?limit=7`, headers),
     fetchRequiredWhoopJson(`${WHOOP_API_BASE}/recovery?limit=7`, headers),
   ]);
 
-  const cycle = cycleCollection.records?.[0] || null;
+  const cycles = cycleCollection.records || [];
+  const cycle = cycles[0] || null;
   let recovery = null;
-  let sleep = null;
 
   if (cycle?.id != null) {
-    [recovery, sleep] = await Promise.all([
-      fetchOptionalWhoopJson(`${WHOOP_API_BASE}/cycle/${cycle.id}/recovery`, headers),
-      fetchOptionalWhoopJson(`${WHOOP_API_BASE}/cycle/${cycle.id}/sleep`, headers),
-    ]);
+    recovery = await fetchOptionalWhoopJson(`${WHOOP_API_BASE}/cycle/${cycle.id}/recovery`, headers);
   }
+
+  const recoveries = recoveryCollection.records || [];
+  const sleep = await findLatestSleepForCycles(headers, cycles);
+  const latestScoredRecovery = findLatestScoredRecovery(recovery, recoveries);
+  const latestScoredCycle = cycles.find((entry) => entry?.score?.strain != null) || null;
 
   return {
     cycle,
+    cycles,
     recovery,
-    recoveries: recoveryCollection.records || [],
+    recoveries,
     sleep,
+    latest_scored_recovery: latestScoredRecovery,
+    latest_scored_cycle: latestScoredCycle,
   };
 }
 
@@ -260,6 +288,7 @@ export default {
           refresh_token: body.refresh_token,
           client_id:     env.WHOOP_CLIENT_ID,
           client_secret: env.WHOOP_CLIENT_SECRET,
+          scope:         'offline',
         });
         const r = await fetch(WHOOP_TOKEN_URL, {
           method:  'POST',
@@ -283,7 +312,30 @@ export default {
 
       try {
         const bundle = await fetchWhoopBundle(token);
-        return json(bundle);
+        return json({
+          cycle: {
+            records: bundle.cycle ? [bundle.cycle] : [],
+            next_token: null,
+          },
+          cycles: {
+            records: bundle.cycles || [],
+            next_token: null,
+          },
+          recovery: {
+            records: bundle.recoveries || [],
+            next_token: null,
+          },
+          sleep: {
+            records: bundle.sleep ? [bundle.sleep] : [],
+            next_token: null,
+          },
+          latest_cycle: bundle.cycle,
+          latest_recovery: bundle.recovery,
+          latest_sleep: bundle.sleep,
+          latest_scored_recovery: bundle.latest_scored_recovery,
+          latest_scored_cycle: bundle.latest_scored_cycle,
+          recoveries: bundle.recoveries || [],
+        });
       } catch (e) {
         return json({ error: e.message }, e.status === 401 ? 401 : 500);
       }
