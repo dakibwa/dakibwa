@@ -116,6 +116,9 @@ const App: React.FC = () => {
             <a className="nav-link" href={`/?person=${defaultPersonId}`}>
               Root record
             </a>
+            <a className="nav-link" href="/dashboard.html">
+              Training dashboard
+            </a>
           </nav>
         </header>
 
@@ -153,6 +156,9 @@ const App: React.FC = () => {
           <a className="nav-link" href="#register">
             Register
           </a>
+          <a className="nav-link" href="/dashboard.html">
+            Training
+          </a>
         </nav>
       </header>
 
@@ -177,6 +183,9 @@ const App: React.FC = () => {
             >
               Open Daniel's record
             </button>
+            <a className="btn btn-secondary" href="/dashboard.html">
+              Open training dashboard
+            </a>
           </div>
         </div>
 

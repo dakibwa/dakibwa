@@ -9,37 +9,39 @@
 /* ─── RESET & ROOT ─────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --bg:        #07070f;
-  --surface:   #0e0e1c;
-  --surface2:  #141428;
-  --border:    rgba(255,255,255,0.06);
-  --border2:   rgba(255,255,255,0.10);
-  --orange:    #FF4500;
-  --orange2:   #FF6B35;
-  --purple:    #9B5DE5;
-  --purple2:   #C77DFF;
-  --teal:      #00D9A3;
-  --blue:      #00B4FF;
-  --red:       #FF3B5C;
-  --yellow:    #FFD166;
-  --text:      #F0F0FA;
-  --text2:     #9BA3B8;
-  --text3:     #5A6480;
+  --bg:        #050509;
+  --surface:   #0c0c16;
+  --surface2:  #12121f;
+  --border:    rgba(255,255,255,0.05);
+  --border2:   rgba(255,255,255,0.08);
+  --orange:    #E8430A;
+  --orange2:   #F06830;
+  --purple:    #8B5CF6;
+  --purple2:   #B794F6;
+  --teal:      #34D399;
+  --blue:      #60A5FA;
+  --red:       #F87171;
+  --yellow:    #FBBF24;
+  --text:      #E8E8F0;
+  --text2:     #8B8FA8;
+  --text3:     #4B5068;
   --r-sm:      10px;
-  --r-md:      16px;
-  --r-lg:      22px;
+  --r-md:      14px;
+  --r-lg:      18px;
   font-size: 15px;
 }
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: -apple-system, 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
+  font-family: -apple-system, 'SF Pro Display', 'Inter', 'Segoe UI', system-ui, sans-serif;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.01em;
 }
-::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 99px; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.14); }
 
 /* ─── LAYOUT ───────────────────────────────────────────────── */
 .wrap { max-width: 1140px; margin: 0 auto; padding: 0 22px 60px; }
@@ -76,9 +78,9 @@ header {
   font-weight: 500;
   transition: all 0.3s;
 }
-.pill.ok { border-color: rgba(0,217,163,0.35); color: var(--text2); }
-.pill-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text3); transition: all 0.3s; flex-shrink: 0; }
-.pill.ok .pill-dot { background: var(--teal); box-shadow: 0 0 6px var(--teal); }
+.pill.ok { border-color: rgba(52,211,153,0.25); color: var(--text2); }
+.pill-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text3); transition: all 0.4s ease; flex-shrink: 0; }
+.pill.ok .pill-dot { background: var(--teal); box-shadow: 0 0 8px rgba(52,211,153,0.4); }
 .hbtn {
   background: var(--orange);
   color: #fff; border: none;
@@ -134,8 +136,8 @@ header {
   border-radius: var(--r-lg); padding: 26px 28px;
   position: relative; overflow: hidden;
 }
-.goal-card.apr { background: linear-gradient(135deg, rgba(255,69,0,0.13), rgba(255,107,53,0.05)); border: 1px solid rgba(255,69,0,0.22); }
-.goal-card.aug { background: linear-gradient(135deg, rgba(155,93,229,0.13), rgba(199,125,255,0.05)); border: 1px solid rgba(155,93,229,0.22); }
+.goal-card.apr { background: linear-gradient(145deg, rgba(232,67,10,0.08), rgba(240,104,48,0.02)); border: 1px solid rgba(232,67,10,0.15); }
+.goal-card.aug { background: linear-gradient(145deg, rgba(139,92,246,0.08), rgba(183,148,246,0.02)); border: 1px solid rgba(139,92,246,0.15); }
 .goal-label {
   font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
   letter-spacing: 0.9px; display: flex; align-items: center; gap: 8px;
@@ -166,16 +168,44 @@ header {
 .goal-insight .ico { flex-shrink: 0; font-size: 0.95rem; }
 .goal-insight strong { color: var(--text); }
 
-/* ─── TODAY CARD ─────────────────────────────────────────────── */
+/* ─── TODAY + RECOVERY CARD ──────────────────────────────────── */
 .today-card {
   background: var(--surface);
   border: 1px solid var(--border2);
   border-radius: var(--r-md);
-  padding: 20px 24px;
-  margin-bottom: 18px;
-  display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+  margin-bottom: 28px;
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
 }
-.today-emo { font-size: 2.2rem; flex-shrink: 0; }
+.today-left {
+  flex: 1;
+  padding: 22px 26px;
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+}
+.today-divider { width: 1px; background: var(--border); flex-shrink: 0; }
+.today-right {
+  min-width: 260px;
+  max-width: 320px;
+  padding: 18px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  justify-content: center;
+}
+.whoop-metrics-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+@media(max-width: 760px) {
+  .today-card { flex-direction: column; }
+  .today-divider { width: auto; height: 1px; }
+  .today-right { max-width: none; min-width: 0; }
+}
+.today-emo { font-size: 2.2rem; flex-shrink: 0; margin-top: 2px; }
 .today-body { flex: 1; min-width: 180px; }
 .today-eyebrow { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px; color: var(--text3); margin-bottom: 4px; }
 .today-title { font-size: 1rem; font-weight: 700; margin-bottom: 3px; }
@@ -189,7 +219,7 @@ header {
   border-radius: var(--r-md); padding: 18px 20px;
   transition: border-color 0.2s, transform 0.2s;
 }
-.stat:hover { border-color: var(--border2); transform: translateY(-1px); }
+.stat:hover { border-color: var(--border2); transform: translateY(-2px); box-shadow: 0 6px 24px rgba(0,0,0,0.35); }
 .stat-lbl { font-size: 0.7rem; color: var(--text3); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 10px; }
 .stat-val { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; line-height: 1; }
 .c-or { color: var(--orange2); } .c-tl { color: var(--teal); } .c-bl { color: var(--blue); } .c-yl { color: var(--yellow); }
@@ -269,13 +299,14 @@ header {
 .run-right { text-align: right; }
 .run-dist { font-size: 1.05rem; font-weight: 700; }
 .run-time2 { font-size: 0.76rem; color: var(--text3); margin-top: 2px; }
-.run-music { border-top: 1px solid var(--border); padding: 9px 20px; display: none; }
+.run-music { border-top: 1px solid var(--border); padding: 10px 22px; display: none; background: rgba(255,255,255,0.01); }
 .run-music.vis { display: block; }
-.music-inner { display: flex; gap: 7px; align-items: center; flex-wrap: wrap; }
-.music-lbl { font-size: 0.68rem; color: var(--text3); flex-shrink: 0; }
-.tpill { display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.04); border-radius: 99px; padding: 3px 10px 3px 5px; font-size: 0.72rem; }
-.tart { width: 18px; height: 18px; border-radius: 3px; object-fit: cover; background: #222; flex-shrink: 0; }
-.tname { color: var(--text2); max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.music-inner { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.music-lbl { font-size: 0.66rem; color: var(--text3); flex-shrink: 0; letter-spacing: 0.3px; }
+.tpill { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.04); border-radius: 99px; padding: 3px 11px 3px 4px; font-size: 0.72rem; transition: background 0.2s ease; }
+.tpill:hover { background: rgba(255,255,255,0.07); }
+.tart { width: 20px; height: 20px; border-radius: 4px; object-fit: cover; background: rgba(255,255,255,0.06); flex-shrink: 0; }
+.tname { color: var(--text2); max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .more-t { font-size: 0.68rem; color: var(--text3); }
 
 /* ─── PLAN ───────────────────────────────────────────────────── */
@@ -285,8 +316,8 @@ header {
 .week-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 8px; }
 @media(max-width:760px){ .week-grid{ grid-template-columns:repeat(4,1fr); } }
 @media(max-width:480px){ .week-grid{ grid-template-columns:repeat(2,1fr); } }
-.wday { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 13px 11px; }
-.wday.hl { border-color: rgba(255,69,0,0.35); }
+.wday { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 14px 12px; transition: border-color 0.2s ease; }
+.wday.hl { border-color: rgba(232,67,10,0.3); box-shadow: 0 0 12px rgba(232,67,10,0.06); }
 .wday-name { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text3); margin-bottom: 7px; font-weight: 700; }
 .wday-type { font-size: 0.68rem; font-weight: 700; padding: 2px 8px; border-radius: 99px; display: inline-block; margin-bottom: 7px; }
 .t-int { background: rgba(255,213,102,0.14); color: var(--yellow); }
@@ -348,10 +379,114 @@ header {
 .whoop-metric .val { font-size: 1.3rem; font-weight: 700; }
 .whoop-metric .key { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text3); margin-top: 4px; }
 .whoop-connect-hint { font-size: 0.8rem; color: var(--text3); }
-.whoop-connect-hint button {
+.whoop-connect-hint button,
+.today-right button, #whoopSub button {
   background: none; border: none; color: var(--purple2);
-  font-size: 0.8rem; cursor: pointer; font-family: inherit;
+  font-size: 0.78rem; cursor: pointer; font-family: inherit;
   text-decoration: underline; text-underline-offset: 3px; padding: 0;
+}
+
+/* ─── WHOOP RECOVERY TREND ──────────────────────────────────── */
+.whoop-trend {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 32px;
+  margin-top: 6px;
+}
+.whoop-trend-bar {
+  flex: 1;
+  border-radius: 3px 3px 1px 1px;
+  min-height: 3px;
+  transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+.whoop-trend-bar::after {
+  content: attr(data-day);
+  position: absolute;
+  bottom: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.52rem;
+  color: var(--text3);
+  letter-spacing: 0.3px;
+}
+.whoop-trend-label {
+  font-size: 0.62rem;
+  color: var(--text3);
+  text-align: center;
+  margin-top: 18px;
+  letter-spacing: 0.2px;
+}
+
+/* ─── WEEKLY RHYTHM STRIP ──────────────────────────────────── */
+.week-strip {
+  display: flex;
+  gap: 6px;
+  align-items: stretch;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 16px 20px;
+  margin-bottom: 28px;
+}
+.week-strip-day {
+  flex: 1;
+  text-align: center;
+  padding: 8px 4px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+.week-strip-day.today {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border2);
+}
+.week-strip-day.done {
+  background: rgba(52,211,153,0.06);
+}
+.week-strip-lbl {
+  font-size: 0.6rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text3);
+  margin-bottom: 6px;
+}
+.week-strip-day.today .week-strip-lbl { color: var(--text2); }
+.week-strip-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin: 0 auto 4px;
+  background: var(--border2);
+}
+.week-strip-day.done .week-strip-dot { background: var(--teal); box-shadow: 0 0 6px rgba(52,211,153,0.3); }
+.week-strip-day.today .week-strip-dot { background: var(--orange2); box-shadow: 0 0 6px rgba(240,104,48,0.3); }
+.week-strip-km {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text2);
+  min-height: 1em;
+}
+.week-strip-day:not(.done) .week-strip-km { color: var(--text3); font-weight: 400; }
+.week-strip-type {
+  font-size: 0.58rem;
+  color: var(--text3);
+  margin-top: 2px;
+}
+
+/* ─── SIMPLE GEAR ─────────────────────────────────────────────── */
+.gear-simple {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 18px 24px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.22);
 }
 
 /* ─── MISC ───────────────────────────────────────────────────── */
@@ -361,43 +496,79 @@ header {
 .mb18 { margin-bottom: 18px; }
 
 /* ─── VISUAL POLISH ──────────────────────────────────────────── */
-:root { font-size: 16px; }
-.wrap { padding: 0 28px 80px; max-width: 1160px; }
+:root { font-size: 15px; }
+.wrap { padding: 0 32px 90px; max-width: 1120px; }
 
-/* Header */
-header { padding: 34px 0 30px; margin-bottom: 0; border-bottom: 1px solid var(--border); }
-.logo-icon { width: 46px; height: 46px; border-radius: 14px; font-size: 22px; box-shadow: 0 2px 12px rgba(255,69,0,0.25); }
-.logo-text { font-size: 1.12rem; letter-spacing: -0.4px; }
-.logo-sub { font-size: 0.74rem; letter-spacing: 0.1px; margin-top: 3px; }
-.pill { padding: 6px 14px; font-size: 0.74rem; }
+/* Header — clean, minimal bar */
+header {
+  padding: 36px 0 28px;
+  margin-bottom: 0;
+  border-bottom: 1px solid var(--border);
+}
+.logo-icon {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  font-size: 21px;
+  box-shadow: 0 2px 16px rgba(232,67,10,0.18);
+}
+.logo-text { font-size: 1.08rem; letter-spacing: -0.5px; font-weight: 650; }
+.logo-sub { font-size: 0.72rem; letter-spacing: 0; margin-top: 3px; color: var(--text3); }
+.pill { padding: 5px 13px; font-size: 0.72rem; letter-spacing: -0.01em; }
 
-/* Section spacing */
-.goals { gap: 20px; margin-bottom: 28px; margin-top: 28px; }
-.today-card { padding: 22px 26px; margin-bottom: 28px; }
-.stats { gap: 16px; margin-bottom: 28px; }
-.charts { gap: 18px; margin-bottom: 28px; }
-.gear { gap: 16px; margin-bottom: 28px; }
-.whoop-row { padding: 22px 28px; margin-bottom: 28px; }
-.runs { gap: 10px; margin-bottom: 28px; }
-.zones { gap: 12px; margin-bottom: 36px; }
-.section-lbl { margin-bottom: 16px; letter-spacing: 1px; }
+/* Section spacing — generous breathing room */
+.goals { gap: 18px; margin-bottom: 32px; margin-top: 32px; }
+.stats { gap: 14px; margin-bottom: 32px; }
+.charts { gap: 16px; margin-bottom: 32px; }
+.runs { gap: 8px; margin-bottom: 32px; }
+.zones { gap: 10px; margin-bottom: 40px; }
+.section-lbl { margin-bottom: 16px; letter-spacing: 0.8px; font-size: 0.66rem; }
 
-/* Card polish — subtle shadow + extra padding */
-.stat { padding: 20px 22px; box-shadow: 0 1px 1px rgba(255,255,255,0.03) inset, 0 4px 20px rgba(0,0,0,0.28); }
-.stat-val { font-size: 1.75rem; }
-.stat-lbl { margin-bottom: 12px; }
-.chart-card { padding: 26px; box-shadow: 0 4px 20px rgba(0,0,0,0.28); }
-.goal-card { padding: 28px 30px; box-shadow: 0 4px 24px rgba(0,0,0,0.3); }
-.goal-time { font-size: 3.9rem; letter-spacing: -2.5px; }
-.gear-card { padding: 22px; box-shadow: 0 4px 16px rgba(0,0,0,0.22); }
-.run-card { box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
-.run-main { padding: 16px 22px; }
-.whoop-row { box-shadow: 0 4px 20px rgba(0,0,0,0.28); }
-.goal-insight { padding: 13px 16px; border-radius: 12px; background: rgba(255,255,255,0.05); }
+/* Card polish — depth through shadow, not border weight */
+.stat {
+  padding: 22px 24px;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.02) inset, 0 2px 16px rgba(0,0,0,0.3);
+  transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+}
+.stat-val { font-size: 1.65rem; letter-spacing: -0.5px; }
+.stat-lbl { margin-bottom: 12px; font-size: 0.67rem; letter-spacing: 0.7px; }
+.chart-card {
+  padding: 26px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.3);
+}
+.goal-card {
+  padding: 28px 30px;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.25);
+}
+.goal-time { font-size: 3.6rem; letter-spacing: -2.5px; font-weight: 800; }
+.run-card {
+  box-shadow: 0 1px 8px rgba(0,0,0,0.2);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.run-card:hover { box-shadow: 0 3px 16px rgba(0,0,0,0.3); }
+.run-main { padding: 14px 22px; }
+.today-card {
+  box-shadow: 0 2px 16px rgba(0,0,0,0.3);
+  border-color: var(--border);
+}
+.goal-insight {
+  padding: 13px 16px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.04);
+}
+
+/* Whoop ring refinement */
+.whoop-ring {
+  border-width: 3px;
+}
 
 /* First-run screen refinements */
-.first-run h1 { font-size: 1.5rem; letter-spacing: -0.5px; }
-.approve-btn { border-radius: 14px; padding: 15px 30px; letter-spacing: 0.1px; }
+.first-run h1 { font-size: 1.4rem; letter-spacing: -0.5px; font-weight: 750; }
+.first-run p { font-size: 0.88rem; line-height: 1.65; }
+.approve-btn { border-radius: 12px; padding: 14px 28px; letter-spacing: -0.01em; font-size: 0.92rem; }
+
+/* Smooth global transitions */
+* { transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
 </style>
 </head>
 <body>
@@ -408,11 +579,13 @@ header { padding: 34px 0 30px; margin-bottom: 0; border-bottom: 1px solid var(--
 ══════════════════════════════════════════════ -->
 <header>
   <div class="logo">
-    <div class="logo-icon">🏃</div>
-    <div>
-      <div class="logo-text">Dan · 5K Training</div>
-      <div class="logo-sub">Pegasus 41 GTX · Targeting sub-17 by August</div>
-    </div>
+    <a href="/" style="text-decoration:none;display:flex;align-items:center;gap:12px">
+      <div class="logo-icon">🏃</div>
+      <div>
+        <div class="logo-text">Dan · 5K Training</div>
+        <div class="logo-sub">Pegasus 41 GTX · Targeting sub-17 by August</div>
+      </div>
+    </a>
   </div>
   <div class="header-right">
     <div class="pill" id="pStrava"><div class="pill-dot" id="dStrava"></div><span id="lStrava">Strava</span></div>
@@ -492,50 +665,48 @@ header { padding: 34px 0 30px; margin-bottom: 0; border-bottom: 1px solid var(--
 </div>
 
 <!-- ══════════════════════════════════════════════
-     WHOOP RECOVERY
+     TODAY'S FOCUS + WHOOP RECOVERY COMBINED
 ══════════════════════════════════════════════ -->
-<div class="whoop-row" id="whoopRow">
-  <div class="whoop-score-wrap">
-    <div class="whoop-ring grey" id="whoopRing">
-      <span class="num" id="whoopScore">—</span>
-      <span class="lbl">Recovery</span>
+<div class="today-card">
+  <div class="today-left">
+    <div class="today-emo" id="todayEmo">📋</div>
+    <div class="today-body">
+      <div class="today-eyebrow">Today's Focus</div>
+      <div class="today-title" id="todayTitle">Connect your data to get a personalised recommendation</div>
+      <div class="today-desc" id="todayDesc">Your training insight will appear here once Strava is connected or demo data is loaded.</div>
     </div>
-    <div class="whoop-score-label">
-      <div class="title" id="whoopStatus">Whoop</div>
-      <div class="sub" id="whoopSub" class="whoop-connect-hint">
-        <button onclick="doWhoopAuth()">Connect Whoop</button> to see recovery, HRV &amp; strain
+  </div>
+  <div class="today-divider"></div>
+  <div class="today-right">
+    <div class="whoop-score-wrap">
+      <div class="whoop-ring grey" id="whoopRing">
+        <span class="num" id="whoopScore">—</span>
+        <span class="lbl">Recovery</span>
+      </div>
+      <div class="whoop-score-label">
+        <div class="title" id="whoopStatus">Whoop</div>
+        <div class="sub" id="whoopSub">
+          <button onclick="doWhoopAuth()">Connect Whoop</button> for HRV &amp; recovery
+        </div>
       </div>
     </div>
-  </div>
-  <div class="whoop-metric">
-    <div class="val" id="whoopHrv" style="color:var(--purple2)">—</div>
-    <div class="key">HRV (ms)</div>
-  </div>
-  <div class="whoop-metric">
-    <div class="val" id="whoopRhr" style="color:var(--red)">—</div>
-    <div class="key">Resting HR</div>
-  </div>
-  <div class="whoop-metric">
-    <div class="val" id="whoopSleep" style="color:var(--blue)">—</div>
-    <div class="key">Sleep Score</div>
-  </div>
-  <div class="whoop-metric">
-    <div class="val" id="whoopStrain" style="color:var(--yellow)">—</div>
-    <div class="key">Day Strain</div>
+    <div class="whoop-metrics-row">
+      <div class="whoop-metric"><div class="val" id="whoopHrv" style="color:var(--purple2)">—</div><div class="key">HRV</div></div>
+      <div class="whoop-metric"><div class="val" id="whoopRhr" style="color:var(--red)">—</div><div class="key">RHR</div></div>
+      <div class="whoop-metric"><div class="val" id="whoopSleep" style="color:var(--blue)">—</div><div class="key">Sleep</div></div>
+      <div class="whoop-metric"><div class="val" id="whoopStrain" style="color:var(--yellow)">—</div><div class="key">Strain</div></div>
+    </div>
+    <div id="whoopTrend" style="display:none">
+      <div class="whoop-trend" id="whoopTrendBars"></div>
+      <div class="whoop-trend-label">7-day recovery</div>
+    </div>
   </div>
 </div>
 
 <!-- ══════════════════════════════════════════════
-     TODAY'S FOCUS
+     THIS WEEK — rhythm strip
 ══════════════════════════════════════════════ -->
-<div class="today-card">
-  <div class="today-emo" id="todayEmo">📋</div>
-  <div class="today-body">
-    <div class="today-eyebrow">Today's Focus</div>
-    <div class="today-title" id="todayTitle">Connect your data to get a personalised recommendation</div>
-    <div class="today-desc" id="todayDesc">Your training insight will appear here once Strava is connected or demo data is loaded.</div>
-  </div>
-</div>
+<div class="week-strip" id="weekStrip"></div>
 
 <!-- ══════════════════════════════════════════════
      STATS
@@ -585,56 +756,20 @@ header { padding: 34px 0 30px; margin-bottom: 0; border-bottom: 1px solid var(--
 </div>
 
 <!-- ══════════════════════════════════════════════
-     GEAR LOCKER
+     CURRENT GEAR
 ══════════════════════════════════════════════ -->
-<div class="section-lbl">Gear Locker</div>
-<div class="gear">
-
-  <div class="gear-card cur">
-    <div class="gear-badge b-cur">Current</div>
-    <div class="gear-ico">👟</div>
-    <div class="gear-name">Nike Pegasus 41 GTX</div>
-    <div class="gear-sub">All-weather daily trainer</div>
-    <div class="gear-chips">
-      <span class="gear-chip">Gore-Tex</span>
-      <span class="gear-chip">ReactX foam</span>
-      <span class="gear-chip">Tempo · Intervals</span>
-      <span class="gear-chip">Long runs</span>
-    </div>
-    <div class="gear-note">Versatile workhorse — great for all your quality sessions. The GTX keeps you going in spring rain without ruining your workout.</div>
-    <div class="km-row">
-      <input class="km-input" type="number" placeholder="0" oninput="checkKm(this,'kwarn')">
-      <span class="km-lbl">km on them</span>
-    </div>
-    <div class="km-warn" id="kwarn">⚠️ Nearing replacement range — consider fresh pair before August goal</div>
+<div class="section-lbl">Current Gear</div>
+<div class="gear-simple">
+  <span style="font-size:1.8rem;flex-shrink:0">👟</span>
+  <div style="flex:1;min-width:160px">
+    <div style="font-weight:700;font-size:0.95rem">Nike Pegasus 41 GTX</div>
+    <div style="font-size:0.75rem;color:var(--text3);margin-top:3px">All-weather daily trainer · ReactX foam · Gore-Tex</div>
+    <div class="km-warn" id="kwarn">⚠️ Nearing replacement range — consider a fresh pair before August</div>
   </div>
-
-  <div class="gear-card">
-    <div class="gear-badge b-com">Coming Soon</div>
-    <div class="gear-ico">👟</div>
-    <div class="gear-name">Nike Pegasus 42</div>
-    <div class="gear-sub">Expected mid-2026</div>
-    <div class="gear-chips">
-      <span class="gear-chip">ReactX update</span>
-      <span class="gear-chip">Refreshed upper</span>
-      <span class="gear-chip">Versatile</span>
-    </div>
-    <div class="gear-note">A solid step up from your current pair — but don't rush it. <strong>Wait for reviews before buying.</strong> The generational jump from Peg 41→42 is usually modest. If your 41s still have life in them, hold off until reviews land and your August build ramps up.</div>
+  <div class="km-row" style="margin-top:0;flex-shrink:0">
+    <input class="km-input" type="number" placeholder="0" oninput="checkKm(this,'kwarn')">
+    <span class="km-lbl">km on them</span>
   </div>
-
-  <div class="gear-card rec">
-    <div class="gear-badge b-rec">Recommended Add</div>
-    <div class="gear-ico">☁️</div>
-    <div class="gear-name">Nike Vomero 18</div>
-    <div class="gear-sub">Max-cushion recovery trainer</div>
-    <div class="gear-chips">
-      <span class="gear-chip">ZoomX foam</span>
-      <span class="gear-chip">Max cushion</span>
-      <span class="gear-chip">Easy days only</span>
-    </div>
-    <div class="gear-note"><strong>This is the smarter buy right now.</strong> For sub-17 training your legs absorb heavy load — the Vomero on easy and recovery days protects them so you can hit intervals at full intensity. Keep the Pegasus for workouts. Add a <strong>Vaporfly 3</strong> for race day time trials and you have the perfect 3-shoe rotation.</div>
-  </div>
-
 </div>
 
 <!-- ══════════════════════════════════════════════
@@ -674,7 +809,9 @@ const G = {
   apr: { date: new Date('2026-04-30'), secs: 18*60 },
   aug: { date: new Date('2026-08-31'), secs: 17*60-1 }
 };
-const NOW = new Date();
+let NOW = new Date();
+// Refresh NOW every 60s so countdown + today's plan stay accurate
+setInterval(() => { NOW = new Date(); countdown(); }, 60000);
 
 // ─── APP STATE ────────────────────────────────────────────────
 const A = {
@@ -688,34 +825,40 @@ const A = {
 const CH = {};
 
 // ─── ENVIRONMENT DETECTION ────────────────────────────────────
-// When running locally (via launch.py) secrets live here.
-// When deployed to akibwa.com all OAuth flows go through the
-// Cloudflare Worker — no secrets ever reach the browser.
-const IS_LOCAL = location.hostname === '127.0.0.1' || location.hostname === 'localhost';
+// The published file is secret-safe by default. When launch.py serves this
+// page locally it injects window.__DASHBOARD_LOCAL_CONFIG__ at request time.
+const LOCAL_CONFIG = window.__DASHBOARD_LOCAL_CONFIG__ || null;
+const IS_LOCAL = Boolean(LOCAL_CONFIG);
 
 // ▸ After deploying the Worker, paste its URL here:
 //   e.g. 'https://running-dashboard-api.YOUR_SUBDOMAIN.workers.dev'
 //   or   'https://api.akibwa.com'  if you set a custom domain
 const WORKER_URL = 'https://running-dashboard-api.dakibwa.workers.dev';
 
-// ─── LOCAL CREDENTIALS (only used when IS_LOCAL === true) ─────
-const CREDS = {
+// ─── LOCAL CREDENTIALS (blank in Git, injected at runtime locally) ─────
+const DEFAULT_CREDS = {
   strava: {
-    clientId:     '211823',
-    clientSecret: '7b3616eb034433b32cb8cbe244c1d29e9df140a7',
-    redirectUri:  'http://127.0.0.1:8787/callback'
+    clientId:     '',
+    clientSecret: '',
+    redirectUri:  ''
   },
   whoop: {
-    clientId:     '887c7614-5f98-4227-9c19-1109e58f0a5d',
-    clientSecret: '694d63c77f760852d677c6bc4d4635e2ab9129fc30226df98a6cdd96599d0f4e',
-    redirectUri:  'http://127.0.0.1:8787/callback',
+    clientId:     '',
+    clientSecret: '',
+    redirectUri:  '',
     authUrl:      'https://api.prod.whoop.com/oauth/oauth2/auth',
     tokenUrl:     'https://api.prod.whoop.com/oauth/oauth2/token',
-    apiBase:      'https://api.prod.whoop.com/developer/v2',
+    apiBase:      'https://api.prod.whoop.com/developer/v1',
     scopes:       'read:recovery read:cycles read:sleep read:workout read:profile read:body_measurement'
   },
   lastfm: { apiKey: '59ebdb7b79a9305078dea983ea32a3f6', username: 'akibwa' }
 };
+
+const CREDS = LOCAL_CONFIG ? {
+  strava: { ...DEFAULT_CREDS.strava, ...(LOCAL_CONFIG.strava || {}) },
+  whoop:  { ...DEFAULT_CREDS.whoop,  ...(LOCAL_CONFIG.whoop  || {}) },
+  lastfm: { ...DEFAULT_CREDS.lastfm, ...(LOCAL_CONFIG.lastfm || {}) }
+} : DEFAULT_CREDS;
 
 // ─── BOOT ─────────────────────────────────────────────────────
 window.addEventListener('load', async () => {
@@ -887,19 +1030,19 @@ async function refreshStravaToken(saved) {
   }
 }
 
-// ─── WHOOP NUDGE TOAST ────────────────────────────────────────────
+// ─── WHOOP NUDGE TOAST ────────────────────────────────────────
 function showWhoopNudge() {
   if (document.getElementById('whoopNudge')) return;
   const n = document.createElement('div');
   n.id = 'whoopNudge';
-  n.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#1e1e2e;border:1px solid #3b3b5e;border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:10px;z-index:999;box-shadow:0 4px 24px rgba(0,0,0,0.5);font-size:0.85rem;color:#cdd6f4;max-width:340px';
+  n.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#12121f;border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:10px;z-index:999;box-shadow:0 4px 30px rgba(0,0,0,0.5);font-size:0.82rem;color:#8B8FA8;max-width:340px;backdrop-filter:blur(8px)';
   const icon = document.createElement('span');
   icon.style.fontSize = '1.2rem'; icon.textContent = '💪';
   const text = document.createElement('span');
   text.innerHTML = 'Connect <strong>Whoop</strong> to see recovery &amp; HRV alongside your runs';
   const connectBtn = document.createElement('button');
   connectBtn.textContent = 'Connect';
-  connectBtn.style.cssText = 'background:#7c3aed;border:none;color:#fff;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:0.8rem;white-space:nowrap;flex-shrink:0';
+  connectBtn.style.cssText = 'background:#8B5CF6;border:none;color:#fff;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:0.78rem;white-space:nowrap;flex-shrink:0;font-weight:500';
   connectBtn.onclick = doWhoopAuth;
   const closeBtn = document.createElement('button');
   closeBtn.textContent = '×';
@@ -1006,26 +1149,43 @@ async function fetchWhoopData() {
       const h = { Authorization: 'Bearer ' + A.whoop.token };
       const base = CREDS.whoop.apiBase;
       const [rR, cR, sR] = await Promise.all([
-        fetch(base + '/recovery?limit=7',       { headers: h }),
-        fetch(base + '/cycle?limit=1',          { headers: h }),
-        fetch(base + '/activity/sleep?limit=1', { headers: h }),
+        fetch(`${base}/recovery?limit=7`,       { headers: h }),
+        fetch(`${base}/cycle?limit=1`,          { headers: h }),
+        fetch(`${base}/activity/sleep?limit=1`, { headers: h }),
       ]);
       [recData, cycData, slpData] = await Promise.all([rR.json(), cR.json(), sR.json()]);
     } else {
-      // Production: proxy through Worker - Whoop blocks direct browser calls (CORS)
-      const r = await fetch(WORKER_URL + '/whoop/data', {
+      // Production: proxy through Worker — Whoop blocks direct browser calls (CORS)
+      const r = await fetch(`${WORKER_URL}/whoop/data`, {
         headers: { 'x-whoop-token': A.whoop.token }
       });
-      if (!r.ok) throw new Error('whoop proxy ' + r.status);
+      if (r.status === 401) {
+        // Token expired — clear and show reconnect
+        localStorage.removeItem('whoop_refresh');
+        A.whoop.token = null; A.whoop.ok = false;
+        document.getElementById('whoopStatus').textContent = 'Token expired';
+        document.getElementById('whoopSub').innerHTML = '<button onclick="doWhoopAuth()">Reconnect Whoop</button>';
+        return;
+      }
+      if (!r.ok) {
+        const errData = await r.json().catch(() => ({}));
+        throw new Error(errData.error || 'whoop proxy ' + r.status);
+      }
       const d = await r.json();
       recData = d.recovery; cycData = d.cycle; slpData = d.sleep;
     }
-    A.whoop.recovery = recData.records?.[0] || null;
-    A.whoop.cycle    = cycData.records?.[0] || null;
-    A.whoop.sleep    = slpData.records?.[0] || null;
+    A.whoop.recovery    = recData.records?.[0] || null;
+    A.whoop.recoveries  = recData.records || [];  // all 7 days
+    A.whoop.cycle       = cycData.records?.[0] || null;
+    A.whoop.sleep       = slpData.records?.[0] || null;
     renderWhoop();
     if (A.runs.length) renderToday();
-  } catch(e) { console.warn('Whoop data fetch failed:', e.message); }
+  } catch(e) {
+    console.warn('Whoop data fetch failed:', e.message);
+    // Show the error visibly in the recovery panel
+    document.getElementById('whoopStatus').textContent = 'Data unavailable';
+    document.getElementById('whoopSub').innerHTML = `<span style="color:var(--red);font-size:0.72rem">${e.message}</span> — <button onclick="doWhoopAuth()">Reconnect</button>`;
+  }
 }
 
 function renderWhoop() {
@@ -1058,6 +1218,24 @@ function renderWhoop() {
   document.getElementById('whoopRhr').textContent    = rhr    != null ? rhr + ' bpm' : '—';
   document.getElementById('whoopSleep').textContent  = sleepPct || '—';
   document.getElementById('whoopStrain').textContent = strain  || '—';
+
+  // 7-day recovery trend bars
+  const recs = A.whoop.recoveries || [];
+  if (recs.length > 1) {
+    const trendEl = document.getElementById('whoopTrend');
+    const barsEl  = document.getElementById('whoopTrendBars');
+    // Reverse so oldest is left, newest is right
+    const sorted = [...recs].reverse();
+    const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    barsEl.innerHTML = sorted.map(r => {
+      const s = r.score?.recovery_score ?? 0;
+      const d = new Date(r.created_at || r.updated_at || '');
+      const dayLabel = days[d.getDay()] || '';
+      const color = s >= 67 ? 'var(--teal)' : s >= 34 ? 'var(--yellow)' : 'var(--red)';
+      return `<div class="whoop-trend-bar" style="height:${Math.max(8, s * 0.3)}px;background:${color}" data-day="${dayLabel}" title="${s}%"></div>`;
+    }).join('');
+    trendEl.style.display = 'block';
+  }
 }
 
 function showLoading(msg) {
@@ -1125,20 +1303,39 @@ function loadDemo() {
 }
 
 // ─── HELPERS ──────────────────────────────────────────────────
-const fPace  = mps => { const m=(1000/mps)/60, mi=Math.floor(m), s=Math.round((m-mi)*60); return `${mi}:${String(s).padStart(2,'0')}`; };
-const fTime  = s   => { const m=Math.floor(s/60); return `${m}:${String(s%60).padStart(2,'0')}`; };
+const fPace = mps => {
+  const totalMin = (1000 / mps) / 60;
+  let mi = Math.floor(totalMin), s = Math.round((totalMin - mi) * 60);
+  if (s === 60) { mi++; s = 0; }
+  return `${mi}:${String(s).padStart(2, '0')}`;
+};
+const fTime = totalSec => {
+  const t = Math.round(totalSec);
+  const h = Math.floor(t / 3600);
+  const m = Math.floor((t % 3600) / 60);
+  const s = t % 60;
+  if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  return `${m}:${String(s).padStart(2, '0')}`;
+};
 const fDist  = m   => (m/1000).toFixed(2)+' km';
-const fMinKm = v   => { const m=Math.floor(v), s=Math.round((v-m)*60); return `${m}:${String(s).padStart(2,'0')}`; };
+const fMinKm = v   => {
+  let m = Math.floor(v), s = Math.round((v - m) * 60);
+  if (s === 60) { m++; s = 0; }
+  return `${m}:${String(s).padStart(2, '0')}`;
+};
 const esc    = s   => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
 function best5kMs() {
+  if (!A.runs.length) return 5000 / (19.75 * 60); // safe fallback ~19:45 5K
   const fives = A.runs.filter(r => r.distance >= 4800 && r.distance <= 5200);
-  return (fives.length ? fives : A.runs).reduce((a,b) => a.average_speed > b.average_speed ? a : b).average_speed;
+  const pool = fives.length ? fives : A.runs;
+  return pool.reduce((a, b) => a.average_speed > b.average_speed ? a : b).average_speed;
 }
 function best5kSecs() { return Math.round(5000 / best5kMs()); }
 
 // ─── MASTER RENDER ────────────────────────────────────────────
 function render() {
+  renderWeekStrip();
   renderStats();
   renderGoals();
   renderToday();
@@ -1147,17 +1344,101 @@ function render() {
   buildZones(best5kMs());
 }
 
+// ─── WEEKLY RHYTHM STRIP ─────────────────────────────────────
+function renderWeekStrip() {
+  const plan = weekPlan();
+  const dow  = NOW.getDay();
+  const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+  // Find runs this week (Mon → Sun)
+  const monStart = new Date(NOW);
+  monStart.setDate(NOW.getDate() - ((NOW.getDay() + 6) % 7));
+  monStart.setHours(0, 0, 0, 0);
+
+  const weekRuns = A.runs.filter(r => {
+    const d = new Date(r.start_date);
+    return d >= monStart && d <= NOW;
+  });
+
+  // Map runs to day of week
+  const runsByDay = {};
+  weekRuns.forEach(r => {
+    const d = new Date(r.start_date).getDay();
+    if (!runsByDay[d]) runsByDay[d] = [];
+    runsByDay[d].push(r);
+  });
+
+  const el = document.getElementById('weekStrip');
+  el.innerHTML = dayNames.map((name, i) => {
+    const isToday = i === dow;
+    const dayRuns = runsByDay[i] || [];
+    const done = dayRuns.length > 0;
+    const km = dayRuns.reduce((s, r) => s + r.distance, 0) / 1000;
+    const planType = plan[i];
+    const typeLabel = planType.type === 'int' ? 'Intervals' : planType.type === 'tem' ? 'Tempo' : planType.type === 'eas' ? 'Easy' : planType.type === 'lon' ? 'Long' : 'Rest';
+    const isPast = i < dow || (i === dow);
+    const missed = isPast && !done && planType.type !== 'res';
+
+    let cls = 'week-strip-day';
+    if (isToday) cls += ' today';
+    if (done) cls += ' done';
+
+    return `<div class="${cls}">
+      <div class="week-strip-lbl">${name}</div>
+      <div class="week-strip-dot"${missed ? ' style="background:rgba(248,113,113,0.4)"' : ''}></div>
+      <div class="week-strip-km">${done ? km.toFixed(1) + ' km' : (isToday ? 'Today' : '')}</div>
+      <div class="week-strip-type">${typeLabel}</div>
+    </div>`;
+  }).join('');
+}
+
 // ─── STATS ────────────────────────────────────────────────────
 function renderStats() {
   const best = best5kSecs();
   document.getElementById('sBest').textContent    = fTime(best);
-  document.getElementById('sBestSub').textContent = 'Need '+ fTime(Math.max(0, best - G.apr.secs)) +' off for April goal';
+  const secsOff = Math.max(0, best - G.apr.secs);
+  document.getElementById('sBestSub').textContent = secsOff === 0
+    ? '✓ April goal smashed!'
+    : 'Need '+ fTime(secsOff) +' off for April goal';
   document.getElementById('sRuns').textContent    = A.runs.length;
-  const wStart = new Date(); wStart.setDate(wStart.getDate() - ((wStart.getDay()+6)%7));
+
+  // This week km
+  const wStart = new Date(NOW);
+  wStart.setDate(NOW.getDate() - ((NOW.getDay()+6)%7));
+  wStart.setHours(0,0,0,0);
   const wKm = A.runs.filter(r => new Date(r.start_date) >= wStart).reduce((s,r) => s+r.distance,0)/1000;
-  document.getElementById('sWeek').textContent    = wKm.toFixed(1)+' km';
+
+  // Last week km (for trend)
+  const lwEnd = new Date(wStart);
+  const lwStart = new Date(wStart);
+  lwStart.setDate(lwStart.getDate() - 7);
+  const lwKm = A.runs.filter(r => { const d = new Date(r.start_date); return d >= lwStart && d < lwEnd; }).reduce((s,r) => s+r.distance,0)/1000;
+  const weekDiff = wKm - lwKm;
+  const weekTrend = lwKm > 0 ? (weekDiff >= 0 ? `↑ ${weekDiff.toFixed(1)} vs last wk` : `↓ ${Math.abs(weekDiff).toFixed(1)} vs last wk`) : '';
+
+  document.getElementById('sWeek').textContent = wKm.toFixed(1)+' km';
+  document.getElementById('sWeek').closest('.stat').querySelector('.stat-sub').textContent = weekTrend || 'km so far';
+
+  // Avg pace with trend (recent 30 days vs prior 30 days)
+  const d30 = new Date(NOW); d30.setDate(d30.getDate() - 30);
+  const d60 = new Date(NOW); d60.setDate(d60.getDate() - 60);
+  const recent = A.runs.filter(r => new Date(r.start_date) >= d30);
+  const prior  = A.runs.filter(r => { const d = new Date(r.start_date); return d >= d60 && d < d30; });
+  const avgRecent = recent.length ? recent.reduce((s,r) => s+r.average_speed,0)/recent.length : 0;
+  const avgPrior  = prior.length  ? prior.reduce((s,r) => s+r.average_speed,0)/prior.length  : 0;
+
   const avg = A.runs.reduce((s,r) => s+r.average_speed,0)/A.runs.length;
-  document.getElementById('sPace').textContent    = fPace(avg)+' /km';
+  document.getElementById('sPace').textContent = fPace(avg)+' /km';
+
+  if (avgRecent && avgPrior) {
+    const paceDiff = ((1000/avgPrior)/60) - ((1000/avgRecent)/60); // positive = getting faster
+    const paceEl = document.getElementById('sPace').closest('.stat').querySelector('.stat-sub');
+    if (Math.abs(paceDiff) > 0.01) {
+      const secs = Math.round(Math.abs(paceDiff) * 60);
+      paceEl.textContent = paceDiff > 0 ? `↓ ${secs}s/km faster this month` : `↑ ${secs}s/km slower this month`;
+      paceEl.style.color = paceDiff > 0 ? 'var(--teal)' : 'var(--red)';
+    }
+  }
 }
 
 // ─── GOALS ────────────────────────────────────────────────────
@@ -1221,10 +1502,10 @@ function renderToday() {
 // ─── CHARTS ───────────────────────────────────────────────────
 const cBase = {
   responsive:true, maintainAspectRatio:false,
-  plugins:{ legend:{display:false}, tooltip:{ backgroundColor:'#1a1a2c', titleColor:'#F0F0FA', bodyColor:'#9BA3B8', padding:12, cornerRadius:10, borderColor:'rgba(255,255,255,0.08)', borderWidth:1 } },
+  plugins:{ legend:{display:false}, tooltip:{ backgroundColor:'#12121f', titleColor:'#E8E8F0', bodyColor:'#8B8FA8', padding:12, cornerRadius:8, borderColor:'rgba(255,255,255,0.06)', borderWidth:1, titleFont:{weight:600} } },
   scales:{
-    x:{ grid:{color:'rgba(255,255,255,0.04)'}, ticks:{color:'#5A6480',font:{size:11},maxTicksLimit:7} },
-    y:{ grid:{color:'rgba(255,255,255,0.04)'}, ticks:{color:'#5A6480',font:{size:11}} }
+    x:{ grid:{color:'rgba(255,255,255,0.03)'}, ticks:{color:'#4B5068',font:{size:11},maxTicksLimit:7} },
+    y:{ grid:{color:'rgba(255,255,255,0.03)'}, ticks:{color:'#4B5068',font:{size:11}} }
   }
 };
 
@@ -1244,9 +1525,9 @@ function renderCharts() {
   CH.pace = new Chart(document.getElementById('paceChart'), {
     type:'line',
     data:{ labels, datasets:[
-      { data:paces, borderColor:'#FF6B35', backgroundColor:'rgba(255,107,53,0.07)', borderWidth:2.5, pointRadius:5, pointBackgroundColor:'#FF6B35', pointBorderColor:'#07070f', pointBorderWidth:2, tension:0.38, fill:true },
-      { data:Array(labels.length).fill(aprLine), borderColor:'rgba(255,107,53,0.55)', borderDash:[6,4], borderWidth:1.5, pointRadius:0, fill:false },
-      { data:Array(labels.length).fill(augLine), borderColor:'rgba(199,125,255,0.55)', borderDash:[6,4], borderWidth:1.5, pointRadius:0, fill:false },
+      { data:paces, borderColor:'#F06830', backgroundColor:'rgba(240,104,48,0.05)', borderWidth:2, pointRadius:4, pointBackgroundColor:'#F06830', pointBorderColor:'#050509', pointBorderWidth:2, tension:0.35, fill:true },
+      { data:Array(labels.length).fill(aprLine), borderColor:'rgba(240,104,48,0.4)', borderDash:[6,4], borderWidth:1.5, pointRadius:0, fill:false },
+      { data:Array(labels.length).fill(augLine), borderColor:'rgba(183,148,246,0.4)', borderDash:[6,4], borderWidth:1.5, pointRadius:0, fill:false },
     ]},
     options:{ ...cBase, scales:{ ...cBase.scales, y:{ ...cBase.scales.y, reverse:true, ticks:{ ...cBase.scales.y.ticks, callback:v=>{const m=Math.floor(v),s=Math.round((v-m)*60);return `${m}:${String(s).padStart(2,'0')}`;} } } } }
   });
@@ -1256,7 +1537,7 @@ function renderCharts() {
   const wks = Object.keys(weeks).sort().slice(-12);
   CH.vol = new Chart(document.getElementById('volChart'), {
     type:'bar',
-    data:{ labels:wks.map(k=>k.slice(5)), datasets:[{ data:wks.map(k=>+weeks[k].toFixed(1)), backgroundColor:'rgba(0,180,255,0.45)', borderColor:'#00B4FF', borderWidth:1.5, borderRadius:7, borderSkipped:false }] },
+    data:{ labels:wks.map(k=>k.slice(5)), datasets:[{ data:wks.map(k=>+weeks[k].toFixed(1)), backgroundColor:'rgba(96,165,250,0.35)', borderColor:'#60A5FA', borderWidth:1, borderRadius:6, borderSkipped:false }] },
     options:{ ...cBase }
   });
 }
@@ -1282,16 +1563,22 @@ async function renderRuns() {
   }).join('');
 
   if (A.lfm.ok) {
-    for (let i=0; i<runs.length; i++) {
-      const tracks = await tracksForRun(runs[i]);
-      const mel = document.getElementById('rm'+i);
+    // Fetch all music in parallel for speed
+    const trackPromises = runs.map(r => tracksForRun(r));
+    const allTracks = await Promise.all(trackPromises);
+    for (let i = 0; i < runs.length; i++) {
+      const tracks = allTracks[i];
+      const mel = document.getElementById('rm' + i);
       if (!mel || !tracks.length) continue;
-      const pills = tracks.slice(0,5).map(t => {
-        const img = t.image?.find(x=>x.size==='small')?.['#text']||'';
-        return `<div class="tpill">${img?`<img class="tart" src="${img}" onerror="this.style.display='none'">`:'<div class="tart"></div>'}<span class="tname">${esc(t.name)}</span></div>`;
+      const pills = tracks.slice(0, 6).map(t => {
+        const img = t.image?.find(x => x.size === 'small')?.['#text'] || '';
+        const artist = t.artist?.['#text'] || '';
+        const title = esc(t.name);
+        const sub = artist ? `<span style="color:var(--text3);margin-left:1px">${esc(artist)}</span>` : '';
+        return `<div class="tpill">${img ? `<img class="tart" src="${img}" onerror="this.style.display='none'">` : ''}<span class="tname">${title}</span>${sub}</div>`;
       }).join('');
-      const more = tracks.length>5?`<span class="more-t">+${tracks.length-5} more</span>`:'';
-      mel.innerHTML = `<div class="music-inner"><span class="music-lbl">🎵</span>${pills}${more}</div>`;
+      const more = tracks.length > 6 ? `<span class="more-t">+${tracks.length - 6} more</span>` : '';
+      mel.innerHTML = `<div class="music-inner"><span class="music-lbl">🎵 Listening</span>${pills}${more}</div>`;
       mel.classList.add('vis');
     }
   }
@@ -1384,11 +1671,11 @@ function buildZones(bestMs) {
   const ref = bestMs || (5000/(19.75*60/5)); // default ~19:45 5K
   const refMinKm = (1000/ref)/60;
   const zones = [
-    { name:'Z1 · Recovery', mult:[1.40,1.55], color:'#00B4FF', desc:'Very easy, can sing' },
-    { name:'Z2 · Easy',     mult:[1.20,1.40], color:'#00D9A3', desc:'Conversational pace' },
-    { name:'Z3 · Tempo',    mult:[1.06,1.20], color:'#FFD166', desc:'Comfortably hard' },
-    { name:'Z4 · Threshold',mult:[1.00,1.06], color:'#FF6B35', desc:'Hard, few words' },
-    { name:'Z5 · Max',      mult:[0.90,1.00], color:'#FF3B5C', desc:'Race pace+, all out' },
+    { name:'Z1 · Recovery', mult:[1.40,1.55], color:'#60A5FA', desc:'Very easy, can sing' },
+    { name:'Z2 · Easy',     mult:[1.20,1.40], color:'#34D399', desc:'Conversational pace' },
+    { name:'Z3 · Tempo',    mult:[1.06,1.20], color:'#FBBF24', desc:'Comfortably hard' },
+    { name:'Z4 · Threshold',mult:[1.00,1.06], color:'#F06830', desc:'Hard, few words' },
+    { name:'Z5 · Max',      mult:[0.90,1.00], color:'#F87171', desc:'Race pace+, all out' },
   ];
   document.getElementById('zonesEl').innerHTML = zones.map(z => {
     const lo = fMinKm(refMinKm*z.mult[0]), hi = fMinKm(refMinKm*z.mult[1]);
