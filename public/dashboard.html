@@ -174,42 +174,102 @@ header {
   border: 1px solid var(--border2);
   border-radius: var(--r-md);
   margin-bottom: 28px;
-  display: flex;
-  align-items: stretch;
-  overflow: hidden;
+  display: grid;
+  gap: 18px;
+  padding: 24px 26px;
 }
 .today-left {
-  flex: 1;
-  padding: 22px 26px;
   display: flex;
-  align-items: flex-start;
-  gap: 18px;
+  align-items: center;
+  gap: 16px;
+  padding: 0;
+  min-width: 0;
 }
-.today-divider { width: 1px; background: var(--border); flex-shrink: 0; }
+.today-divider { display: none; }
 .today-right {
-  min-width: 260px;
-  max-width: 320px;
-  padding: 18px 22px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  justify-content: center;
+  gap: 16px;
+  padding: 0;
+  min-width: 0;
+  max-width: none;
 }
 .whoop-metrics-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
+  gap: 10px;
 }
 @media(max-width: 760px) {
-  .today-card { flex-direction: column; }
-  .today-divider { width: auto; height: 1px; }
+  .today-card { padding: 20px; }
+  .today-left { align-items: flex-start; }
   .today-right { max-width: none; min-width: 0; }
+  .whoop-metrics-row { grid-template-columns: repeat(2, 1fr); }
 }
 .today-emo { font-size: 2.2rem; flex-shrink: 0; margin-top: 2px; }
 .today-body { flex: 1; min-width: 180px; }
 .today-eyebrow { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px; color: var(--text3); margin-bottom: 4px; }
 .today-title { font-size: 1rem; font-weight: 700; margin-bottom: 3px; }
 .today-desc { font-size: 0.82rem; color: var(--text2); line-height: 1.5; }
+.whoop-topline {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+}
+.whoop-head-copy {
+  display: grid;
+  gap: 12px;
+}
+.whoop-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.whoop-summary-card {
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.5);
+}
+.whoop-summary-card span {
+  display: block;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text3);
+  margin-bottom: 6px;
+}
+.whoop-summary-card strong {
+  font-size: 1rem;
+  line-height: 1;
+  color: var(--text);
+}
+.whoop-trend-panel {
+  padding: 14px 16px 12px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.54);
+}
+.whoop-trend-topline {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-end;
+}
+.whoop-trend-copy {
+  font-size: 0.74rem;
+  color: var(--text2);
+  line-height: 1.5;
+}
+@media(max-width: 760px) {
+  .whoop-topline {
+    grid-template-columns: 1fr;
+  }
+
+  .whoop-summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
 
 /* ─── STATS ──────────────────────────────────────────────────── */
 .stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 18px; }
@@ -417,6 +477,279 @@ header {
   text-align: center;
   margin-top: 18px;
   letter-spacing: 0.2px;
+}
+
+/* ─── WEEK EXPLORER ─────────────────────────────────────────── */
+.week-explorer {
+  display: grid;
+  gap: 18px;
+  margin-bottom: 32px;
+}
+.week-summary-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.week-summary-card {
+  width: 100%;
+  text-align: left;
+  padding: 16px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: 0 16px 34px rgba(17,17,14,0.06);
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+.week-summary-card:hover,
+.week-summary-card:focus-visible {
+  border-color: var(--border2);
+  transform: translateY(-1px);
+  box-shadow: 0 20px 40px rgba(17,17,14,0.08);
+  outline: none;
+}
+.week-summary-card.is-active {
+  border-color: rgba(88,126,168,0.22);
+  background: rgba(255,255,255,0.92);
+}
+.week-summary-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+.week-summary-kicker {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text3);
+  margin-bottom: 6px;
+}
+.week-summary-title {
+  font-size: 0.96rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.week-summary-km {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--teal);
+  white-space: nowrap;
+}
+.week-summary-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.week-summary-meta span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(17,17,14,0.05);
+  color: var(--text2);
+  font-size: 0.76rem;
+}
+.week-summary-bars {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+.week-summary-bar {
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+}
+.week-summary-bar-fill {
+  width: 100%;
+  min-height: 8px;
+  border-radius: 999px;
+  background: rgba(88,126,168,0.16);
+}
+.week-summary-bar span {
+  font-size: 0.62rem;
+  color: var(--text3);
+}
+.week-detail-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 22px 24px;
+  box-shadow: 0 16px 34px rgba(17,17,14,0.06);
+}
+.week-detail-empty {
+  font-size: 0.9rem;
+  color: var(--text3);
+  text-align: center;
+  padding: 32px 0;
+}
+.week-detail-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+.week-detail-head h3 {
+  font-size: 1.15rem;
+  margin-bottom: 4px;
+}
+.week-detail-head p {
+  font-size: 0.82rem;
+  color: var(--text2);
+}
+.week-detail-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgba(17,17,14,0.05);
+  color: var(--text2);
+  font-size: 0.76rem;
+  white-space: nowrap;
+}
+.week-detail-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.week-detail-metric {
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.52);
+}
+.week-detail-metric span {
+  display: block;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text3);
+  margin-bottom: 6px;
+}
+.week-detail-metric strong {
+  font-size: 1rem;
+  color: var(--text);
+}
+.week-detail-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.week-detail-day {
+  padding: 10px 8px;
+  border-radius: 12px;
+  background: rgba(17,17,14,0.04);
+  text-align: center;
+}
+.week-detail-day-label {
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text3);
+  margin-bottom: 8px;
+}
+.week-detail-day-bar {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(88,126,168,0.16);
+  margin-bottom: 7px;
+}
+.week-detail-day-km {
+  font-size: 0.75rem;
+  color: var(--text2);
+}
+.week-detail-runs {
+  display: grid;
+  gap: 10px;
+}
+.week-detail-run {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.54);
+}
+.week-detail-run-date {
+  display: grid;
+  gap: 2px;
+  text-align: center;
+}
+.week-detail-run-date strong {
+  font-size: 1rem;
+  line-height: 1;
+}
+.week-detail-run-date span {
+  font-size: 0.66rem;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.week-detail-run-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.week-detail-run-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.week-detail-run-meta span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 9px;
+  border-radius: 999px;
+  background: rgba(17,17,14,0.05);
+  color: var(--text2);
+  font-size: 0.74rem;
+}
+.week-detail-run-main {
+  text-align: right;
+}
+.week-detail-run-main strong {
+  display: block;
+  font-size: 0.96rem;
+  color: var(--text);
+}
+.week-detail-run-main span {
+  font-size: 0.74rem;
+  color: var(--text3);
+}
+@media(max-width:900px) {
+  .week-summary-list {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .week-detail-metrics {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media(max-width:700px) {
+  .week-summary-list,
+  .week-detail-days {
+    grid-template-columns: 1fr;
+  }
+
+  .week-detail-head,
+  .week-detail-run {
+    grid-template-columns: 1fr;
+  }
+
+  .week-detail-run-main,
+  .week-detail-run-date {
+    text-align: left;
+  }
 }
 
 /* ─── WEEKLY RHYTHM STRIP ──────────────────────────────────── */
@@ -1136,15 +1469,33 @@ body {
   </div>
   <div class="today-divider"></div>
   <div class="today-right">
-    <div class="whoop-score-wrap">
-      <div class="whoop-ring grey" id="whoopRing">
-        <span class="num" id="whoopScore">—</span>
-        <span class="lbl">Recovery</span>
+    <div class="whoop-topline">
+      <div class="whoop-score-wrap">
+        <div class="whoop-ring grey" id="whoopRing">
+          <span class="num" id="whoopScore">—</span>
+          <span class="lbl">Recovery</span>
+        </div>
+        <div class="whoop-score-label">
+          <div class="title" id="whoopStatus">Whoop</div>
+          <div class="sub" id="whoopSub">
+            <button onclick="doWhoopAuth()">Connect Whoop</button> for HRV &amp; recovery
+          </div>
+        </div>
       </div>
-      <div class="whoop-score-label">
-        <div class="title" id="whoopStatus">Whoop</div>
-        <div class="sub" id="whoopSub">
-          <button onclick="doWhoopAuth()">Connect Whoop</button> for HRV &amp; recovery
+      <div class="whoop-head-copy">
+        <div class="whoop-summary-grid">
+          <div class="whoop-summary-card">
+            <span>7-day average</span>
+            <strong id="whoopAvg">—</strong>
+          </div>
+          <div class="whoop-summary-card">
+            <span>Best this week</span>
+            <strong id="whoopBest">—</strong>
+          </div>
+          <div class="whoop-summary-card">
+            <span>Scored days</span>
+            <strong id="whoopScoredDays">—</strong>
+          </div>
         </div>
       </div>
     </div>
@@ -1154,17 +1505,18 @@ body {
       <div class="whoop-metric"><div class="val" id="whoopSleep" style="color:var(--blue)">—</div><div class="key">Sleep</div></div>
       <div class="whoop-metric"><div class="val" id="whoopStrain" style="color:var(--yellow)">—</div><div class="key">Strain</div></div>
     </div>
-    <div id="whoopTrend" style="display:none">
+    <div class="whoop-trend-panel" id="whoopTrend" style="display:none">
+      <div class="whoop-trend-topline">
+        <div>
+          <div class="today-eyebrow">Recovery Trend</div>
+          <div class="whoop-trend-copy" id="whoopTrendCopy">Your last scored recoveries, week by week.</div>
+        </div>
+      </div>
       <div class="whoop-trend" id="whoopTrendBars"></div>
       <div class="whoop-trend-label">7-day recovery</div>
     </div>
   </div>
 </div>
-
-<!-- ══════════════════════════════════════════════
-     THIS WEEK — rhythm strip
-══════════════════════════════════════════════ -->
-<div class="week-strip" id="weekStrip"></div>
 
 <!-- ══════════════════════════════════════════════
      STATS
@@ -1239,15 +1591,29 @@ body {
 </div>
 
 <!-- ══════════════════════════════════════════════
-     TRAINING PLAN
+     WEEKLY BREAKDOWN
 ══════════════════════════════════════════════ -->
-<div class="section-lbl mb18">8-Week Plan to 18:00 · April 30</div>
-<div class="plan-tabs">
-  <button class="ptab active" onclick="showPlan('cur',this)">This Week</button>
-  <button class="ptab" onclick="showPlan('full',this)">Full 8 Weeks</button>
+<div class="section-lbl mb18">Weekly Breakdown <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3);font-size:0.75rem">· aggregate first, then drill into the sessions</span></div>
+<div class="week-explorer">
+  <div class="week-summary-list" id="weekSummaryList">
+    <div class="empty">Connect Strava or load demo data to compare recent weeks.</div>
+  </div>
+  <div class="week-detail-card">
+    <div class="week-detail-empty" id="weekDetailEmpty">Pick a recent week to see the day-by-day load and the runs behind it.</div>
+    <div id="weekDetail" hidden>
+      <div class="week-detail-head">
+        <div>
+          <h3 id="weekDetailTitle">Week overview</h3>
+          <p id="weekDetailSub">Recent training will appear here.</p>
+        </div>
+        <div class="week-detail-pill" id="weekDetailHighlight">—</div>
+      </div>
+      <div class="week-detail-metrics" id="weekDetailMetrics"></div>
+      <div class="week-detail-days" id="weekDetailDays"></div>
+      <div class="week-detail-runs" id="weekDetailRuns"></div>
+    </div>
+  </div>
 </div>
-<div class="plan-cur" id="planCur"><div class="week-grid" id="wGrid"></div></div>
-<div class="plan-full" id="planFull"><div class="weeks-list" id="wList"></div></div>
 
 <div style="height:24px"></div>
 
@@ -1278,6 +1644,7 @@ const A = {
   lfm:    { key: null, user: null, ok: false, cache: {} },
   whoop:  { token: null, ok: false, recovery: null, sleep: null, cycle: null, cycles: [] }
 };
+let selectedWeekKey = null;
 
 // ─── CHART REFS ───────────────────────────────────────────────
 const CH = {};
@@ -1390,7 +1757,6 @@ function hydrateDashboardCache() {
 // ─── BOOT ─────────────────────────────────────────────────────
 window.addEventListener('load', async () => {
   countdown();
-  buildPlan();
   buildZones(null);
   const hasCachedDashboard = hydrateDashboardCache();
 
@@ -1705,6 +2071,16 @@ function findLatestScoredRecovery(primaryRecovery, recoveries) {
   }) || null;
 }
 
+function uniqueRecoveries(entries) {
+  const seen = new Set();
+  return (entries || []).filter(Boolean).filter((entry) => {
+    const key = entry.id || `${entry.created_at || ''}:${entry.updated_at || ''}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 async function findLatestSleepForCycles(base, headers, cycles) {
   for (const cycle of cycles || []) {
     if (cycle?.id == null) continue;
@@ -1816,15 +2192,31 @@ async function fetchWhoopData() {
 function renderWhoopTrend(recs) {
   const trendEl = document.getElementById('whoopTrend');
   const barsEl  = document.getElementById('whoopTrendBars');
+  const trendCopyEl = document.getElementById('whoopTrendCopy');
 
   if (!recs?.length || recs.length < 2) {
     trendEl.style.display = 'none';
     barsEl.innerHTML = '';
+    if (trendCopyEl) trendCopyEl.textContent = 'Your last scored recoveries, week by week.';
     return;
   }
 
-  const sorted = [...recs].reverse();
+  const sorted = uniqueRecoveries(recs)
+    .filter((entry) => entry?.score?.recovery_score != null)
+    .reverse();
+  if (!sorted.length) {
+    trendEl.style.display = 'none';
+    barsEl.innerHTML = '';
+    if (trendCopyEl) trendCopyEl.textContent = 'Recovery will appear here once WHOOP scores enough days.';
+    return;
+  }
+
   const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const average = Math.round(sorted.reduce((sum, entry) => sum + (entry.score?.recovery_score || 0), 0) / sorted.length);
+  const last = sorted[sorted.length - 1]?.score?.recovery_score || average;
+  if (trendCopyEl) {
+    trendCopyEl.textContent = `Average ${average}% across ${sorted.length} scored day${sorted.length === 1 ? '' : 's'}. Latest scored recovery ${last}%.`;
+  }
   barsEl.innerHTML = sorted.map(r => {
     const s = r.score?.recovery_score ?? 0;
     const d = new Date(r.created_at || r.updated_at || '');
@@ -1835,12 +2227,35 @@ function renderWhoopTrend(recs) {
   trendEl.style.display = 'block';
 }
 
+function renderWhoopSummaryCards(recs) {
+  const scored = uniqueRecoveries(recs).filter((entry) => entry?.score?.recovery_score != null).slice(0, 7);
+  const avgEl = document.getElementById('whoopAvg');
+  const bestEl = document.getElementById('whoopBest');
+  const countEl = document.getElementById('whoopScoredDays');
+
+  if (!scored.length) {
+    avgEl.textContent = '—';
+    bestEl.textContent = '—';
+    countEl.textContent = '0';
+    return;
+  }
+
+  const scores = scored.map((entry) => entry.score.recovery_score);
+  const avg = Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length);
+  const best = Math.max(...scores);
+
+  avgEl.textContent = `${avg}%`;
+  bestEl.textContent = `${best}%`;
+  countEl.textContent = `${scores.length}`;
+}
+
 function renderWhoop() {
   const rec = A.whoop.recovery;
   const cyc = A.whoop.cycle;
   const slp = A.whoop.sleep;
   const recs = A.whoop.recoveries || [];
   const cycles = A.whoop.cycles || [];
+  renderWhoopSummaryCards([rec, ...recs].filter(Boolean));
   const displayRec = findLatestScoredRecovery(rec, recs);
   const displayCycle = cyc?.score?.strain != null
     ? cyc
@@ -2009,63 +2424,244 @@ function best5kMs() {
 }
 function best5kSecs() { return Math.round(5000 / best5kMs()); }
 
+function startOfWeek(value) {
+  const d = new Date(value);
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
+  return d;
+}
+
+function endOfWeek(value) {
+  const d = new Date(value);
+  d.setDate(d.getDate() + 6);
+  d.setHours(23, 59, 59, 999);
+  return d;
+}
+
+function weekKey(value) {
+  return startOfWeek(value).toISOString().split('T')[0];
+}
+
+function formatWeekLabel(start) {
+  const end = endOfWeek(start);
+  const startLabel = start.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+  const endLabel = end.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+  return `${startLabel} – ${endLabel}`;
+}
+
+function describeWeek(start) {
+  const currentKey = weekKey(NOW);
+  const key = weekKey(start);
+  if (key === currentKey) return 'This week';
+  const lastWeek = new Date(NOW);
+  lastWeek.setDate(lastWeek.getDate() - 7);
+  return key === weekKey(lastWeek) ? 'Last week' : 'Recent week';
+}
+
+function classifyRun(run) {
+  const name = (run.name || '').toLowerCase();
+  const pace = (1000 / run.average_speed) / 60;
+
+  if (
+    name.includes('interval') ||
+    name.includes('repeat') ||
+    name.includes('parkrun') ||
+    name.includes('time trial') ||
+    pace <= 4.1
+  ) {
+    return { key: 'quality', label: 'Quality', color: 'var(--orange2)' };
+  }
+
+  if (name.includes('tempo') || pace <= 4.85) {
+    return { key: 'steady', label: 'Steady', color: 'var(--yellow)' };
+  }
+
+  return { key: 'easy', label: 'Easy', color: 'var(--teal)' };
+}
+
 // ─── MASTER RENDER ────────────────────────────────────────────
 function render() {
-  renderWeekStrip();
   renderStats();
   renderGoals();
   renderToday();
   renderCharts();
   renderRuns();
+  renderWeekExplorer();
   buildZones(best5kMs());
 }
 
-// ─── WEEKLY RHYTHM STRIP ─────────────────────────────────────
-function renderWeekStrip() {
-  const plan = weekPlan();
-  const dow  = NOW.getDay();
-  const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+// ─── WEEK EXPLORER ───────────────────────────────────────────
+function getWeekSummaries() {
+  const groups = {};
 
-  // Find runs this week (Mon → Sun)
-  const monStart = new Date(NOW);
-  monStart.setDate(NOW.getDate() - ((NOW.getDay() + 6) % 7));
-  monStart.setHours(0, 0, 0, 0);
-
-  const weekRuns = A.runs.filter(r => {
-    const d = new Date(r.start_date);
-    return d >= monStart && d <= NOW;
+  A.runs.forEach((run) => {
+    const key = weekKey(run.start_date);
+    if (!groups[key]) {
+      const start = startOfWeek(run.start_date);
+      groups[key] = { key, start, runs: [] };
+    }
+    groups[key].runs.push(run);
   });
 
-  // Map runs to day of week
-  const runsByDay = {};
-  weekRuns.forEach(r => {
-    const d = new Date(r.start_date).getDay();
-    if (!runsByDay[d]) runsByDay[d] = [];
-    runsByDay[d].push(r);
-  });
+  return Object.values(groups)
+    .sort((a, b) => b.start - a.start)
+    .slice(0, 6)
+    .map((group) => {
+      const runs = [...group.runs].sort((a, b) => new Date(b.start_date) - new Date(a.start_date));
+      const totalDistance = runs.reduce((sum, run) => sum + run.distance, 0);
+      const totalTime = runs.reduce((sum, run) => sum + run.moving_time, 0);
+      const totalElevation = runs.reduce((sum, run) => sum + (run.total_elevation_gain || 0), 0);
+      const longestRun = runs.reduce((longest, run) => run.distance > longest.distance ? run : longest, runs[0]);
+      const avgPace = totalDistance ? (totalTime / 60) / (totalDistance / 1000) : 0;
+      const qualityCount = runs.filter((run) => classifyRun(run).key === 'quality').length;
+      const steadyCount = runs.filter((run) => classifyRun(run).key === 'steady').length;
+      const easyCount = runs.filter((run) => classifyRun(run).key === 'easy').length;
+      const fiveKs = runs.filter((run) => run.distance >= 4800 && run.distance <= 5200);
+      const best5k = fiveKs.length
+        ? Math.min(...fiveKs.map((run) => Math.round(run.moving_time)))
+        : null;
+      const days = Array.from({ length: 7 }, (_, index) => {
+        const day = new Date(group.start);
+        day.setDate(day.getDate() + index);
+        const dayRuns = runs.filter((run) => {
+          const runDate = new Date(run.start_date);
+          return runDate.toDateString() === day.toDateString();
+        });
+        const km = dayRuns.reduce((sum, run) => sum + run.distance, 0) / 1000;
+        return {
+          label: day.toLocaleDateString('en-GB', { weekday: 'short' }),
+          km,
+        };
+      });
 
-  const el = document.getElementById('weekStrip');
-  el.innerHTML = dayNames.map((name, i) => {
-    const isToday = i === dow;
-    const dayRuns = runsByDay[i] || [];
-    const done = dayRuns.length > 0;
-    const km = dayRuns.reduce((s, r) => s + r.distance, 0) / 1000;
-    const planType = plan[i];
-    const typeLabel = planType.type === 'int' ? 'Intervals' : planType.type === 'tem' ? 'Tempo' : planType.type === 'eas' ? 'Easy' : planType.type === 'lon' ? 'Long' : 'Rest';
-    const isPast = i < dow || (i === dow);
-    const missed = isPast && !done && planType.type !== 'res';
+      return {
+        key: group.key,
+        start: group.start,
+        label: formatWeekLabel(group.start),
+        shortLabel: describeWeek(group.start),
+        runs,
+        totalKm: totalDistance / 1000,
+        totalDistance,
+        totalTime,
+        totalElevation,
+        avgPace,
+        longestRun,
+        qualityCount,
+        steadyCount,
+        easyCount,
+        best5k,
+        days,
+      };
+    });
+}
 
-    let cls = 'week-strip-day';
-    if (isToday) cls += ' today';
-    if (done) cls += ' done';
+function selectWeek(key) {
+  selectedWeekKey = key;
+  renderWeekExplorer();
+}
 
-    return `<div class="${cls}">
-      <div class="week-strip-lbl">${name}</div>
-      <div class="week-strip-dot"${missed ? ' style="background:rgba(248,113,113,0.4)"' : ''}></div>
-      <div class="week-strip-km">${done ? km.toFixed(1) + ' km' : (isToday ? 'Today' : '')}</div>
-      <div class="week-strip-type">${typeLabel}</div>
-    </div>`;
+function renderWeekExplorer() {
+  const summaries = getWeekSummaries();
+  const listEl = document.getElementById('weekSummaryList');
+  const emptyEl = document.getElementById('weekDetailEmpty');
+  const detailEl = document.getElementById('weekDetail');
+
+  if (!summaries.length) {
+    listEl.innerHTML = '<div class="empty">Connect Strava or load demo data to compare recent weeks.</div>';
+    emptyEl.hidden = false;
+    detailEl.hidden = true;
+    return;
+  }
+
+  if (!selectedWeekKey || !summaries.some((summary) => summary.key === selectedWeekKey)) {
+    selectedWeekKey = summaries[0].key;
+  }
+
+  listEl.innerHTML = summaries.map((summary) => `
+    <button
+      type="button"
+      class="week-summary-card${summary.key === selectedWeekKey ? ' is-active' : ''}"
+      onclick="selectWeek('${summary.key}')"
+    >
+      <div class="week-summary-top">
+        <div>
+          <div class="week-summary-kicker">${summary.shortLabel}</div>
+          <div class="week-summary-title">${summary.label}</div>
+        </div>
+        <div class="week-summary-km">${summary.totalKm.toFixed(1)} km</div>
+      </div>
+      <div class="week-summary-meta">
+        <span>${summary.runs.length} runs</span>
+        <span>${fMinKm(summary.avgPace)} /km avg</span>
+        <span>${summary.qualityCount} quality</span>
+      </div>
+      <div class="week-summary-bars">
+        ${summary.days.map((day) => `
+          <div class="week-summary-bar">
+            <div class="week-summary-bar-fill" style="height:${Math.max(8, day.km * 5)}px"></div>
+            <span>${day.label.slice(0, 2)}</span>
+          </div>
+        `).join('')}
+      </div>
+    </button>
+  `).join('');
+
+  const detail = summaries.find((summary) => summary.key === selectedWeekKey) || summaries[0];
+  const highlight = detail.best5k != null
+    ? `Best 5K ${fTime(detail.best5k)}`
+    : `${detail.qualityCount} quality session${detail.qualityCount === 1 ? '' : 's'}`;
+
+  document.getElementById('weekDetailTitle').textContent = detail.label;
+  document.getElementById('weekDetailSub').textContent = `${detail.runs.length} runs across ${detail.totalKm.toFixed(1)} km this week.`;
+  document.getElementById('weekDetailHighlight').textContent = highlight;
+  document.getElementById('weekDetailMetrics').innerHTML = [
+    ['Distance', `${detail.totalKm.toFixed(1)} km`],
+    ['Sessions', `${detail.runs.length}`],
+    ['Avg pace', `${fMinKm(detail.avgPace)} /km`],
+    ['Longest', `${(detail.longestRun.distance / 1000).toFixed(1)} km`],
+  ].map(([label, value]) => `
+    <div class="week-detail-metric">
+      <span>${label}</span>
+      <strong>${value}</strong>
+    </div>
+  `).join('');
+
+  document.getElementById('weekDetailDays').innerHTML = detail.days.map((day) => `
+    <div class="week-detail-day">
+      <div class="week-detail-day-label">${day.label}</div>
+      <div class="week-detail-day-bar" style="width:${day.km > 0 ? `${Math.max(22, Math.min(100, day.km * 9))}%` : '16%'}"></div>
+      <div class="week-detail-day-km">${day.km > 0 ? `${day.km.toFixed(1)} km` : 'Rest'}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('weekDetailRuns').innerHTML = detail.runs.map((run) => {
+    const date = new Date(run.start_date);
+    const tag = classifyRun(run);
+    return `
+      <div class="week-detail-run">
+        <div class="week-detail-run-date">
+          <strong>${date.getDate()}</strong>
+          <span>${date.toLocaleDateString('en-GB', { month: 'short' })}</span>
+        </div>
+        <div>
+          <div class="week-detail-run-name">${esc(run.name)}</div>
+          <div class="week-detail-run-meta">
+            <span style="color:${tag.color}">${tag.label}</span>
+            <span>${fPace(run.average_speed)} /km</span>
+            ${run.average_heartrate ? `<span>${Math.round(run.average_heartrate)} bpm</span>` : ''}
+            ${run.total_elevation_gain ? `<span>+${Math.round(run.total_elevation_gain)} m</span>` : ''}
+          </div>
+        </div>
+        <div class="week-detail-run-main">
+          <strong>${fDist(run.distance)}</strong>
+          <span>${fTime(run.moving_time)}</span>
+        </div>
+      </div>
+    `;
   }).join('');
+
+  emptyEl.hidden = true;
+  detailEl.hidden = false;
 }
 
 // ─── STATS ────────────────────────────────────────────────────
@@ -2290,7 +2886,7 @@ async function tracksForRun(run) {
   } catch { return []; }
 }
 
-// ─── TRAINING PLAN ────────────────────────────────────────────
+// ─── TRAINING WEEK MODEL ─────────────────────────────────────
 function weekPlan() {
   return [
     { day:'Sun', type:'res', emoji:'😴', title:'Rest Day',              desc:'Full recovery. Light stretching or yoga. Sleep is your best performance tool — protect it.' },
@@ -2301,49 +2897,6 @@ function weekPlan() {
     { day:'Fri', type:'res', emoji:'😴', title:'Rest or Cross-Train',   desc:'Rest completely, or 30 min easy cycling. Legs should feel fresh for Saturday\'s effort.' },
     { day:'Sat', type:'int', emoji:'🏁', title:'5K Time Trial / Parkrun', desc:'Full effort 5K — use this as your benchmark. Every second off your PB brings April\'s 18:00 closer.' },
   ];
-}
-
-function buildPlan() {
-  const plan = weekPlan();
-  const dow  = NOW.getDay();
-  const tmap = { res:'t-res', eas:'t-eas', int:'t-int', tem:'t-tem' };
-
-  document.getElementById('wGrid').innerHTML = plan.map((d,i) => `
-    <div class="wday${i===dow?' hl':''}">
-      <div class="wday-name">${d.day}${i===dow?' · Today':''}</div>
-      <div class="wday-type ${tmap[d.type]||'t-res'}">${capitalize(d.type==='int'?'Intervals':d.type==='tem'?'Tempo':d.type==='eas'?'Easy':'Rest')}</div>
-      <div class="wday-desc">${d.desc.slice(0,90)}${d.desc.length>90?'…':''}</div>
-    </div>`).join('');
-
-  const w8 = [
-    { label:'Week 1 — Foundation', focus:'Build aerobic base, introduce intervals', days:[{d:'Mon',t:'eas',w:'Easy 5km'},{d:'Tue',t:'int',w:'6×400m @ 5K effort'},{d:'Wed',t:'eas',w:'Easy 4km recovery'},{d:'Thu',t:'tem',w:'Tempo 3km'},{d:'Fri',t:'res',w:'Rest'},{d:'Sat',t:'int',w:'5K time trial'},{d:'Sun',t:'eas',w:'Long easy 8km'}] },
-    { label:'Week 2 — Building',    focus:'Longer intervals, more weekly volume',   days:[{d:'Mon',t:'eas',w:'Easy 6km'},{d:'Tue',t:'int',w:'5×800m @ 5K effort'},{d:'Wed',t:'eas',w:'Easy 5km'},{d:'Thu',t:'tem',w:'Tempo 4km'},{d:'Fri',t:'res',w:'Rest'},{d:'Sat',t:'int',w:'5K time trial'},{d:'Sun',t:'eas',w:'Long easy 9km'}] },
-    { label:'Week 3 — Intensity',   focus:'1km repeats + longer tempo',            days:[{d:'Mon',t:'eas',w:'Easy 6km'},{d:'Tue',t:'int',w:'4×1km @ 5K effort'},{d:'Wed',t:'eas',w:'Easy 5km'},{d:'Thu',t:'tem',w:'Tempo 5km'},{d:'Fri',t:'res',w:'Rest'},{d:'Sat',t:'int',w:'5K time trial'},{d:'Sun',t:'eas',w:'Long easy 10km'}] },
-    { label:'Week 4 — Recovery',    focus:'Drop volume, keep sharpness',           days:[{d:'Mon',t:'eas',w:'Easy 4km'},{d:'Tue',t:'int',w:'4×400m @ 5K effort'},{d:'Wed',t:'eas',w:'Easy 4km'},{d:'Thu',t:'tem',w:'Easy tempo 3km'},{d:'Fri',t:'res',w:'Rest'},{d:'Sat',t:'int',w:'5K relaxed effort'},{d:'Sun',t:'eas',w:'Easy 7km'}] },
-    { label:'Week 5 — Peak Load',   focus:'Hardest week — trust the process',     days:[{d:'Mon',t:'eas',w:'Easy 7km'},{d:'Tue',t:'int',w:'3×1.5km @ threshold'},{d:'Wed',t:'eas',w:'Easy 5km'},{d:'Thu',t:'tem',w:'Tempo 6km'},{d:'Fri',t:'res',w:'Rest'},{d:'Sat',t:'int',w:'5K time trial — push'},{d:'Sun',t:'eas',w:'Long easy 11km'}] },
-    { label:'Week 6 — Sharpen',     focus:'Faster, shorter — speed over volume',  days:[{d:'Mon',t:'eas',w:'Easy 5km + strides'},{d:'Tue',t:'int',w:'8×400m faster than 5K pace'},{d:'Wed',t:'eas',w:'Easy 5km'},{d:'Thu',t:'tem',w:'Controlled tempo 4km'},{d:'Fri',t:'res',w:'Rest'},{d:'Sat',t:'int',w:'5K time trial'},{d:'Sun',t:'eas',w:'Easy 8km'}] },
-    { label:'Week 7 — Taper',       focus:'Freshen up, trust your fitness',       days:[{d:'Mon',t:'eas',w:'Easy 4km'},{d:'Tue',t:'int',w:'4×400m easy effort'},{d:'Wed',t:'eas',w:'Easy 3km'},{d:'Thu',t:'eas',w:'Easy 20 min jog'},{d:'Fri',t:'res',w:'Rest'},{d:'Sat',t:'eas',w:'15 min easy + 4 strides'},{d:'Sun',t:'res',w:'Rest'}] },
-    { label:'Week 8 — Race Week 🏁', focus:'April 30 — everything you\'ve built',  days:[{d:'Mon',t:'eas',w:'Easy 3km shake-out'},{d:'Tue',t:'int',w:'3×200m at goal pace'},{d:'Wed',t:'res',w:'Rest'},{d:'Thu',t:'eas',w:'10 min easy jog'},{d:'Fri',t:'res',w:'Rest'},{d:'Sat',t:'res',w:'Rest — early night'},{d:'Sun',t:'int',w:'🏁 RACE — Go for 18:00!'}] },
-  ];
-
-  document.getElementById('wList').innerHTML = w8.map(w => `
-    <div>
-      <div class="week-hd">${w.label} <span>${w.focus}</span></div>
-      <div class="week-grid">${w.days.map(d=>`
-        <div class="wday">
-          <div class="wday-name">${d.d}</div>
-          <div class="wday-type ${tmap[d.t]||'t-res'}">${capitalize(d.t==='int'?'Intervals':d.t==='tem'?'Tempo':d.t==='eas'?'Easy':'Rest')}</div>
-          <div class="wday-desc">${d.w}</div>
-        </div>`).join('')}
-      </div>
-    </div>`).join('');
-}
-
-function showPlan(tab, btn) {
-  document.querySelectorAll('.ptab').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('planCur').className  = 'plan-cur'  + (tab==='cur'  ? '' : ' hid');
-  document.getElementById('planFull').className = 'plan-full' + (tab==='full' ? ' vis' : '');
 }
 
 // ─── ZONES ────────────────────────────────────────────────────
