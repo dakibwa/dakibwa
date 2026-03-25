@@ -29,12 +29,14 @@ const STRAVA_AUTH_URL  = 'https://www.strava.com/oauth/authorize';
 const STRAVA_TOKEN_URL = 'https://www.strava.com/oauth/token';
 const WHOOP_AUTH_URL   = 'https://api.prod.whoop.com/oauth/oauth2/auth';
 const WHOOP_TOKEN_URL  = 'https://api.prod.whoop.com/oauth/oauth2/token';
+const WHOOP_API_BASE   = 'https://api.prod.whoop.com/developer/v2';
+const WHOOP_SCOPES     = 'read:recovery read:cycles read:sleep read:workout read:profile read:body_measurement';
 
 // CORS headers — allow the dashboard origin to call the worker
 const CORS = {
   'Access-Control-Allow-Origin':  '*',
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-WHOOP-TOKEN',
 };
 
 function json(data, status = 200) {
@@ -51,6 +53,72 @@ function redirect(url) {
 function workerBase(request) {
   const u = new URL(request.url);
   return `${u.protocol}//${u.host}`;
+}
+
+async function readJson(response) {
+  return response.json().catch(() => ({}));
+}
+
+function getApiErrorMessage(payload, fallback) {
+  return payload.error || payload.message || payload.error_description || fallback;
+}
+
+async function fetchRequiredWhoopJson(url, headers) {
+  const response = await fetch(url, { headers });
+  const payload = await readJson(response);
+
+  if (!response.ok) {
+    const error = new Error(getApiErrorMessage(payload, `Whoop API ${response.status}`));
+    error.status = response.status;
+    throw error;
+  }
+
+  return payload;
+}
+
+async function fetchOptionalWhoopJson(url, headers) {
+  const response = await fetch(url, { headers });
+
+  if (response.status === 404) {
+    return null;
+  }
+
+  const payload = await readJson(response);
+
+  if (!response.ok) {
+    const error = new Error(getApiErrorMessage(payload, `Whoop API ${response.status}`));
+    error.status = response.status;
+    throw error;
+  }
+
+  return payload;
+}
+
+async function fetchWhoopBundle(token) {
+  const headers = { Authorization: `Bearer ${token}` };
+
+  const [cycleCollection, recoveryCollection] = await Promise.all([
+    fetchRequiredWhoopJson(`${WHOOP_API_BASE}/cycle?limit=1`, headers),
+    fetchRequiredWhoopJson(`${WHOOP_API_BASE}/recovery?limit=7`, headers),
+  ]);
+
+  const cycle = cycleCollection.records?.[0] || null;
+  let recovery = null;
+  let sleep = null;
+
+  if (cycle?.id != null) {
+    [recovery, sleep] = await Promise.all([
+      fetchOptionalWhoopJson(`${WHOOP_API_BASE}/cycle/${cycle.id}/recovery`, headers),
+      fetchOptionalWhoopJson(`${WHOOP_API_BASE}/cycle/${cycle.id}/sleep`, headers),
+    ]);
+  }
+
+  return {
+    cycle,
+    recovery,
+    recoveries: recoveryCollection.records || [],
+    sleep,
+  };
 }
 
 // ─── ROUTER ───────────────────────────────────────────────────────────────────
@@ -139,12 +207,11 @@ export default {
     // ── WHOOP ───────────────────────────────────────────────────────────────
     if (path === '/whoop/auth' && method === 'GET') {
       const redirectUri = `${workerBase(request)}/whoop/callback`;
-      const scopes = 'read:recovery read:cycles read:sleep read:workout read:profile read:body_measurement';
       const params = new URLSearchParams({
         client_id:     env.WHOOP_CLIENT_ID,
         redirect_uri:  redirectUri,
         response_type: 'code',
-        scope:         scopes,
+        scope:         WHOOP_SCOPES,
         state:         crypto.randomUUID(),
       });
       return redirect(`${WHOOP_AUTH_URL}?${params}`);
@@ -214,27 +281,11 @@ export default {
       const token = request.headers.get('x-whoop-token');
       if (!token) return json({ error: 'missing token' }, 401);
 
-      const h    = { Authorization: `Bearer ${token}` };
-      const base = 'https://api.prod.whoop.com/developer/v1';
-
       try {
-        const [recRes, cycRes, slpRes] = await Promise.all([
-          fetch(`${base}/recovery?limit=7`,        { headers: h }),
-          fetch(`${base}/cycle?limit=1`,           { headers: h }),
-          fetch(`${base}/activity/sleep?limit=1`,  { headers: h }),
-        ]);
-        // Surface Whoop auth/API errors clearly
-        if (!recRes.ok) {
-          const errBody = await recRes.clone().json().catch(() => ({}));
-          const msg = errBody.error || errBody.message || 'check token';
-          return json({ error: `Whoop API ${recRes.status}: ${msg}` }, recRes.status === 401 ? 401 : 500);
-        }
-        const [recovery, cycle, sleep] = await Promise.all([
-          recRes.json(), cycRes.json(), slpRes.json(),
-        ]);
-        return json({ recovery, cycle, sleep });
+        const bundle = await fetchWhoopBundle(token);
+        return json(bundle);
       } catch (e) {
-        return json({ error: e.message }, 500);
+        return json({ error: e.message }, e.status === 401 ? 401 : 500);
       }
     }
 

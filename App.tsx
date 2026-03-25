@@ -45,6 +45,40 @@ const branchAccentColor: Record<string, string> = {
   shared: '#345061',
 };
 
+const ArchiveMenu: React.FC = () => (
+  <details className="site-menu">
+    <summary className="site-menu-button">Menu</summary>
+    <div className="site-menu-popover">
+      <a className="site-menu-link" href="/" aria-current="page">
+        Family archive
+      </a>
+      <a className="site-menu-link" href={`/?person=${defaultPersonId}#tree`}>
+        Family tree
+      </a>
+      <a className="site-menu-link" href={`/?person=${defaultPersonId}#register`}>
+        Register
+      </a>
+      <a className="site-menu-link" href="/dashboard.html">
+        Training dashboard
+      </a>
+    </div>
+  </details>
+);
+
+const SiteHeader: React.FC<{ label: string; note: string }> = ({ label, note }) => (
+  <header className="site-header">
+    <div className="site-brand">
+      <a href="/" className="site-brand-mark">Dakibwa</a>
+      <div className="site-brand-stack">
+        <span className="site-brand-copy">{label}</span>
+        <span className="site-brand-note">{note}</span>
+      </div>
+    </div>
+
+    <ArchiveMenu />
+  </header>
+);
+
 const App: React.FC = () => {
   const [route, setRoute] = useState<RouteState>(() => readRoute());
 
@@ -62,15 +96,15 @@ const App: React.FC = () => {
     document.title =
       route.view === 'record'
         ? `${selectedPerson.name} — Dakibwa`
-        : 'Dakibwa — Atkinson Family Archive';
+        : 'Dakibwa — Family Records';
 
     const desc = document.querySelector('meta[name="description"]');
     if (desc) {
       desc.setAttribute(
         'content',
         route.view === 'record'
-          ? `${selectedPerson.name} — Atkinson and Nealon family lines.`
-          : 'Dakibwa is a family archive for the Atkinson line. Names confirmed, connections made, details to follow.'
+          ? `${selectedPerson.name} — structured records for the Atkinson and Nealon lines.`
+          : 'Dakibwa is a clean archive of family records for the Atkinson and Nealon lines.'
       );
     }
 
@@ -103,24 +137,7 @@ const App: React.FC = () => {
       <div className="site-shell">
         <a className="skip-link" href="#main-content">Skip to content</a>
 
-        <header className="site-header">
-          <div className="site-brand">
-            <a href="/" className="site-brand-mark">Dakibwa</a>
-            <span className="site-brand-copy">Family Archive</span>
-          </div>
-
-          <nav className="site-nav" aria-label="Primary">
-            <button type="button" className="nav-button" onClick={() => openTree(selectedPerson.id)}>
-              Tree view
-            </button>
-            <a className="nav-link" href={`/?person=${defaultPersonId}`}>
-              Root record
-            </a>
-            <a className="nav-link" href="/dashboard.html">
-              Training dashboard
-            </a>
-          </nav>
-        </header>
+        <SiteHeader label="Record view" note={selectedPerson.name} />
 
         <PersonRecordPage
           person={selectedPerson}
@@ -130,7 +147,7 @@ const App: React.FC = () => {
         />
 
         <footer className="site-footer">
-          <p>Dakibwa — a family archive, started honestly.</p>
+          <p>Dakibwa. Structured family records with room to grow.</p>
         </footer>
       </div>
     );
@@ -140,60 +157,55 @@ const App: React.FC = () => {
     <div className="site-shell">
       <a className="skip-link" href="#main-content">Skip to content</a>
 
-      <header className="site-header">
-        <div className="site-brand">
-          <span className="site-brand-mark">Dakibwa</span>
-          <span className="site-brand-copy">Family Archive</span>
-        </div>
-
-        <nav className="site-nav" aria-label="Primary">
-          <a className="nav-link" href="#tree">
-            Family tree
-          </a>
-          <a className="nav-link" href="#branches">
-            Branches
-          </a>
-          <a className="nav-link" href="#register">
-            Register
-          </a>
-          <a className="nav-link" href="/dashboard.html">
-            Training
-          </a>
-        </nav>
-      </header>
+      <SiteHeader label="Family records" note="Atkinson and Nealon lines." />
 
       <main id="main-content">
         {/* Landing */}
         <div className="landing">
-          <p className="landing-eyebrow">Atkinson family archive</p>
-          <h1 className="landing-h1">The Atkinson family.</h1>
+          <p className="landing-eyebrow">Structured family records</p>
+          <h1 className="landing-h1">One place for the Atkinson and Nealon lines.</h1>
           <p className="landing-desc">
-            A first honest record — names confirmed, connections made. Details will be
-            added as research continues.
+            A clean interface for names, relationships, and verified records. Start with the tree,
+            open a person, and expand detail only when it is known.
           </p>
           <p className="landing-desc">
-            Sparse by intention. Better to begin with what is known than to fill gaps with guesswork.
+            Quiet by design. The structure does the work, so the archive can grow without becoming noisy.
           </p>
           <div className="landing-actions">
-            <a className="btn btn-primary" href="#tree">Browse the tree</a>
+            <a className="btn btn-primary" href="#tree">Open the tree</a>
             <button
               type="button"
               className="btn btn-secondary"
               onClick={() => openRecord(defaultPersonId)}
             >
-              Open Daniel's record
+              Open Daniel&apos;s record
             </button>
             <a className="btn btn-secondary" href="/dashboard.html">
               Open training dashboard
             </a>
+          </div>
+
+          <div className="landing-stats" aria-label="Archive overview">
+            <div className="landing-stat">
+              <span className="landing-stat-value">{familyPeople.length}</span>
+              <span className="landing-stat-label">records</span>
+            </div>
+            <div className="landing-stat">
+              <span className="landing-stat-value">{primaryBranches.length}</span>
+              <span className="landing-stat-label">family lines</span>
+            </div>
+            <div className="landing-stat">
+              <span className="landing-stat-value">3</span>
+              <span className="landing-stat-label">generations</span>
+            </div>
           </div>
         </div>
 
         {/* Tree */}
         <div className="section-block" id="tree">
           <div className="section-head">
-            <p className="section-label">Family tree</p>
-            <h2>Three generations</h2>
+            <p className="section-label">Tree</p>
+            <h2>Connected records</h2>
           </div>
 
           <div className="tree-explorer">
@@ -217,8 +229,8 @@ const App: React.FC = () => {
         {/* Branches */}
         <div className="section-block" id="branches">
           <div className="section-head">
-            <p className="section-label">Branch overview</p>
-            <h2>Both lines</h2>
+            <p className="section-label">Lines</p>
+            <h2>Two family branches</h2>
           </div>
 
           <div className="branches-grid">
@@ -239,8 +251,8 @@ const App: React.FC = () => {
         {/* Register */}
         <div className="section-block" id="register">
           <div className="section-head">
-            <p className="section-label">Family register</p>
-            <h2>{familyPeople.length} people in this archive</h2>
+            <p className="section-label">Directory</p>
+            <h2>{familyPeople.length} records in the archive</h2>
           </div>
 
           <table className="register-table">
@@ -285,7 +297,7 @@ const App: React.FC = () => {
       </main>
 
       <footer className="site-footer">
-        <p>Dakibwa — a family archive, started honestly. Two branches, eight names, room to grow.</p>
+        <p>Dakibwa. Structured family records with room to grow.</p>
       </footer>
     </div>
   );

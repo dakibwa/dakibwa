@@ -30,8 +30,8 @@ const PersonRecordPage: React.FC<PersonRecordPageProps> = ({ person, branches, o
 
   const recordNote =
     person.recordState === 'placeholder'
-      ? 'A living-person record, kept intentionally spare.'
-      : 'Name and relationships confirmed. Further detail will be added as research continues.';
+      ? 'A living-person record kept intentionally minimal.'
+      : 'Identity and relationships confirmed. Additional detail is added only when it is verified.';
 
   return (
     <main id="main-content">

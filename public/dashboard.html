@@ -116,8 +116,8 @@ header {
 }
 .approve-btn:hover { opacity: 0.88; transform: translateY(-1px); }
 .approve-btn svg { width: 20px; height: 20px; fill: #fff; }
-.skip-link { font-size: 0.78rem; color: var(--text3); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
-.skip-link:hover { color: var(--text2); }
+.first-run-link { font-size: 0.78rem; color: var(--text3); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.first-run-link:hover { color: var(--text2); }
 .loading-screen {
   position: fixed; inset: 0; z-index: 99;
   background: var(--bg);
@@ -569,6 +569,423 @@ header {
 
 /* Smooth global transitions */
 * { transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+
+/* ─── UNIFIED LIGHT THEME ───────────────────────────────────── */
+:root {
+  --bg: #f4f4ef;
+  --surface: rgba(255,255,255,0.84);
+  --surface2: #ecece5;
+  --border: rgba(24,24,21,0.09);
+  --border2: rgba(24,24,21,0.14);
+  --orange: #c9784f;
+  --orange2: #b96a40;
+  --purple: #7a75c8;
+  --purple2: #6660b6;
+  --teal: #3e8b74;
+  --blue: #587ea8;
+  --red: #b05d5d;
+  --yellow: #b58a42;
+  --text: #171716;
+  --text2: #616158;
+  --text3: #8b8b80;
+}
+
+body {
+  background:
+    radial-gradient(circle at top left, rgba(62, 139, 116, 0.10), transparent 30%),
+    radial-gradient(circle at top right, rgba(88, 126, 168, 0.10), transparent 28%),
+    var(--bg);
+  color: var(--text);
+}
+
+::-webkit-scrollbar-thumb { background: rgba(24,24,21,0.14); }
+::-webkit-scrollbar-thumb:hover { background: rgba(24,24,21,0.2); }
+
+.wrap {
+  max-width: 1120px;
+  padding: 0 32px 96px;
+}
+
+.site-header {
+  padding: 28px 0 0;
+  margin-bottom: 28px;
+  border-bottom: none;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.brand-link {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.logo-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.92);
+  border: 1px solid var(--border);
+  box-shadow: 0 12px 30px rgba(17,17,14,0.08);
+  color: var(--text);
+  font-size: 0.98rem;
+  font-weight: 700;
+}
+
+.logo-eyebrow {
+  font-size: 0.72rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 4px;
+}
+
+.logo-text {
+  font-size: 1.05rem;
+  letter-spacing: -0.03em;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.logo-sub {
+  font-size: 0.88rem;
+  color: var(--text2);
+  margin-top: 2px;
+}
+
+.header-right {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.status-pills {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.pill {
+  background: rgba(255,255,255,0.88);
+  border: 1px solid var(--border);
+  color: var(--text3);
+  box-shadow: 0 8px 20px rgba(17,17,14,0.04);
+}
+
+.pill.ok {
+  border-color: rgba(62, 139, 116, 0.20);
+  color: var(--text2);
+}
+
+.pill-dot {
+  background: var(--text3);
+}
+
+.pill.ok .pill-dot {
+  box-shadow: 0 0 0 rgba(0,0,0,0);
+}
+
+.site-menu {
+  position: relative;
+}
+
+.site-menu[open] {
+  z-index: 20;
+}
+
+.site-menu > summary {
+  list-style: none;
+}
+
+.site-menu > summary::-webkit-details-marker {
+  display: none;
+}
+
+.site-menu-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 38px;
+  padding: 0 15px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.9);
+  box-shadow: 0 8px 20px rgba(17,17,14,0.05);
+  font-size: 0.88rem;
+  color: var(--text);
+  cursor: pointer;
+  user-select: none;
+}
+
+.site-menu-button::after {
+  content: "+";
+  font-size: 1rem;
+  color: var(--text3);
+  transition: transform 160ms ease, color 160ms ease;
+}
+
+.site-menu[open] .site-menu-button::after {
+  transform: rotate(45deg);
+  color: var(--text);
+}
+
+.site-menu-popover {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  min-width: 220px;
+  padding: 10px;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.95);
+  box-shadow: 0 28px 60px rgba(17,17,14,0.10);
+  backdrop-filter: blur(16px);
+  display: grid;
+  gap: 4px;
+}
+
+.site-menu-link {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  color: var(--text2);
+}
+
+.site-menu-link:hover,
+.site-menu-link:focus-visible {
+  background: var(--surface2);
+  color: var(--text);
+  outline: none;
+}
+
+.site-menu-link[aria-current="page"] {
+  background: var(--text);
+  color: #fff;
+}
+
+.first-run,
+.loading-screen {
+  background: rgba(244,244,239,0.92);
+  backdrop-filter: blur(24px);
+}
+
+.first-run h1,
+.first-run p,
+.loading-screen p {
+  color: var(--text);
+}
+
+.first-run p,
+.loading-screen p {
+  color: var(--text2);
+}
+
+.approve-btn {
+  background: var(--text);
+  border: 1px solid rgba(17,17,14,0.06);
+  box-shadow: 0 14px 30px rgba(17,17,14,0.10);
+}
+
+.loading-screen .spin-big,
+.spinner {
+  border-color: rgba(24,24,21,0.12);
+  border-top-color: var(--text);
+}
+
+.goal-card,
+.today-card,
+.stat,
+.chart-card,
+.run-card,
+.gear-simple,
+.wday,
+.zone,
+.week-strip {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 16px 34px rgba(17,17,14,0.06);
+}
+
+.goal-card.apr {
+  background: linear-gradient(180deg, rgba(201,120,79,0.10), rgba(255,255,255,0.84));
+  border-color: rgba(185,106,64,0.16);
+}
+
+.goal-card.aug {
+  background: linear-gradient(180deg, rgba(122,117,200,0.10), rgba(255,255,255,0.84));
+  border-color: rgba(102,96,182,0.16);
+}
+
+.goal-insight,
+.run-music,
+.week-strip-day.today {
+  background: rgba(17,17,14,0.03);
+  border-color: var(--border);
+}
+
+.goal-prog-bg {
+  background: rgba(17,17,14,0.08);
+}
+
+.today-divider {
+  background: var(--border);
+}
+
+.stat:hover,
+.run-card:hover,
+.chart-card:hover,
+.today-card:hover {
+  box-shadow: 0 20px 40px rgba(17,17,14,0.08);
+}
+
+.gear-chip,
+.rchip,
+.tpill,
+.ptab,
+.wday-type {
+  background: rgba(17,17,14,0.05);
+  color: var(--text2);
+}
+
+.rchip.fast { background: rgba(62,139,116,0.11); color: var(--teal); }
+.rchip.mid  { background: rgba(181,138,66,0.12); color: var(--yellow); }
+.rchip.easy { background: rgba(88,126,168,0.11); color: var(--blue); }
+
+.km-input {
+  background: rgba(255,255,255,0.82);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.today-right button,
+#whoopSub button {
+  color: var(--text);
+}
+
+.empty,
+.goal-prog-row,
+.section-lbl,
+.chart-hd p,
+.leg,
+.run-time2,
+.week-strip-type,
+.week-strip-lbl,
+.whoop-metric .key,
+.whoop-ring .lbl,
+.whoop-trend-label,
+.wday-name,
+.z-desc,
+.goal-countdown .lbl,
+.goal-label,
+.stat-sub,
+.km-lbl,
+.gear-sub,
+.goal-insight,
+.today-desc {
+  color: var(--text3);
+}
+
+.today-title,
+.chart-hd h3,
+.run-name,
+.gear-name,
+.whoop-score-label .title,
+.goal-time,
+.stat-val,
+.z-pace {
+  color: var(--text);
+}
+
+.today-eyebrow,
+.stat-lbl,
+.section-lbl,
+.goal-label,
+.wday-name,
+.z-name {
+  color: var(--text3);
+}
+
+.week-strip-day.done {
+  background: rgba(62,139,116,0.07);
+}
+
+.week-strip-day.today .week-strip-dot {
+  background: var(--orange2);
+  box-shadow: none;
+}
+
+.week-strip-day.done .week-strip-dot {
+  background: var(--teal);
+  box-shadow: none;
+}
+
+.whoop-ring.grey {
+  border-color: var(--border2);
+}
+
+.whoop-trend-bar::after {
+  color: var(--text3);
+}
+
+@media (max-width: 840px) {
+  .site-header {
+    flex-wrap: wrap;
+  }
+
+  .header-right {
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+@media (max-width: 620px) {
+  .wrap {
+    padding: 0 22px 80px;
+  }
+
+  .brand-link {
+    align-items: flex-start;
+  }
+
+  .logo-sub {
+    max-width: 28ch;
+  }
+
+  .header-right {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .status-pills {
+    justify-content: flex-start;
+  }
+
+  .site-menu-button {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .site-menu-popover {
+    left: 0;
+    right: 0;
+    min-width: 0;
+  }
+
+  .goal-card,
+  .chart-card,
+  .stat,
+  .today-left,
+  .today-right,
+  .gear-simple {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
 </style>
 </head>
 <body>
@@ -577,20 +994,32 @@ header {
 <!-- ══════════════════════════════════════════════
      HEADER
 ══════════════════════════════════════════════ -->
-<header>
+<header class="site-header">
   <div class="logo">
-    <a href="/" style="text-decoration:none;display:flex;align-items:center;gap:12px">
-      <div class="logo-icon">🏃</div>
+    <a href="/" class="brand-link">
+      <div class="logo-icon">D</div>
       <div>
-        <div class="logo-text">Dan · 5K Training</div>
-        <div class="logo-sub">Pegasus 41 GTX · Targeting sub-17 by August</div>
+        <div class="logo-eyebrow">Dakibwa</div>
+        <div class="logo-text">Training dashboard</div>
+        <div class="logo-sub">A calm view of runs, recovery, and the week ahead.</div>
       </div>
     </a>
   </div>
   <div class="header-right">
-    <div class="pill" id="pStrava"><div class="pill-dot" id="dStrava"></div><span id="lStrava">Strava</span></div>
-    <div class="pill" id="pWhoop"><div class="pill-dot" id="dWhoop"></div><span id="lWhoop">Whoop</span></div>
-    <div class="pill" id="pLfm"><div class="pill-dot" id="dLfm"></div><span id="lLfm">Last.fm</span></div>
+    <div class="status-pills">
+      <div class="pill" id="pStrava"><div class="pill-dot" id="dStrava"></div><span id="lStrava">Strava</span></div>
+      <div class="pill" id="pWhoop"><div class="pill-dot" id="dWhoop"></div><span id="lWhoop">Whoop</span></div>
+      <div class="pill" id="pLfm"><div class="pill-dot" id="dLfm"></div><span id="lLfm">Last.fm</span></div>
+    </div>
+    <details class="site-menu">
+      <summary class="site-menu-button">Menu</summary>
+      <div class="site-menu-popover">
+        <a class="site-menu-link" href="/">Family archive</a>
+        <a class="site-menu-link" href="/?person=daniel-atkinson#tree">Family tree</a>
+        <a class="site-menu-link" href="/?person=daniel-atkinson#register">Register</a>
+        <a class="site-menu-link" href="/dashboard.html" aria-current="page">Training dashboard</a>
+      </div>
+    </details>
   </div>
 </header>
 
@@ -608,7 +1037,7 @@ header {
   <button class="approve-btn" style="background:#2d2d2d;margin-top:4px" onclick="doWhoopAuth()">
     💪 Approve Whoop Access
   </button>
-  <span class="skip-link" onclick="loadDemo()">Skip — use demo data instead</span>
+  <span class="first-run-link" onclick="loadDemo()">Skip for now and use demo data</span>
 </div>
 
 <!-- Loading screen -->
@@ -848,7 +1277,7 @@ const DEFAULT_CREDS = {
     redirectUri:  '',
     authUrl:      'https://api.prod.whoop.com/oauth/oauth2/auth',
     tokenUrl:     'https://api.prod.whoop.com/oauth/oauth2/token',
-    apiBase:      'https://api.prod.whoop.com/developer/v1',
+    apiBase:      'https://api.prod.whoop.com/developer/v2',
     scopes:       'read:recovery read:cycles read:sleep read:workout read:profile read:body_measurement'
   },
   lastfm: { apiKey: '59ebdb7b79a9305078dea983ea32a3f6', username: 'akibwa' }
@@ -1140,20 +1569,60 @@ async function silentWhoopRefresh(saved) {
   }
 }
 
+async function whoopFetchJson(url, options = {}) {
+  const r = await fetch(url, options);
+  if (r.status === 404) return null;
+
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) {
+    const err = new Error(data.error || data.message || data.error_description || `Whoop API ${r.status}`);
+    err.status = r.status;
+    throw err;
+  }
+
+  return data;
+}
+
+async function fetchWhoopBundleDirect() {
+  const headers = { Authorization: 'Bearer ' + A.whoop.token };
+  const base = CREDS.whoop.apiBase;
+  const [cycleCollection, recoveryCollection] = await Promise.all([
+    whoopFetchJson(`${base}/cycle?limit=1`, { headers }),
+    whoopFetchJson(`${base}/recovery?limit=7`, { headers }),
+  ]);
+
+  const cycle = cycleCollection?.records?.[0] || null;
+  let recovery = null;
+  let sleep = null;
+
+  if (cycle?.id != null) {
+    [recovery, sleep] = await Promise.all([
+      whoopFetchJson(`${base}/cycle/${cycle.id}/recovery`, { headers }),
+      whoopFetchJson(`${base}/cycle/${cycle.id}/sleep`, { headers }),
+    ]);
+  }
+
+  return {
+    cycle,
+    recovery,
+    recoveries: recoveryCollection?.records || [],
+    sleep,
+  };
+}
+
+function applyWhoopBundle(bundle) {
+  A.whoop.cycle = bundle.cycle || null;
+  A.whoop.recovery = bundle.recovery || null;
+  A.whoop.recoveries = bundle.recoveries || [];
+  A.whoop.sleep = bundle.sleep || null;
+}
+
 async function fetchWhoopData() {
   if (!A.whoop.token) return;
   try {
-    let recData, cycData, slpData;
+    let bundle;
     if (IS_LOCAL) {
-      // Local dev: call Whoop API directly (no CORS restriction on localhost)
-      const h = { Authorization: 'Bearer ' + A.whoop.token };
-      const base = CREDS.whoop.apiBase;
-      const [rR, cR, sR] = await Promise.all([
-        fetch(`${base}/recovery?limit=7`,       { headers: h }),
-        fetch(`${base}/cycle?limit=1`,          { headers: h }),
-        fetch(`${base}/activity/sleep?limit=1`, { headers: h }),
-      ]);
-      [recData, cycData, slpData] = await Promise.all([rR.json(), cR.json(), sR.json()]);
+      bundle = await fetchWhoopBundleDirect();
     } else {
       // Production: proxy through Worker — Whoop blocks direct browser calls (CORS)
       const r = await fetch(`${WORKER_URL}/whoop/data`, {
@@ -1171,13 +1640,10 @@ async function fetchWhoopData() {
         const errData = await r.json().catch(() => ({}));
         throw new Error(errData.error || 'whoop proxy ' + r.status);
       }
-      const d = await r.json();
-      recData = d.recovery; cycData = d.cycle; slpData = d.sleep;
+      bundle = await r.json();
     }
-    A.whoop.recovery    = recData.records?.[0] || null;
-    A.whoop.recoveries  = recData.records || [];  // all 7 days
-    A.whoop.cycle       = cycData.records?.[0] || null;
-    A.whoop.sleep       = slpData.records?.[0] || null;
+
+    applyWhoopBundle(bundle);
     renderWhoop();
     if (A.runs.length) renderToday();
   } catch(e) {
@@ -1188,22 +1654,72 @@ async function fetchWhoopData() {
   }
 }
 
+function renderWhoopTrend(recs) {
+  const trendEl = document.getElementById('whoopTrend');
+  const barsEl  = document.getElementById('whoopTrendBars');
+
+  if (!recs?.length || recs.length < 2) {
+    trendEl.style.display = 'none';
+    barsEl.innerHTML = '';
+    return;
+  }
+
+  const sorted = [...recs].reverse();
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  barsEl.innerHTML = sorted.map(r => {
+    const s = r.score?.recovery_score ?? 0;
+    const d = new Date(r.created_at || r.updated_at || '');
+    const dayLabel = days[d.getDay()] || '';
+    const color = s >= 67 ? 'var(--teal)' : s >= 34 ? 'var(--yellow)' : 'var(--red)';
+    return `<div class="whoop-trend-bar" style="height:${Math.max(8, s * 0.3)}px;background:${color}" data-day="${dayLabel}" title="${s}%"></div>`;
+  }).join('');
+  trendEl.style.display = 'block';
+}
+
 function renderWhoop() {
   const rec = A.whoop.recovery;
   const cyc = A.whoop.cycle;
   const slp = A.whoop.sleep;
+  const recs = A.whoop.recoveries || [];
+  const scoreState = rec?.score_state || null;
+  const strain = cyc?.score?.strain != null ? cyc.score.strain.toFixed(1) : null;
+  const sleepPct = slp?.score?.sleep_performance_percentage != null
+    ? Math.round(slp.score.sleep_performance_percentage) + '%' : null;
+  const ring = document.getElementById('whoopRing');
 
-  if (!rec) return;
+  if (!rec || scoreState !== 'SCORED') {
+    ring.className = 'whoop-ring grey';
+    document.getElementById('whoopScore').textContent = '—';
+
+    let title = 'Whoop synced';
+    let sub = 'Recovery will appear once WHOOP scores your latest cycle.';
+
+    if (scoreState === 'PENDING_SCORE') {
+      title = 'Recovery pending';
+      sub = 'WHOOP is still processing today\'s recovery score.';
+    } else if (scoreState === 'UNSCORABLE') {
+      title = 'Recovery unavailable';
+      sub = 'WHOOP could not score the latest cycle yet.';
+    } else if (!rec && cyc) {
+      title = 'Cycle synced';
+      sub = 'Latest strain and sleep are available even though no fresh recovery is ready yet.';
+    }
+
+    document.getElementById('whoopStatus').textContent = title;
+    document.getElementById('whoopSub').textContent = sub;
+    document.getElementById('whoopHrv').textContent = '—';
+    document.getElementById('whoopRhr').textContent = '—';
+    document.getElementById('whoopSleep').textContent = sleepPct || '—';
+    document.getElementById('whoopStrain').textContent = strain || '—';
+    renderWhoopTrend(recs);
+    return;
+  }
 
   const score = rec.score?.recovery_score ?? null;
   const hrv   = rec.score?.hrv_rmssd_milli != null ? Math.round(rec.score.hrv_rmssd_milli) : null;
   const rhr   = rec.score?.resting_heart_rate != null ? Math.round(rec.score.resting_heart_rate) : null;
-  const strain = cyc?.score?.strain != null ? cyc.score.strain.toFixed(1) : null;
-  const sleepPct = slp?.score?.sleep_performance_percentage != null
-    ? Math.round(slp.score.sleep_performance_percentage) + '%' : null;
 
   // Recovery ring colour
-  const ring = document.getElementById('whoopRing');
   const cls  = score == null ? 'grey' : score >= 67 ? 'green' : score >= 34 ? 'yellow' : 'red';
   ring.className = `whoop-ring ${cls}`;
   document.getElementById('whoopScore').textContent = score != null ? score + '%' : '—';
@@ -1218,24 +1734,7 @@ function renderWhoop() {
   document.getElementById('whoopRhr').textContent    = rhr    != null ? rhr + ' bpm' : '—';
   document.getElementById('whoopSleep').textContent  = sleepPct || '—';
   document.getElementById('whoopStrain').textContent = strain  || '—';
-
-  // 7-day recovery trend bars
-  const recs = A.whoop.recoveries || [];
-  if (recs.length > 1) {
-    const trendEl = document.getElementById('whoopTrend');
-    const barsEl  = document.getElementById('whoopTrendBars');
-    // Reverse so oldest is left, newest is right
-    const sorted = [...recs].reverse();
-    const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-    barsEl.innerHTML = sorted.map(r => {
-      const s = r.score?.recovery_score ?? 0;
-      const d = new Date(r.created_at || r.updated_at || '');
-      const dayLabel = days[d.getDay()] || '';
-      const color = s >= 67 ? 'var(--teal)' : s >= 34 ? 'var(--yellow)' : 'var(--red)';
-      return `<div class="whoop-trend-bar" style="height:${Math.max(8, s * 0.3)}px;background:${color}" data-day="${dayLabel}" title="${s}%"></div>`;
-    }).join('');
-    trendEl.style.display = 'block';
-  }
+  renderWhoopTrend(recs);
 }
 
 function showLoading(msg) {
@@ -1502,10 +2001,10 @@ function renderToday() {
 // ─── CHARTS ───────────────────────────────────────────────────
 const cBase = {
   responsive:true, maintainAspectRatio:false,
-  plugins:{ legend:{display:false}, tooltip:{ backgroundColor:'#12121f', titleColor:'#E8E8F0', bodyColor:'#8B8FA8', padding:12, cornerRadius:8, borderColor:'rgba(255,255,255,0.06)', borderWidth:1, titleFont:{weight:600} } },
+  plugins:{ legend:{display:false}, tooltip:{ backgroundColor:'rgba(255,255,255,0.96)', titleColor:'#171716', bodyColor:'#616158', padding:12, cornerRadius:12, borderColor:'rgba(24,24,21,0.10)', borderWidth:1, titleFont:{weight:600} } },
   scales:{
-    x:{ grid:{color:'rgba(255,255,255,0.03)'}, ticks:{color:'#4B5068',font:{size:11},maxTicksLimit:7} },
-    y:{ grid:{color:'rgba(255,255,255,0.03)'}, ticks:{color:'#4B5068',font:{size:11}} }
+    x:{ grid:{color:'rgba(24,24,21,0.06)'}, ticks:{color:'#8b8b80',font:{size:11},maxTicksLimit:7} },
+    y:{ grid:{color:'rgba(24,24,21,0.06)'}, ticks:{color:'#8b8b80',font:{size:11}} }
   }
 };
 
@@ -1525,9 +2024,9 @@ function renderCharts() {
   CH.pace = new Chart(document.getElementById('paceChart'), {
     type:'line',
     data:{ labels, datasets:[
-      { data:paces, borderColor:'#F06830', backgroundColor:'rgba(240,104,48,0.05)', borderWidth:2, pointRadius:4, pointBackgroundColor:'#F06830', pointBorderColor:'#050509', pointBorderWidth:2, tension:0.35, fill:true },
-      { data:Array(labels.length).fill(aprLine), borderColor:'rgba(240,104,48,0.4)', borderDash:[6,4], borderWidth:1.5, pointRadius:0, fill:false },
-      { data:Array(labels.length).fill(augLine), borderColor:'rgba(183,148,246,0.4)', borderDash:[6,4], borderWidth:1.5, pointRadius:0, fill:false },
+      { data:paces, borderColor:'#b96a40', backgroundColor:'rgba(185,106,64,0.08)', borderWidth:2, pointRadius:4, pointBackgroundColor:'#b96a40', pointBorderColor:'#ffffff', pointBorderWidth:2, tension:0.35, fill:true },
+      { data:Array(labels.length).fill(aprLine), borderColor:'rgba(185,106,64,0.35)', borderDash:[6,4], borderWidth:1.5, pointRadius:0, fill:false },
+      { data:Array(labels.length).fill(augLine), borderColor:'rgba(102,96,182,0.35)', borderDash:[6,4], borderWidth:1.5, pointRadius:0, fill:false },
     ]},
     options:{ ...cBase, scales:{ ...cBase.scales, y:{ ...cBase.scales.y, reverse:true, ticks:{ ...cBase.scales.y.ticks, callback:v=>{const m=Math.floor(v),s=Math.round((v-m)*60);return `${m}:${String(s).padStart(2,'0')}`;} } } } }
   });
@@ -1537,7 +2036,7 @@ function renderCharts() {
   const wks = Object.keys(weeks).sort().slice(-12);
   CH.vol = new Chart(document.getElementById('volChart'), {
     type:'bar',
-    data:{ labels:wks.map(k=>k.slice(5)), datasets:[{ data:wks.map(k=>+weeks[k].toFixed(1)), backgroundColor:'rgba(96,165,250,0.35)', borderColor:'#60A5FA', borderWidth:1, borderRadius:6, borderSkipped:false }] },
+    data:{ labels:wks.map(k=>k.slice(5)), datasets:[{ data:wks.map(k=>+weeks[k].toFixed(1)), backgroundColor:'rgba(88,126,168,0.25)', borderColor:'#587ea8', borderWidth:1, borderRadius:6, borderSkipped:false }] },
     options:{ ...cBase }
   });
 }
