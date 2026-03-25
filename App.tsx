@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import './src_styles.css';
 import FamilyTree from './components/FamilyTree';
-import PersonPanel from './components/PersonPanel';
 import PersonRecordPage from './components/PersonRecordPage';
+import TreePreview from './components/TreePreview';
 import {
   defaultPersonId,
   familyBranches,
   familyPeople,
-  getBranchById,
   getFamilyPersonById,
-  primaryBranches,
 } from './data/familyTree';
 
 type ViewMode = 'tree' | 'record';
@@ -39,27 +37,15 @@ const writeRoute = (next: RouteState, mode: 'push' | 'replace') => {
   window.history[method]({}, '', `${url.pathname}${url.search}`);
 };
 
-const branchAccentColor: Record<string, string> = {
-  atkinson: '#2f5d50',
-  nealon: '#99633d',
-  shared: '#345061',
-};
-
 const ArchiveMenu: React.FC = () => (
   <details className="site-menu">
     <summary className="site-menu-button">Menu</summary>
     <div className="site-menu-popover">
-      <a className="site-menu-link" href="/" aria-current="page">
-        Family archive
-      </a>
-      <a className="site-menu-link" href={`/?person=${defaultPersonId}#tree`}>
-        Family tree
-      </a>
-      <a className="site-menu-link" href={`/?person=${defaultPersonId}#register`}>
-        Register
-      </a>
       <a className="site-menu-link" href="/dashboard.html">
         Training dashboard
+      </a>
+      <a className="site-menu-link" href="/family.html" aria-current="page">
+        Family tree
       </a>
     </div>
   </details>
@@ -68,7 +54,7 @@ const ArchiveMenu: React.FC = () => (
 const SiteHeader: React.FC<{ label: string; note: string }> = ({ label, note }) => (
   <header className="site-header">
     <div className="site-brand">
-      <a href="/" className="site-brand-mark">Dakibwa</a>
+      <a href="/dashboard.html" className="site-brand-mark">Dakibwa</a>
       <div className="site-brand-stack">
         <span className="site-brand-copy">{label}</span>
         <span className="site-brand-note">{note}</span>
@@ -81,6 +67,7 @@ const SiteHeader: React.FC<{ label: string; note: string }> = ({ label, note }) 
 
 const App: React.FC = () => {
   const [route, setRoute] = useState<RouteState>(() => readRoute());
+  const [hoveredPersonId, setHoveredPersonId] = useState<string | null>(null);
 
   useEffect(() => {
     const initial = readRoute();
@@ -91,20 +78,23 @@ const App: React.FC = () => {
   }, []);
 
   const selectedPerson = getFamilyPersonById(route.personId) || familyPeople[0];
+  const hoveredPerson = hoveredPersonId ? getFamilyPersonById(hoveredPersonId) : null;
+  const previewPerson =
+    hoveredPerson || (selectedPerson.id !== defaultPersonId || route.view === 'record' ? selectedPerson : null);
 
   useEffect(() => {
     document.title =
       route.view === 'record'
         ? `${selectedPerson.name} — Dakibwa`
-        : 'Dakibwa — Family Records';
+        : 'Dakibwa — Family Tree';
 
     const desc = document.querySelector('meta[name="description"]');
     if (desc) {
       desc.setAttribute(
         'content',
         route.view === 'record'
-          ? `${selectedPerson.name} — structured records for the Atkinson and Nealon lines.`
-          : 'Dakibwa is a clean archive of family records for the Atkinson and Nealon lines.'
+          ? `${selectedPerson.name} — a careful family record within the Dakibwa tree.`
+          : 'Dakibwa family tree. Hover-first records for the Atkinson and Nealon lines.'
       );
     }
 
@@ -137,7 +127,7 @@ const App: React.FC = () => {
       <div className="site-shell">
         <a className="skip-link" href="#main-content">Skip to content</a>
 
-        <SiteHeader label="Record view" note={selectedPerson.name} />
+        <SiteHeader label="Family tree" note={selectedPerson.name} />
 
         <PersonRecordPage
           person={selectedPerson}
@@ -157,147 +147,59 @@ const App: React.FC = () => {
     <div className="site-shell">
       <a className="skip-link" href="#main-content">Skip to content</a>
 
-      <SiteHeader label="Family records" note="Atkinson and Nealon lines." />
+      <SiteHeader label="Family tree" note="Hover to inspect. Click to pin." />
 
       <main id="main-content">
-        {/* Landing */}
-        <div className="landing">
-          <p className="landing-eyebrow">Structured family records</p>
-          <h1 className="landing-h1">One place for the Atkinson and Nealon lines.</h1>
-          <p className="landing-desc">
-            A clean interface for names, relationships, and verified records. Start with the tree,
-            open a person, and expand detail only when it is known.
-          </p>
-          <p className="landing-desc">
-            Quiet by design. The structure does the work, so the archive can grow without becoming noisy.
-          </p>
-          <div className="landing-actions">
-            <a className="btn btn-primary" href="#tree">Open the tree</a>
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => openRecord(defaultPersonId)}
-            >
-              Open Daniel&apos;s record
-            </button>
-            <a className="btn btn-secondary" href="/dashboard.html">
-              Open training dashboard
-            </a>
-          </div>
-
-          <div className="landing-stats" aria-label="Archive overview">
-            <div className="landing-stat">
-              <span className="landing-stat-value">{familyPeople.length}</span>
-              <span className="landing-stat-label">records</span>
+        <section className="tree-page">
+          <div className="tree-page-head">
+            <div>
+              <p className="tree-page-label">Ancillary family page</p>
+              <h1 className="tree-page-title">A quiet tree for the Atkinson and Nealon lines.</h1>
             </div>
-            <div className="landing-stat">
-              <span className="landing-stat-value">{primaryBranches.length}</span>
-              <span className="landing-stat-label">family lines</span>
-            </div>
-            <div className="landing-stat">
-              <span className="landing-stat-value">3</span>
-              <span className="landing-stat-label">generations</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Tree */}
-        <div className="section-block" id="tree">
-          <div className="section-head">
-            <p className="section-label">Tree</p>
-            <h2>Connected records</h2>
+            <p className="tree-page-copy">
+              The site now starts with training. This page stays focused on the tree itself:
+              hover to inspect, click to pin, and open a full record only when you want the extra context.
+            </p>
           </div>
 
-          <div className="tree-explorer">
-            <FamilyTree
-              people={familyPeople}
-              selectedId={selectedPerson.id}
-              onSelect={handleSelect}
-            />
-
-            <PersonPanel
-              selectedPerson={selectedPerson}
-              branches={familyBranches}
-              onSelect={handleSelect}
-              onOpenRecord={openRecord}
-              onReset={() => handleSelect(defaultPersonId)}
-              showReset={selectedPerson.id !== defaultPersonId}
-            />
-          </div>
-        </div>
-
-        {/* Branches */}
-        <div className="section-block" id="branches">
-          <div className="section-head">
-            <p className="section-label">Lines</p>
-            <h2>Two family branches</h2>
-          </div>
-
-          <div className="branches-grid">
-            {primaryBranches.map((branch) => (
-              <div key={branch.id} className="branch-card">
-                <div
-                  className="branch-card-accent"
-                  style={{ background: branchAccentColor[branch.id] || '#888' }}
-                />
-                <p className="branch-card-name">{branch.label}</p>
-                <p className="branch-card-strapline">{branch.strapline}</p>
-                <p className="branch-card-desc">{branch.description}</p>
+          <div className="tree-page-shell">
+            <div className="tree-stage-card">
+              <div className="tree-stage-topline">
+                <div className="tree-stage-pills">
+                  <span>Training-first home</span>
+                  <span>Hover-first records</span>
+                  <span>Living details kept minimal</span>
+                </div>
+                <p className="tree-stage-caption">Public additions stay out until they are clearly attributable.</p>
               </div>
-            ))}
-          </div>
-        </div>
 
-        {/* Register */}
-        <div className="section-block" id="register">
-          <div className="section-head">
-            <p className="section-label">Directory</p>
-            <h2>{familyPeople.length} records in the archive</h2>
-          </div>
+              <FamilyTree
+                people={familyPeople}
+                selectedId={selectedPerson.id}
+                hoveredId={hoveredPersonId}
+                onSelect={handleSelect}
+                onHover={setHoveredPersonId}
+              />
 
-          <table className="register-table">
-            <thead>
-              <tr>
-                <th aria-label="Branch indicator" />
-                <th>Name</th>
-                <th>Generation</th>
-                <th>Place</th>
-                <th>Record</th>
-              </tr>
-            </thead>
-            <tbody>
-              {familyPeople.map((person) => (
-                <tr
-                  key={person.id}
-                  className={`register-row branch-${person.branch}${person.id === selectedPerson.id ? ' is-selected' : ''}`}
-                >
-                  <td>
-                    <div
-                      className={`register-dot branch-dot-${person.branch}`}
-                      aria-hidden="true"
-                    />
-                  </td>
-                  <td>
-                    <button
-                      type="button"
-                      className="register-name-btn"
-                      onClick={() => openRecord(person.id)}
-                    >
-                      {person.name}
-                    </button>
-                  </td>
-                  <td className="register-muted">{person.generation}</td>
-                  <td className="register-muted">{person.location || '—'}</td>
-                  <td className="register-muted">{person.role}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              <TreePreview
+                person={previewPerson}
+                branches={familyBranches}
+                isHovering={Boolean(hoveredPerson)}
+                onSelect={handleSelect}
+                onOpenRecord={openRecord}
+              />
+            </div>
+
+            <p className="tree-page-research-note">
+              Research pass on March 25, 2026: I checked public web indexes cautiously and did not add any new
+              relatives without stronger documentary evidence.
+            </p>
+          </div>
+        </section>
       </main>
 
       <footer className="site-footer">
-        <p>Dakibwa. Structured family records with room to grow.</p>
+        <p>Dakibwa. Training first, with the family tree as a quiet secondary space.</p>
       </footer>
     </div>
   );

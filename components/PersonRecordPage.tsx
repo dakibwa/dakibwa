@@ -74,7 +74,45 @@ const PersonRecordPage: React.FC<PersonRecordPageProps> = ({ person, branches, o
       <div className="record-layout">
         <div>
           <p className="record-section-label">About this record</p>
-          <p className="record-about-text">{recordNote}</p>
+          <p className="record-about-text">{person.summary}</p>
+          <p className="record-about-text record-about-text--secondary">{recordNote}</p>
+
+          {person.facts.length > 0 ? (
+            <div className="record-detail-card">
+              <p className="record-section-label">Known facts</p>
+              <div className="record-detail-grid">
+                {person.facts.map((fact) => (
+                  <div key={`${person.id}:${fact.label}`} className="record-detail-item">
+                    <p className="record-detail-label">{fact.label}</p>
+                    <p className="record-detail-value">{fact.value}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          <div className="record-detail-card">
+            <p className="record-section-label">Research note</p>
+            <p className="record-about-text">{person.researchNote}</p>
+            {person.sources.length > 0 ? (
+              <div className="record-source-list">
+                {person.sources.map((source) => (
+                  <a
+                    key={`${person.id}:${source.url}`}
+                    className="record-source-item"
+                    href={source.url}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <span>{source.label}</span>
+                    <span>{source.note}</span>
+                  </a>
+                ))}
+              </div>
+            ) : (
+              <p className="record-source-empty">No public source is attached yet.</p>
+            )}
+          </div>
         </div>
 
         <div>
