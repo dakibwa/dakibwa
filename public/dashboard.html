@@ -4,6 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dan · 5K Training Dashboard</title>
+<meta name="description" content="Dakibwa training dashboard for runs, Whoop recovery, and adaptive weekly recommendations.">
+<meta name="theme-color" content="#f5f3ee">
+<link rel="canonical" href="https://akibwa.com/dashboard.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Dakibwa">
+<meta property="og:title" content="Dakibwa - Training dashboard">
+<meta property="og:description" content="A calm dashboard for runs, Whoop recovery, and adaptive weekly recommendations.">
+<meta property="og:url" content="https://akibwa.com/dashboard.html">
+<meta property="og:image" content="https://akibwa.com/og-dashboard.svg">
+<meta property="og:image:alt" content="Dakibwa training dashboard preview card">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Dakibwa - Training dashboard">
+<meta name="twitter:description" content="A calm dashboard for runs, Whoop recovery, and adaptive weekly recommendations.">
+<meta name="twitter:image" content="https://akibwa.com/og-dashboard.svg">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 /* ─── RESET & ROOT ─────────────────────────────────────────── */
@@ -492,9 +506,20 @@ header {
 .run-music.vis { display: block; }
 .music-inner { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .music-lbl { font-size: 0.66rem; color: var(--text3); flex-shrink: 0; letter-spacing: 0.3px; }
-.tpill { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.04); border-radius: 99px; padding: 3px 11px 3px 4px; font-size: 0.72rem; transition: background 0.2s ease; }
+.tpill { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.04); border-radius: 99px; padding: 4px 11px; font-size: 0.72rem; transition: background 0.2s ease; }
 .tpill:hover { background: rgba(255,255,255,0.07); }
-.tart { width: 20px; height: 20px; border-radius: 4px; object-fit: cover; background: rgba(255,255,255,0.06); flex-shrink: 0; }
+.tpill-note {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.06);
+  color: var(--text3);
+  font-size: 0.62rem;
+  flex-shrink: 0;
+}
 .tname { color: var(--text2); max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .more-t { font-size: 0.68rem; color: var(--text3); }
 
@@ -3366,14 +3391,13 @@ async function renderRuns() {
       const mel = document.getElementById('rm' + i);
       if (!mel || !tracks.length) continue;
       const pills = tracks.slice(0, 6).map(t => {
-        const img = t.image?.find(x => x.size === 'small')?.['#text'] || '';
         const artist = t.artist?.['#text'] || '';
         const title = esc(t.name);
         const sub = artist ? `<span style="color:var(--text3);margin-left:1px">${esc(artist)}</span>` : '';
-        return `<div class="tpill">${img ? `<img class="tart" src="${img}" onerror="this.style.display='none'">` : ''}<span class="tname">${title}</span>${sub}</div>`;
+        return `<div class="tpill"><span class="tpill-note" aria-hidden="true">♪</span><span class="tname">${title}</span>${sub}</div>`;
       }).join('');
       const more = tracks.length > 6 ? `<span class="more-t">+${tracks.length - 6} more</span>` : '';
-      mel.innerHTML = `<div class="music-inner"><span class="music-lbl">🎵 Listening</span>${pills}${more}</div>`;
+      mel.innerHTML = `<div class="music-inner"><span class="music-lbl">During this run</span>${pills}${more}</div>`;
       mel.classList.add('vis');
     }
   }
