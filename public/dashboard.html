@@ -1583,7 +1583,7 @@ body {
     <div class="goal-prog-bg"><div class="goal-prog-fill" id="barApr" style="width:0%"></div></div>
     <div class="goal-insight">
       <span class="ico">⚡</span>
-      <span id="insApr">Load your data to see a personalised week-by-week breakdown.</span>
+      <span id="insApr">Load your data to see a clearer week-by-week breakdown.</span>
     </div>
   </div>
 
@@ -1610,24 +1610,24 @@ body {
 </div>
 
 <!-- ══════════════════════════════════════════════
-     TODAY'S FOCUS + WHOOP RECOVERY COMBINED
+     TODAY'S TRAINING DECISION + WHOOP RECOVERY
 ══════════════════════════════════════════════ -->
 <div class="today-card">
   <div class="today-left">
     <div class="today-emo" id="todayEmo">📋</div>
     <div class="today-body">
       <div class="coach-kicker-row">
-        <div class="today-eyebrow">Adaptive Recommendation</div>
+        <div class="today-eyebrow">Training decision</div>
         <div class="coach-chip-row">
           <span class="coach-chip coach-chip--strong" id="coachTypeChip">Awaiting data</span>
-          <span class="coach-chip" id="coachConfidenceChip">Confidence —</span>
+          <span class="coach-chip" id="coachConfidenceChip">Recent data</span>
         </div>
       </div>
-      <div class="today-title" id="todayTitle">Connect your data to get a personalised recommendation</div>
-      <div class="today-desc" id="todayDesc">Your training insight will appear here once Strava is connected or demo data is loaded.</div>
+      <div class="today-title" id="todayTitle">Connect your data to see today's training decision</div>
+      <div class="today-desc" id="todayDesc">Your training view will appear here once Strava is connected or demo data is loaded.</div>
       <div class="coach-prescription">
-        <div class="coach-prescription-label">Session Prescription</div>
-        <div class="coach-prescription-copy" id="coachWorkout">Connect your data and the dashboard will turn your recent load and recovery into a workout recommendation.</div>
+        <div class="coach-prescription-label">Today's session</div>
+        <div class="coach-prescription-copy" id="coachWorkout">Connect your data and the dashboard will use recent load and recovery to suggest today's session.</div>
       </div>
       <div class="coach-evidence-grid">
         <div class="coach-evidence-card">
@@ -1643,14 +1643,14 @@ body {
         <div class="coach-evidence-card">
           <span>Training Need</span>
           <strong id="coachEvidenceNeed">—</strong>
-          <p id="coachEvidenceNeedSub">The model will explain what your week needs next.</p>
+          <p id="coachEvidenceNeedSub">The dashboard will show what your week needs next.</p>
         </div>
       </div>
       <div class="coach-note-grid">
         <div class="coach-note-card">
-          <div class="coach-note-label">Why Today</div>
+          <div class="coach-note-label">Why this call</div>
           <div class="coach-note-list" id="coachWhy">
-            <div class="coach-note-empty">The reasoning will appear here once your recent runs are loaded.</div>
+            <div class="coach-note-empty">The key signals will appear here once your recent runs are loaded.</div>
           </div>
         </div>
         <div class="coach-note-card">
@@ -2950,7 +2950,7 @@ function renderGoals() {
   document.getElementById('barAug').style.width = Math.min(100, Math.round(augDone/augGap*100)) + '%';
 }
 
-// ─── ADAPTIVE COACH ───────────────────────────────────────────
+// ─── TODAY'S TRAINING DECISION ────────────────────────────────
 const SESSION_LIBRARY = {
   rest: {
     emoji: '🛌',
@@ -2970,7 +2970,7 @@ const SESSION_LIBRARY = {
     emoji: '🔥',
     chip: 'Steady / tempo',
     title: 'Use your readiness for controlled threshold work',
-    summary: () => 'You look ready for quality, but the model prefers controlled work over a maximal session today.',
+    summary: () => 'You look ready to train well, but today is better suited to controlled threshold work than a maximal session.',
     prescription: () => `Warm up 15 min, then run 20–25 min steady at about ${paceBand(1.06, 1.14)}, then cool down 10 min easy.`,
   },
   quality: {
@@ -2984,7 +2984,7 @@ const SESSION_LIBRARY = {
     emoji: '🏔️',
     chip: 'Long aerobic',
     title: 'Top up durability with an easy long run',
-    summary: () => 'The model sees room to build aerobic durability without overreaching.',
+    summary: () => 'There is room to build aerobic durability without overreaching.',
     prescription: () => `Run 70–90 min easy at roughly ${paceBand(1.22, 1.42)}. Keep the effort calm all the way through.`,
   },
 };
@@ -3195,7 +3195,7 @@ function buildTrainingIntelligence() {
 
   if (consistency < 0.5) {
     note('easy', 5, 'Consistency is still worth prioritising over chasing big single sessions.');
-    note('quality', -3, 'The engine prefers frequency before adding more intensity.');
+    note('quality', -3, 'Frequency still matters more than adding extra intensity right now.');
   }
 
   const watchouts = [];
@@ -3203,7 +3203,7 @@ function buildTrainingIntelligence() {
   if (sleepPct != null && sleepPct < 80) watchouts.push(`Sleep scored ${sleepPct}%, so keep the warm-up honest and reduce intensity if legs feel flat.`);
   if (loadState === 'Heavy') watchouts.push(`Recent weighted load is elevated at ${loadRatio.toFixed(2)}× your short baseline.`);
   if (daysSinceQuality < 2) watchouts.push('Your last quality session is still very recent, so do not force another maximal effort.');
-  if (A.runs.length < 12) watchouts.push('The model has a short history window, so recommendations are less personalised than they will become.');
+  if (A.runs.length < 12) watchouts.push('The history window is still short, so today’s call has less context than it will later.');
 
   const ranked = Object.entries(buckets)
     .map(([key, value]) => ({ key, score: value.score, reasons: value.reasons.sort((a, b) => b.points - a.points) }))
@@ -3212,23 +3212,9 @@ function buildTrainingIntelligence() {
   const secondary = ranked[1];
   const topReasonTexts = primary.reasons.filter((reason) => reason.points > 0).slice(0, 3).map((reason) => reason.text);
 
-  const confidence = Math.round(clamp(
-    44 +
-    Math.min(16, A.runs.length * 0.5) +
-    (latestRecoveryScore != null ? 12 : 0) +
-    Math.min(10, recentWeeks.length * 2) +
-    clamp((primary.score - secondary.score) * 2, 0, 16) -
-    watchouts.length * 3,
-    42,
-    91
-  ));
-  const confidenceLabel = confidence >= 80 ? 'High' : confidence >= 65 ? 'Medium' : 'Cautious';
-
   return {
     primary: primary.key,
     secondary: secondary?.key || 'easy',
-    confidence,
-    confidenceLabel,
     reasons: topReasonTexts,
     watchouts,
     readinessScore,
@@ -3248,6 +3234,7 @@ function buildTrainingIntelligence() {
     rhr,
     sleepPct,
     strain,
+    recentRunCount: recent42.length,
   };
 }
 
@@ -3266,17 +3253,17 @@ function renderToday() {
   if (!intelligence) {
     document.getElementById('todayEmo').textContent = '📋';
     document.getElementById('coachTypeChip').textContent = 'Awaiting data';
-    document.getElementById('coachConfidenceChip').textContent = 'Confidence —';
-    document.getElementById('todayTitle').textContent = 'Connect your data to get a personalised recommendation';
-    document.getElementById('todayDesc').textContent = 'Your training insight will appear here once Strava is connected or demo data is loaded.';
-    document.getElementById('coachWorkout').textContent = 'Connect your data and the dashboard will turn your recent load and recovery into a workout recommendation.';
+    document.getElementById('coachConfidenceChip').textContent = 'Recent data';
+    document.getElementById('todayTitle').textContent = 'Connect your data to see today\'s training decision';
+    document.getElementById('todayDesc').textContent = 'Your training view will appear here once Strava is connected or demo data is loaded.';
+    document.getElementById('coachWorkout').textContent = 'Connect your data and the dashboard will use recent load and recovery to suggest today\'s session.';
     document.getElementById('coachEvidenceReadiness').textContent = '—';
     document.getElementById('coachEvidenceReadinessSub').textContent = 'Needs Strava and Whoop data.';
     document.getElementById('coachEvidenceLoad').textContent = '—';
     document.getElementById('coachEvidenceLoadSub').textContent = 'Recent load analysis appears here.';
     document.getElementById('coachEvidenceNeed').textContent = '—';
-    document.getElementById('coachEvidenceNeedSub').textContent = 'The model will explain what your week needs next.';
-    renderCoachList('coachWhy', [], 'The reasoning will appear here once your recent runs are loaded.');
+    document.getElementById('coachEvidenceNeedSub').textContent = 'The dashboard will show what your week needs next.';
+    renderCoachList('coachWhy', [], 'The key signals will appear here once your recent runs are loaded.');
     renderCoachList('coachWatch', [], 'Any caution flags will appear here.');
     return;
   }
@@ -3289,7 +3276,7 @@ function renderToday() {
 
   document.getElementById('todayEmo').textContent = session.emoji;
   document.getElementById('coachTypeChip').textContent = session.chip;
-  document.getElementById('coachConfidenceChip').textContent = `Confidence ${intelligence.confidenceLabel} · ${intelligence.confidence}%`;
+  document.getElementById('coachConfidenceChip').textContent = intelligence.recentRunCount < 12 ? 'Short history' : 'Recent data';
   document.getElementById('todayTitle').textContent = session.title;
   document.getElementById('todayDesc').textContent = `${session.summary(intelligence)}${summaryTail}`;
   document.getElementById('coachWorkout').textContent = session.prescription(intelligence);
@@ -3308,10 +3295,10 @@ function renderToday() {
     why.push(
       intelligence.performanceDelta > 0
         ? `Your recent 5K trend is moving in the right direction by about ${intelligence.performanceDelta}s over the prior block.`
-        : `Your recent 5K trend is softer than the prior block, so the engine is leaning toward sustainable progress.`
+        : `Your recent 5K trend is softer than the prior block, so the dashboard is leaning toward sustainable progress.`
     );
   }
-  renderCoachList('coachWhy', why.slice(0, 4), 'The reasoning will appear here once your recent runs are loaded.');
+  renderCoachList('coachWhy', why.slice(0, 4), 'The key signals will appear here once your recent runs are loaded.');
   renderCoachList('coachWatch', intelligence.watchouts.slice(0, 4), 'No strong caution flags today.');
 }
 
