@@ -42,6 +42,7 @@
 
     <nav class="wiki-topbar-links" aria-label="Project utilities">
       <a class="topbar-link" href="#overview" data-nav-section="overview">Main page</a>
+      <button class="topbar-link" type="button" data-wiki-path="Indexes/world-map.md">World map</button>
       <a class="topbar-link" href="#people" data-nav-section="people">People</a>
       <a class="topbar-link" href="#journal" data-nav-section="journal">Journal</a>
     </nav>
@@ -62,6 +63,7 @@
       <nav class="sidebar-panel" aria-label="Knowledge areas">
         <h2 class="sidebar-heading">Navigation</h2>
         <a class="drawer-link" href="#overview" data-nav-section="overview">Main page</a>
+        <button class="drawer-link" type="button" data-wiki-path="Indexes/world-map.md">World map</button>
         <a class="drawer-link" href="#profile" data-nav-section="profile">Profile</a>
         <a class="drawer-link" href="#people" data-nav-section="people">People</a>
         <a class="drawer-link" href="#journal" data-nav-section="journal">Journal</a>
@@ -106,6 +108,7 @@
           A private agent-readable life knowledge base built from your documents and current work.
         </p>
         <p class="article-meta" id="pageMeta"></p>
+        <div class="page-graph-strip" id="pageGraphStrip"></div>
       </header>
 
       <div class="article-layout">
@@ -493,6 +496,10 @@
         </article>
 
         <aside class="wiki-right-rail">
+          <section class="wiki-panel wiki-panel-graph">
+            <h2 class="wiki-panel-heading">World model</h2>
+            <div id="graphRail"></div>
+          </section>
 
           <section class="wiki-panel wiki-panel-appearance">
             <h2 class="wiki-panel-heading">Appearance</h2>

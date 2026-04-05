@@ -449,6 +449,12 @@ function wikiSources(data) {
   return Array.isArray(data?.aiContext?.sources) ? data.aiContext.sources : [];
 }
 
+function wikiGraph(data) {
+  return data?.aiContext?.graph && typeof data.aiContext.graph === 'object'
+    ? data.aiContext.graph
+    : {};
+}
+
 function wikiPageByPath(data, path) {
   if (!path) return null;
   return wikiPages(data).find((page) => page.path === path) || null;
@@ -1337,6 +1343,12 @@ function renderError(data) {
   if (el('pageContents')) {
     el('pageContents').innerHTML = '<div class="empty-state">No page contents available.</div>';
   }
+  if (el('pageGraphStrip')) {
+    el('pageGraphStrip').innerHTML = '';
+  }
+  if (el('graphRail')) {
+    el('graphRail').innerHTML = '<div class="empty-state">World model unavailable.</div>';
+  }
   if (el('pageRelated')) {
     el('pageRelated').innerHTML = '<div class="empty-state">No related pages available.</div>';
   }
@@ -1566,6 +1578,124 @@ function buildPageRelated(section) {
   return items.length
     ? items.map((item) => wikiLinkButton(item, pageName(item))).join('')
     : '<div class="empty-state">No related pages surfaced for this article yet.</div>';
+}
+
+function buildGraphRail(data) {
+  if (!data) {
+    return '<div class="empty-state">World model unavailable.</div>';
+  }
+
+  const graph = wikiGraph(data);
+  const summary = graph.summary || {};
+  if (!summary.node_count) {
+    return '<div class="empty-state">The world model has not been generated yet.</div>';
+  }
+
+  const hubButtons = [
+    wikiButtonForPath('Indexes/world-map.md', 'Open world map', 'wiki-link-button'),
+    ...(graph.hub_pages || []).slice(0, 5).map((item) => wikiButtonForPath(item.path, item.title || titleForPath(item.path, data), 'wiki-link-button')),
+  ].filter(Boolean);
+  const clusters = Object.entries(summary.cluster_counts || {})
+    .sort((left, right) => right[1] - left[1])
+    .slice(0, 5);
+
+  return `
+    <div class="graph-rail">
+      <p class="graph-rail-lead">A typed world model now sits underneath the site, so people, homes, work, money, philosophy, and events are linked instead of stranded on separate tabs.</p>
+      <div class="graph-stat-grid">
+        <div class="graph-stat-card">
+          <span class="graph-stat-label">Nodes</span>
+          <span class="graph-stat-value">${escapeHtml(String(summary.node_count || 0))}</span>
+        </div>
+        <div class="graph-stat-card">
+          <span class="graph-stat-label">Edges</span>
+          <span class="graph-stat-value">${escapeHtml(String(summary.edge_count || 0))}</span>
+        </div>
+        <div class="graph-stat-card">
+          <span class="graph-stat-label">People cluster</span>
+          <span class="graph-stat-value">${escapeHtml(String(summary.cluster_counts?.people || 0))}</span>
+        </div>
+        <div class="graph-stat-card">
+          <span class="graph-stat-label">Portfolio</span>
+          <span class="graph-stat-value">${escapeHtml(summary.current_portfolio_value_gbp ? compactGbp.format(summary.current_portfolio_value_gbp) : '—')}</span>
+        </div>
+      </div>
+      <p class="graph-rail-copy">${escapeHtml(
+        [
+          summary.current_role ? `${summary.current_role} at ${summary.current_employer || 'current employer'}` : '',
+          summary.current_residence ? `home base ${summary.current_residence}` : '',
+        ].filter(Boolean).join(' · ')
+      )}</p>
+      <div class="graph-rail-links">${hubButtons.join('')}</div>
+      ${clusters.length ? `
+        <div class="graph-cluster-list">
+          ${clusters.map(([name, value]) => `
+            <div class="graph-cluster-row">
+              <span class="graph-cluster-name">${escapeHtml(humanizeKey(name))}</span>
+              <span class="graph-cluster-value">${escapeHtml(String(value))}</span>
+            </div>
+          `).join('')}
+        </div>
+      ` : ''}
+    </div>
+  `;
+}
+
+function buildPageGraphStrip(section, data) {
+  if (!data) return '';
+
+  const graph = wikiGraph(data);
+  const summary = graph.summary || {};
+  if (!summary.node_count) return '';
+
+  const record = currentWikiRecord(data);
+  const activePerson = section === 'people' ? selectedPerson(data) : null;
+  const pills = [wikiButtonForPath('Indexes/world-map.md', 'Open world map', 'wiki-link-button')];
+  let copy = `${summary.node_count} nodes and ${summary.edge_count} edges are currently linking the life model together.`;
+
+  if (state.activeWikiPath === 'Indexes/world-map.md') {
+    copy = `This is the graph hub: ${summary.node_count} nodes and ${summary.edge_count} typed links spanning people, places, work, money, philosophy, and events.`;
+    (graph.hub_pages || []).slice(0, 3).forEach((item) => {
+      pills.push(wikiButtonForPath(item.path, item.title || titleForPath(item.path, data), 'wiki-link-button'));
+    });
+  } else if (state.activeWikiPath && record) {
+    copy = `${record.title || titleForPath(record.path, data)} currently has ${(record.related_paths || []).length} direct links, ${(record.incoming_paths || []).length} incoming links, and ${(record.source_keys || []).length} declared source groups.`;
+    (record.related_paths || []).slice(0, 3).forEach((path) => {
+      pills.push(wikiButtonForPath(path, titleForPath(path, data), 'wiki-link-button'));
+    });
+  } else if (section === 'people') {
+    copy = activePerson
+      ? `${activePerson.name} sits inside the relationship layer with ${activePerson.mentions || 0} surfaced mentions and cross-links into the wider people and influence graph.`
+      : `${(graph.relationship_threads || []).length || 0} relationship threads are currently connecting Daniel to family, friends, mentors, work ties, and romantic figures.`;
+    pills.push(wikiButtonForPath('Domains/people.md', 'People layer', 'wiki-link-button'));
+    pills.push(wikiButtonForPath('Concepts/influence-map.md', 'Influence map', 'wiki-link-button'));
+  } else if (section === 'employment') {
+    copy = `${(graph.work_threads || []).length || 0} work threads currently connect roles, employers, offices, and cities into one visible career chain.`;
+    pills.push(wikiButtonForPath('Concepts/career-arc.md', 'Career arc', 'wiki-link-button'));
+    pills.push(wikiButtonForPath('Places/leeds.md', 'Leeds', 'wiki-link-button'));
+  } else if (section === 'finances' || section === 'investments') {
+    copy = `${(graph.money_threads || []).length || 0} money threads currently tie together holdings, cash, and the wider financial-position concept.`;
+    pills.push(wikiButtonForPath('Concepts/financial-position.md', 'Financial position', 'wiki-link-button'));
+    pills.push(wikiButtonForPath('Domains/investments.md', 'Investments', 'wiki-link-button'));
+  } else if (section === 'profile' || section === 'creative' || section === 'soul') {
+    copy = `${(graph.philosophy_threads || []).length || 0} philosophy threads and ${(graph.influence_threads || []).length || 0} influence threads are now part of the explicit worldview layer.`;
+    pills.push(wikiButtonForPath('Concepts/north-star.md', 'North star', 'wiki-link-button'));
+    pills.push(wikiButtonForPath('Concepts/influence-map.md', 'Influence map', 'wiki-link-button'));
+  } else if (section === 'journal') {
+    copy = `${(graph.event_threads || []).length || 0} event threads and ${(graph.place_threads || []).length || 0} place threads are now being pulled out of the journal into reusable pages.`;
+    pills.push(wikiButtonForPath('Events/austria-leg-of-the-2019-run.md', 'Austria event', 'wiki-link-button'));
+    pills.push(wikiButtonForPath('Places/london.md', 'London', 'wiki-link-button'));
+  } else {
+    (graph.hub_pages || []).slice(0, 3).forEach((item) => {
+      pills.push(wikiButtonForPath(item.path, item.title || titleForPath(item.path, data), 'wiki-link-button'));
+    });
+  }
+
+  return `
+    <p class="page-graph-strip-label">World model</p>
+    <p class="page-graph-strip-copy">${escapeHtml(copy)}</p>
+    <div class="page-graph-strip-pills">${pills.filter(Boolean).join('')}</div>
+  `;
 }
 
 function buildPageBacklinks(data) {
@@ -2040,6 +2170,12 @@ function updatePageChrome() {
       ? `Source updated ${sourceStamp}`
       : 'Loading latest document snapshot…';
   }
+  if (el('pageGraphStrip')) {
+    el('pageGraphStrip').innerHTML = buildPageGraphStrip(section, data);
+  }
+  if (el('graphRail')) {
+    el('graphRail').innerHTML = buildGraphRail(data);
+  }
   if (el('pageSummary')) {
     el('pageSummary').innerHTML = buildPageSummary(section, data);
   }
@@ -2075,7 +2211,9 @@ function updateSectionFrame() {
   }
 
   document.querySelectorAll('.drawer-link, .sidebar-brand, .site-wordmark, .topbar-link').forEach((node) => {
-    node.classList.toggle('is-active', !state.activeWikiPath && node.dataset.navSection === section);
+    const matchesSection = !state.activeWikiPath && node.dataset.navSection === section;
+    const matchesWikiPath = Boolean(state.activeWikiPath && node.dataset.wikiPath === state.activeWikiPath);
+    node.classList.toggle('is-active', matchesSection || matchesWikiPath);
   });
   renderWikiBrowse(state.snapshot);
   updatePageChrome();
@@ -2099,7 +2237,7 @@ function closeDrawer() {
 }
 
 function hydrateDrawerState() {
-  state.drawerOpen = false;
+  state.drawerOpen = desktopDrawerAllowed();
   setDrawerOpen(state.drawerOpen);
 }
 
@@ -2918,7 +3056,7 @@ function wireNavigation() {
 
     event.preventDefault();
     setActiveSection(link.dataset.navSection, { scroll: true });
-    closeDrawer();
+    if (!desktopDrawerAllowed()) closeDrawer();
   });
 
   document.addEventListener('click', (event) => {
@@ -2930,7 +3068,7 @@ function wireNavigation() {
 
     event.preventDefault();
     setActivePerson(link.dataset.personSlug, { scroll: true });
-    closeDrawer();
+    if (!desktopDrawerAllowed()) closeDrawer();
   });
 
   document.addEventListener('click', (event) => {
@@ -2942,7 +3080,7 @@ function wireNavigation() {
 
     event.preventDefault();
     setActiveWikiPath(link.dataset.wikiPath, { scroll: true });
-    closeDrawer();
+    if (!desktopDrawerAllowed()) closeDrawer();
   });
 
   document.addEventListener('click', (event) => {
@@ -2973,7 +3111,7 @@ function wireNavigation() {
     if (!firstVisible) return;
     event.preventDefault();
     firstVisible.click();
-    closeDrawer();
+    if (!desktopDrawerAllowed()) closeDrawer();
   });
 
   el('contentsToggle')?.addEventListener('click', () => {
@@ -3002,6 +3140,9 @@ function wireNavigation() {
   });
 
   window.addEventListener('resize', () => {
+    if (desktopDrawerAllowed()) {
+      state.drawerOpen = true;
+    }
     setDrawerOpen(state.drawerOpen);
   });
 }

@@ -15,7 +15,7 @@
   --wiki-success: #14866d;
   --wiki-danger: #b32424;
   --wiki-shadow: none;
-  --sidebar-width: 244px;
+  --sidebar-width: 286px;
   --rail-width: 320px;
   --layout-max: 1680px;
   --article-max: 920px;
@@ -71,6 +71,8 @@ button[data-nav-section],
 
 a:hover,
 button[data-nav-section]:hover,
+.topbar-link:hover,
+.drawer-link:hover,
 .contents-link:hover,
 .wiki-link-button:hover,
 .running-source-link:hover,
@@ -214,6 +216,9 @@ body[data-drawer="open"] .drawer-scrim {
 }
 
 .topbar-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
   color: var(--wiki-link);
   text-decoration: none;
   font-size: 0.88rem;
@@ -350,9 +355,13 @@ body[data-drawer="open"] .drawer-scrim {
 
 .drawer-link {
   display: block;
+  width: 100%;
   padding: 4px 2px;
+  border: 0;
+  background: none;
   color: var(--wiki-link);
   text-decoration: none;
+  text-align: left;
   font-size: 0.92rem;
 }
 
@@ -412,6 +421,74 @@ body[data-drawer="open"] .drawer-scrim {
   color: var(--wiki-text-muted);
   font-size: 0.76rem;
   line-height: 1.35;
+}
+
+.graph-rail {
+  display: grid;
+  gap: 14px;
+}
+
+.graph-rail-lead,
+.graph-rail-copy {
+  margin: 0;
+  font-size: 0.88rem;
+}
+
+.graph-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.graph-stat-card {
+  padding: 9px 10px;
+  border: 1px solid var(--wiki-divider);
+  background: var(--wiki-surface-subtle);
+}
+
+.graph-stat-label {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--wiki-text-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.graph-stat-value {
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.graph-rail-links,
+.graph-cluster-list {
+  display: grid;
+  gap: 8px;
+}
+
+.graph-cluster-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--wiki-divider);
+  font-size: 0.84rem;
+}
+
+.graph-cluster-row:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.graph-cluster-name {
+  color: var(--wiki-text-muted);
+}
+
+.graph-cluster-value {
+  font-weight: 700;
 }
 
 .page-contents {
@@ -526,6 +603,37 @@ body[data-drawer="open"] .drawer-scrim {
 .article-meta {
   margin: 0;
   font-size: 0.88rem;
+}
+
+.page-graph-strip {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 14px 16px;
+  border: 1px solid var(--wiki-border-light);
+  background:
+    linear-gradient(135deg, rgba(51, 102, 204, 0.06), rgba(39, 82, 70, 0.04)),
+    var(--wiki-surface);
+}
+
+.page-graph-strip-label {
+  margin: 0;
+  color: var(--wiki-text-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.page-graph-strip-copy {
+  margin: 0;
+  font-size: 0.94rem;
+}
+
+.page-graph-strip-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .article-layout {
@@ -1616,6 +1724,20 @@ body[data-life-view="home"] .article-body-shell {
   }
 }
 
+@media (min-width: 1121px) {
+  .wiki-sidebar {
+    width: var(--sidebar-width);
+  }
+
+  .wiki-main {
+    transition: padding-left 160ms ease;
+  }
+
+  .wiki-layout.is-open .wiki-main {
+    padding-left: calc(var(--sidebar-width) + 28px);
+  }
+}
+
 @media (max-width: 980px) {
   .wiki-topbar {
     grid-template-columns: auto 1fr;
@@ -1641,6 +1763,10 @@ body[data-life-view="home"] .article-body-shell {
 
   .wiki-left-rail {
     display: none;
+  }
+
+  .graph-stat-grid {
+    grid-template-columns: 1fr;
   }
 }
 
