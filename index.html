@@ -3,36 +3,116 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dakibwa</title>
-    <meta name="description" content="Dakibwa redirects to the training dashboard, with the family tree available as a secondary page." />
-    <meta name="theme-color" content="#ffffff" />
+    <title>Akibwa</title>
+    <meta
+      name="description"
+      content="Akibwa is being rebuilt as a private local-first personal knowledge system."
+    />
+    <meta name="theme-color" content="#f4efe2" />
     <link rel="canonical" href="https://akibwa.com/" />
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Dakibwa" />
-    <meta property="og:title" content="Dakibwa - Training dashboard" />
-    <meta property="og:description" content="A calm dashboard for runs, recovery, and weekly training decisions." />
+    <meta property="og:site_name" content="Akibwa" />
+    <meta property="og:title" content="Akibwa" />
+    <meta
+      property="og:description"
+      content="A private local-first personal knowledge system is currently being built."
+    />
     <meta property="og:url" content="https://akibwa.com/" />
-    <meta property="og:image" content="https://akibwa.com/og-dashboard.svg" />
-    <meta property="og:image:alt" content="Dakibwa training dashboard preview card" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Dakibwa - Training dashboard" />
-    <meta name="twitter:description" content="A calm dashboard for runs, recovery, and weekly training decisions." />
-    <meta name="twitter:image" content="https://akibwa.com/og-dashboard.svg" />
-    <meta http-equiv="refresh" content="0; url=/dashboard.html" />
-    <script>
-      (function () {
-        const params = new URLSearchParams(window.location.search);
-        const wantsFamilyPage = params.has('person') || params.get('view') === 'record';
-        const target = wantsFamilyPage
-          ? `/family.html${window.location.search}${window.location.hash}`
-          : '/dashboard.html';
-        window.location.replace(target);
-      })();
-    </script>
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Akibwa" />
+    <meta
+      name="twitter:description"
+      content="A private local-first personal knowledge system is currently being built."
+    />
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f4efe2;
+        --card: rgba(255, 252, 244, 0.9);
+        --ink: #23362c;
+        --muted: #6f786e;
+        --line: rgba(35, 54, 44, 0.12);
+        --accent: #2f614f;
+        --shadow: 0 30px 80px rgba(96, 87, 58, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at top, rgba(206, 180, 105, 0.16), transparent 35%),
+          linear-gradient(180deg, #f7f3e8 0%, var(--bg) 100%);
+      }
+
+      main {
+        width: min(720px, 100%);
+      }
+
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 32px;
+        box-shadow: var(--shadow);
+        padding: 40px 36px;
+        backdrop-filter: blur(18px);
+      }
+
+      .eyebrow {
+        margin: 0 0 14px;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(3rem, 8vw, 5.75rem);
+        line-height: 0.92;
+        font-weight: 500;
+        letter-spacing: -0.05em;
+      }
+
+      p {
+        margin: 22px 0 0;
+        max-width: 38rem;
+        font-size: 1.08rem;
+        line-height: 1.7;
+        color: var(--muted);
+      }
+
+      .note {
+        margin-top: 26px;
+        padding-top: 20px;
+        border-top: 1px solid var(--line);
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 0.95rem;
+        color: var(--accent);
+      }
+    </style>
   </head>
   <body>
-    <p style="font-family: Inter, system-ui, sans-serif; padding: 24px;">
-      Redirecting…
-    </p>
+    <main>
+      <section class="card">
+        <p class="eyebrow">Akibwa</p>
+        <h1>Private system in progress.</h1>
+        <p>
+          Akibwa is currently being rebuilt as a local-first personal knowledge system.
+          The working interface and data layers are staying private for now.
+        </p>
+        <p class="note">Public site placeholder only.</p>
+      </section>
+    </main>
   </body>
 </html>
