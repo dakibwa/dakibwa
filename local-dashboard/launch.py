@@ -3638,6 +3638,7 @@ def _world_map_add_edge(edges, seen, source, relation, target, note='', source_k
 
 def _build_world_map(snapshot, domain_paths, concept_paths, person_paths, people_directory, article_specs):
     profile = snapshot.get('profile', {})
+    profile_library = snapshot.get('profileLibrary', {})
     work = snapshot.get('work', {})
     market = snapshot.get('marketPerformance', {})
     money = snapshot.get('money', {})
@@ -3645,6 +3646,13 @@ def _build_world_map(snapshot, domain_paths, concept_paths, person_paths, people
     running = snapshot.get('running', {})
     creative = snapshot.get('creative', {})
     full_name = _collapse_whitespace(profile.get('fullName', '')) or 'Daniel James Atkinson'
+    public_influences = profile_library.get('publicInfluences', []) or []
+    personal_influences = profile_library.get('personalInfluences', []) or []
+    person_slug_by_name = {
+        _collapse_whitespace(person.get('name', '')).lower(): person.get('slug', _slugify(person.get('name', '')))
+        for person in people_directory
+        if _collapse_whitespace(person.get('name', ''))
+    }
 
     nodes = {}
     edges = []
@@ -3662,6 +3670,7 @@ def _build_world_map(snapshot, domain_paths, concept_paths, person_paths, people
     )
 
     current_living = _collapse_whitespace(profile.get('currentLiving', ''))
+    current_residence_place = ''
     if current_living:
         residence_label = current_living.split('(')[0].strip().rstrip(',')
         residence_note = ''
@@ -3687,6 +3696,29 @@ def _build_world_map(snapshot, domain_paths, concept_paths, person_paths, people
             residence_note,
             source_keys=['inventory_workbook', 'finance_workbook'],
         )
+        residence_parts = [part.strip() for part in residence_label.split(',') if part.strip()]
+        broader_place = residence_parts[-1] if residence_parts else ''
+        broader_place = re.sub(r'\b[A-Z]{1,2}\d[\dA-Z]?\s*\d[A-Z]{2}\b', '', broader_place, flags=re.I).strip(' ,')
+        if broader_place:
+            current_residence_place = broader_place
+            _world_map_add_node(
+                nodes,
+                f"place:{_slugify(broader_place)}",
+                broader_place,
+                'place',
+                'places',
+                summary='Broader place extracted from the recorded current residence.',
+                source_keys=['inventory_workbook', 'finance_workbook'],
+            )
+            _world_map_add_edge(
+                edges,
+                seen_edges,
+                residence_label,
+                'sits within',
+                broader_place,
+                'Derived from the current residence string in the overview layer.',
+                source_keys=['inventory_workbook', 'finance_workbook'],
+            )
 
     hometown = _collapse_whitespace(profile.get('hometown', ''))
     if hometown:
@@ -3901,6 +3933,15 @@ def _build_world_map(snapshot, domain_paths, concept_paths, person_paths, people
             source_keys=['journal_doc'],
         )
     if 'Events/austria-leg-of-the-2019-run.md' in article_specs:
+        _world_map_add_node(
+            nodes,
+            'place:austria',
+            'Austria',
+            'place',
+            'places',
+            summary='Country-level setting for the strongest currently absorbed event page.',
+            source_keys=['journal_doc'],
+        )
         _world_map_add_edge(
             edges,
             seen_edges,
@@ -3949,6 +3990,54 @@ def _build_world_map(snapshot, domain_paths, concept_paths, person_paths, people
             name,
             ' '.join(part for part in note_parts if part).strip(),
             source_keys=['journal_doc', 'profile_ingests' if person.get('profileContext') else ''],
+        )
+
+    for influence in public_influences:
+        name = _collapse_whitespace(influence.get('name', ''))
+        if not name:
+            continue
+        _world_map_add_node(
+            nodes,
+            f"influence-public:{_slugify(name)}",
+            name,
+            'influence',
+            'philosophy',
+            summary='Named public influence from the profile-ingest layer.',
+            source_keys=['profile_ingests'],
+        )
+        _world_map_add_edge(
+            edges,
+            seen_edges,
+            full_name,
+            'is influenced by',
+            name,
+            influence.get('notes', '') or 'Named as a public influence in the profile layer.',
+            source_keys=['profile_ingests'],
+        )
+
+    for influence in personal_influences:
+        name = _collapse_whitespace(influence.get('name', ''))
+        if not name:
+            continue
+        matched_slug = person_slug_by_name.get(name.lower(), '')
+        if not matched_slug:
+            _world_map_add_node(
+                nodes,
+                f"influence-personal:{_slugify(name)}",
+                name,
+                'influence',
+                'people',
+                summary='Personally known influence named in the profile-ingest layer.',
+                source_keys=['profile_ingests'],
+            )
+        _world_map_add_edge(
+            edges,
+            seen_edges,
+            full_name,
+            'is shaped personally by',
+            name,
+            influence.get('whyInfluential', '') or influence.get('notes', '') or influence.get('relationship', ''),
+            source_keys=['profile_ingests'],
         )
 
     for item in work.get('history', []) or []:
@@ -4189,6 +4278,13 @@ def _build_world_map(snapshot, domain_paths, concept_paths, person_paths, people
             'to': current_living.split('(')[0].strip().rstrip(','),
             'note': current_living[current_living.find('(') + 1:current_living.rfind(')')].strip() if '(' in current_living and ')' in current_living else '',
         })
+        if current_residence_place:
+            residence_threads.append({
+                'from': current_living.split('(')[0].strip().rstrip(','),
+                'relation': 'sits within',
+                'to': current_residence_place,
+                'note': 'Broader place parsed from the current residence record.',
+            })
     if hometown:
         residence_threads.append({
             'from': full_name,
@@ -4261,6 +4357,27 @@ def _build_world_map(snapshot, domain_paths, concept_paths, person_paths, people
             'note': 'Creative fragments and essays surface recurring ideas.',
         })
 
+    influence_threads = [
+        {
+            'from': full_name,
+            'relation': 'is influenced by',
+            'to': _collapse_whitespace(item.get('name', '')),
+            'note': item.get('notes', '') or 'Named as a public influence in the profile layer.',
+        }
+        for item in public_influences
+        if _collapse_whitespace(item.get('name', ''))
+    ]
+    influence_threads.extend([
+        {
+            'from': full_name,
+            'relation': 'is shaped personally by',
+            'to': _collapse_whitespace(item.get('name', '')),
+            'note': item.get('whyInfluential', '') or item.get('notes', '') or item.get('relationship', ''),
+        }
+        for item in personal_influences
+        if _collapse_whitespace(item.get('name', ''))
+    ])
+
     event_threads = []
     if 'Events/austria-leg-of-the-2019-run.md' in article_specs:
         event_threads.extend([
@@ -4330,6 +4447,7 @@ def _build_world_map(snapshot, domain_paths, concept_paths, person_paths, people
         'work_threads': work_threads,
         'money_threads': money_threads,
         'philosophy_threads': philosophy_threads,
+        'influence_threads': influence_threads,
         'event_threads': event_threads,
         'page_candidates': page_candidates,
         'missing_nodes': missing_nodes,
@@ -4414,6 +4532,7 @@ def _build_ai_context_markdown(snapshot):
         'schema.md': 'Wiki maintenance rules',
         'log.md': 'Chronological wiki log',
         'Indexes/current-focus.md': 'Current focus index',
+        'Indexes/world-map.md': 'World map index',
         'Indexes/health-check.md': 'Health-check index',
         'Indexes/source-map.md': 'Source map',
         'Indexes/people-index.md': 'People index',
@@ -4446,6 +4565,7 @@ def _build_ai_context_markdown(snapshot):
                 domain_backlinks[domain_slug].append(concept_paths[concept_slug])
 
     article_specs = _build_supporting_article_specs(snapshot, domain_paths, concept_paths, person_paths, people_directory)
+    world_map = _build_world_map(snapshot, domain_paths, concept_paths, person_paths, people_directory, article_specs)
     extracted = _build_extracted_layer(
         snapshot,
         domain_titles,
@@ -4458,6 +4578,162 @@ def _build_ai_context_markdown(snapshot):
         person_paths,
         article_specs,
     )
+    world_map_source_keys = sorted({
+        key
+        for collection in (world_map.get('nodes', []), world_map.get('edges', []))
+        for item in collection
+        for key in item.get('source_keys', [])
+        if key
+    })
+    current_living = _collapse_whitespace(snapshot.get('profile', {}).get('currentLiving', ''))
+    current_work_summary = (snapshot.get('work', {}) or {}).get('summary', {}) if isinstance((snapshot.get('work', {}) or {}).get('summary', {}), dict) else {}
+    north_star_question = _collapse_whitespace((concepts.get('north-star', {}) or {}).get('structured_state', {}).get('question', ''))
+    world_map_source_notes = []
+    if current_living:
+        world_map_source_notes.append({
+            'date': '',
+            'title': 'Current residence',
+            'snippet': current_living,
+        })
+    if world_map.get('summary', {}).get('current_role'):
+        work_snippet = f"{world_map['summary'].get('current_role', '')} at {world_map['summary'].get('current_employer', '')}."
+        if current_work_summary.get('office_address'):
+            work_snippet = f"{work_snippet} Office: {current_work_summary.get('office_address', '')}."
+        if current_work_summary.get('working_pattern'):
+            work_snippet = f"{work_snippet} Pattern: {current_work_summary.get('working_pattern', '')}."
+        world_map_source_notes.append({
+            'date': '',
+            'title': 'Current work anchor',
+            'snippet': work_snippet.strip(),
+        })
+    if snapshot.get('marketPerformance', {}).get('ok'):
+        world_map_source_notes.append({
+            'date': snapshot.get('marketPerformance', {}).get('asOfDate', ''),
+            'title': 'Portfolio anchor',
+            'snippet': (
+                f"Tracked live market value £{float(snapshot.get('marketPerformance', {}).get('marketValueGbp', 0) or 0):,.2f} "
+                f"across {len(snapshot.get('marketPerformance', {}).get('positions', []) or [])} current holdings."
+            ),
+        })
+    if north_star_question:
+        world_map_source_notes.append({
+            'date': '',
+            'title': 'North star question',
+            'snippet': north_star_question,
+        })
+    for rel_path in ('Places/leeds.md', 'Places/london.md', 'Events/austria-leg-of-the-2019-run.md'):
+        source_note = ((article_specs.get(rel_path) or {}).get('source_notes') or [None])[0]
+        if source_note:
+            world_map_source_notes.append({
+                'date': source_note.get('date', ''),
+                'title': source_note.get('title', '') or (article_specs.get(rel_path) or {}).get('title', ''),
+                'snippet': source_note.get('snippet', ''),
+            })
+
+    leeds_source_notes = (article_specs.get('Places/leeds.md') or {}).get('source_notes') or []
+    london_source_notes = (article_specs.get('Places/london.md') or {}).get('source_notes') or []
+    austria_source_notes = (article_specs.get('Events/austria-leg-of-the-2019-run.md') or {}).get('source_notes') or []
+    world_map_quote_anchors = [
+        f"Leeds: \"{_truncate_text(leeds_source_notes[0].get('snippet', ''), limit=144)}\"" if leeds_source_notes else '',
+        f"London: \"{_truncate_text(london_source_notes[3].get('snippet', ''), limit=144)}\"" if len(london_source_notes) > 3 else '',
+        f"Austria: \"{_truncate_text(austria_source_notes[2].get('snippet', ''), limit=144)}\"" if len(austria_source_notes) > 2 else '',
+        f"North star: \"{_truncate_text(north_star_question, limit=144)}\"" if north_star_question else '',
+    ]
+    world_map_highlights = [
+        f"Current home base is recorded as {current_living}." if current_living else '',
+        (
+            f"Current work anchor is {world_map.get('summary', {}).get('current_role', '')} "
+            f"at {world_map.get('summary', {}).get('current_employer', '')}."
+        ).strip()
+        if world_map.get('summary', {}).get('current_role')
+        else '',
+        (
+            f"Live investments currently track £{float(world_map.get('summary', {}).get('current_portfolio_value_gbp', 0) or 0):,.2f} "
+            f"of market value and £{float(world_map.get('summary', {}).get('current_cash_gbp', 0) or 0):,.2f} in cash."
+        ),
+        (
+            f"The first graph pass currently contains {world_map.get('summary', {}).get('node_count', 0)} nodes "
+            f"and {world_map.get('summary', {}).get('edge_count', 0)} edges."
+        ),
+        'Leeds, London, and the Austria leg of the 2019 run now act as typed place-event anchors rather than buried references.',
+    ]
+    world_map_related_paths = list(dict.fromkeys([
+        'index.md',
+        'Domains/overview.md',
+        'Domains/people.md',
+        'Domains/employment.md',
+        'Domains/investments.md',
+        'Domains/soul.md',
+        'Concepts/north-star.md',
+        'Concepts/career-arc.md',
+        'Concepts/financial-position.md',
+        'Concepts/influence-map.md',
+        *[item.get('path', '') for item in world_map.get('hub_pages', []) if item.get('path')],
+        'Indexes/source-map.md',
+        'Indexes/backlinks.md',
+    ]))
+    world_map_body = '\n'.join([
+        '# World map',
+        '',
+        'This page is the first-pass knowledge graph for Akibwa. It maps the strongest current links across people, places, homes, work, money, philosophy, and defining events so the wiki can expand without losing the underlying shape.',
+        '',
+        'It is intentionally evidence-backed and specific. The links here are compiled from the normalized workbook, journal, profile-ingest, memory, and absorbed article layers rather than from a loose summary or a raw quote dump.',
+        '',
+        '## current_shape',
+        _bullet_markdown([
+            f"Current home base: {current_living}." if current_living else '',
+            (
+                f"Current work anchor: {world_map.get('summary', {}).get('current_role', '')} "
+                f"at {world_map.get('summary', {}).get('current_employer', '')}."
+            ).strip()
+            if world_map.get('summary', {}).get('current_role')
+            else '',
+            (
+                f"Current live portfolio value: £{float(world_map.get('summary', {}).get('current_portfolio_value_gbp', 0) or 0):,.2f}"
+                + (
+                    f" as of {snapshot.get('marketPerformance', {}).get('asOfDate', '')}."
+                    if snapshot.get('marketPerformance', {}).get('asOfDate')
+                    else '.'
+                )
+            )
+            if snapshot.get('marketPerformance', {}).get('ok')
+            else '',
+            (
+                f"Current graph size: {world_map.get('summary', {}).get('node_count', 0)} nodes and "
+                f"{world_map.get('summary', {}).get('edge_count', 0)} edges."
+            ),
+        ]),
+        '',
+        '## hub_pages',
+        _bullet_markdown([
+            f"{_relative_markdown_link('Indexes/world-map.md', item.get('path', ''), item.get('title', ''))} — {item.get('note', '')}".rstrip(' —')
+            for item in world_map.get('hub_pages', [])
+            if item.get('path')
+        ]),
+        '',
+        '## cluster_reads',
+        f"People: {len(world_map.get('relationship_threads', []) or [])} typed relationship threads currently connect Daniel to family, friends, mentors, work ties, and romantic figures.",
+        '',
+        'Places and homes: the graph currently anchors the recorded current home, its broader place node, the hometown record, the London hostel phase, and the page-backed Leeds and London city articles.',
+        '',
+        f"Work: {len(snapshot.get('work', {}).get('history', []) or [])} workbook roles currently form the career chain from Lloyds Banking Group through Vanquis Bank, Sky Betting & Gaming, Leeds Building Society, and National Wealth Fund.",
+        '',
+        f"Money: the graph currently links Financial position to {len(snapshot.get('marketPerformance', {}).get('positions', []) or [])} live holdings while keeping cash and liabilities inside the same frame.",
+        '',
+        'Philosophy: North star, Influence map, Media canon, Quote bank, and Creative practice act as the worldview spine, while named public and personal influences are now promoted into explicit relationship threads.',
+        '',
+        'Events: the Austria leg of the 2019 run is currently the strongest event node because it bridges travel, embodiment, hardship, and soul-language in a single absorbed page.',
+        '',
+        '## quote_anchors',
+        _bullet_markdown(world_map_quote_anchors),
+        '',
+        '## next_compilation_targets',
+        _bullet_markdown([
+            f"{item.get('title', '')} ({item.get('kind', '')}) — {item.get('reason', '')}"
+            for item in world_map.get('page_candidates', [])
+        ] + (world_map.get('missing_nodes', []) or [])),
+        '',
+    ])
 
     content_map = {}
     for slug, title in domain_titles.items():
@@ -4509,6 +4785,17 @@ def _build_ai_context_markdown(snapshot):
             source_catalog,
             extracted_rel_path=_extracted_rel_path_for_article(rel_path),
         )
+    content_map['Indexes/world-map.md'] = _decorate_knowledge_markdown(
+        snapshot,
+        'Indexes/world-map.md',
+        'World map',
+        'index',
+        world_map_source_keys,
+        world_map_related_paths,
+        ['index.md', 'Indexes/backlinks.md', 'Indexes/source-map.md'],
+        world_map_body,
+        source_catalog,
+    )
 
     page_catalog = []
     for slug, title in domain_titles.items():
@@ -4559,6 +4846,7 @@ def _build_ai_context_markdown(snapshot):
         '## indexes',
         '\n'.join([
             f"- {_relative_markdown_link('index.md', 'Indexes/current-focus.md', 'Current focus')}",
+            f"- {_relative_markdown_link('index.md', 'Indexes/world-map.md', 'World map')}",
             f"- {_relative_markdown_link('index.md', 'Indexes/source-map.md', 'Source map')}",
             f"- {_relative_markdown_link('index.md', 'Indexes/health-check.md', 'Health check')}",
             f"- {_relative_markdown_link('index.md', 'Indexes/domain-index.md', 'Domain index')}",
@@ -4596,6 +4884,7 @@ def _build_ai_context_markdown(snapshot):
             f"- {_relative_markdown_link('README.md', 'index.md', 'index.md')}",
             f"- {_relative_markdown_link('README.md', 'Indexes/article-index.md', 'article-index.md')}",
             f"- {_relative_markdown_link('README.md', 'Indexes/current-focus.md', 'current-focus.md')}",
+            f"- {_relative_markdown_link('README.md', 'Indexes/world-map.md', 'world-map.md')}",
             f"- {_relative_markdown_link('README.md', 'Indexes/health-check.md', 'health-check.md')}",
             f"- {_relative_markdown_link('README.md', 'Outputs/current-brief.md', 'current-brief.md')}",
             '- `../Extracted/index.json`',
@@ -4703,6 +4992,8 @@ def _build_ai_context_markdown(snapshot):
     source_to_outputs['memory_state'].extend(['Indexes/current-focus.md'])
     source_to_outputs['life_history'].extend(['Indexes/health-check.md'])
     source_to_outputs['market_cache'].extend(['Indexes/health-check.md'])
+    for source_key in world_map_source_keys:
+        source_to_outputs[source_key].append('Indexes/world-map.md')
 
     source_map_payload = []
     for key, record in source_catalog.items():
@@ -4886,6 +5177,7 @@ def _build_ai_context_markdown(snapshot):
             'summary': 'Primary catalog for the Akibwa machine-maintained wiki.',
             'related_paths': [
                 'Domains/overview.md',
+                'Indexes/world-map.md',
                 'Indexes/domain-index.md',
                 'Indexes/concept-index.md',
                 'Indexes/article-index.md',
@@ -4916,6 +5208,7 @@ def _build_ai_context_markdown(snapshot):
                 ],
                 'indexes': [
                     _site_link_record('Indexes/current-focus.md', 'Current focus', 'Short-horizon orientation'),
+                    _site_link_record('Indexes/world-map.md', 'World map', 'First-pass typed relationship map'),
                     _site_link_record('Indexes/source-map.md', 'Source map', 'Source-to-page provenance map'),
                     _site_link_record('Indexes/health-check.md', 'Health check', 'Lint-style findings and maintenance prompts'),
                     _site_link_record('Indexes/domain-index.md', 'Domain index', 'Catalog of domain pages'),
@@ -4934,7 +5227,7 @@ def _build_ai_context_markdown(snapshot):
             'kind': 'meta',
             'title': 'Akibwa Knowledge Base',
             'summary': 'Top-level guide to the compiled knowledge base layers and entry points.',
-            'related_paths': ['index.md', 'schema.md', 'Indexes/current-focus.md', 'Outputs/current-brief.md'],
+            'related_paths': ['index.md', 'schema.md', 'Indexes/current-focus.md', 'Indexes/world-map.md', 'Outputs/current-brief.md'],
             'structured_state': {
                 'layers': [
                     'Raw contains immutable source material and ingest manifests.',
@@ -4946,6 +5239,7 @@ def _build_ai_context_markdown(snapshot):
                     _site_link_record('index.md', 'index.md', 'Primary wiki index'),
                     _site_link_record('Indexes/article-index.md', 'article-index.md', 'Absorbed articles catalog'),
                     _site_link_record('Indexes/current-focus.md', 'current-focus.md', 'Short-horizon orientation'),
+                    _site_link_record('Indexes/world-map.md', 'world-map.md', 'Typed relationship map'),
                     _site_link_record('Indexes/health-check.md', 'health-check.md', 'Maintenance findings'),
                     _site_link_record('Outputs/current-brief.md', 'current-brief.md', 'Reusable current-state brief'),
                 ],
@@ -5017,6 +5311,30 @@ def _build_ai_context_markdown(snapshot):
                 'constraints': scratchpad.get('constraints', []),
                 'preferences': scratchpad.get('preferences', []),
                 'durable_memory_brief': memory.get('brief', {}),
+            },
+        },
+        {
+            'path': 'Indexes/world-map.md',
+            'kind': 'index',
+            'title': 'World map',
+            'summary': 'First-pass typed relationship map across people, places, homes, work, money, philosophy, and events.',
+            'source_keys': world_map_source_keys,
+            'related_paths': world_map_related_paths,
+            'highlights': world_map_highlights,
+            'source_notes': world_map_source_notes,
+            'structured_state': {
+                'summary': world_map.get('summary', {}),
+                'hub_pages': world_map.get('hub_pages', []),
+                'residence_threads': world_map.get('residence_threads', []),
+                'place_threads': world_map.get('place_threads', []),
+                'relationship_threads': world_map.get('relationship_threads', []),
+                'work_threads': world_map.get('work_threads', []),
+                'money_threads': world_map.get('money_threads', []),
+                'philosophy_threads': world_map.get('philosophy_threads', []),
+                'influence_threads': world_map.get('influence_threads', []),
+                'event_threads': world_map.get('event_threads', []),
+                'page_candidates': world_map.get('page_candidates', []),
+                'missing_nodes': world_map.get('missing_nodes', []),
             },
         },
         {
@@ -5133,8 +5451,9 @@ def _build_ai_context_markdown(snapshot):
     return {
         'directory': target_dir,
         'files': generated_files,
-        'entrypoints': ['index.md', 'schema.md', 'log.md', 'Indexes/current-focus.md', 'Indexes/health-check.md'],
+        'entrypoints': ['index.md', 'schema.md', 'log.md', 'Indexes/current-focus.md', 'Indexes/world-map.md', 'Indexes/health-check.md'],
         'extracted': extracted,
+        'graph': world_map,
         'sources': list(source_catalog.values()),
         'site': {
             'homePath': 'index.md',
@@ -7003,6 +7322,7 @@ def _sanitize_snapshot_for_hosting(snapshot):
         'files': [name for name in ai_context.get('files', []) if isinstance(name, str)],
         'entrypoints': [name for name in ai_context.get('entrypoints', []) if isinstance(name, str)],
         'sources': [item for item in ai_context.get('sources', []) if isinstance(item, dict)],
+        'graph': ai_context.get('graph', {}) if isinstance(ai_context.get('graph'), dict) else {},
         'site': {
             'homePath': ((ai_context.get('site') or {}).get('homePath', '') if isinstance(ai_context.get('site'), dict) else ''),
             'pages': [
