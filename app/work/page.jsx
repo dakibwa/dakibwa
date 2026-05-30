@@ -1,11 +1,11 @@
-import { ProjectsPage } from "@/components/pages/projects-page";
+import { PersonalPage } from "@/components/pages/personal-page";
 
 export const metadata = {
-  title: "Work | Daniel Atkinson",
+  title: "Personal | Daniel Atkinson",
   description:
-    "Selected music and private-signal systems by Daniel Atkinson."
+    "Personal projects by Daniel Atkinson, including Sonic FM, Vitals, cover-art experiments, and a private knowledge system."
 };
 
 export default function WorkRoute() {
-  return <ProjectsPage />;
+  return <PersonalPage />;
 }
