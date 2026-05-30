@@ -1,0 +1,11 @@
+import { ContactPage } from "@/components/pages/contact-page";
+
+export const metadata = {
+  title: "Contact | Daniel Atkinson",
+  description:
+    "Contact Daniel Atkinson about messy workflows, data, reporting, client-update, or handover problems."
+};
+
+export default function ContactRoute() {
+  return <ContactPage />;
+}
