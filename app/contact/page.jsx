@@ -1,7 +1,7 @@
 import { ContactPage } from "@/components/pages/contact-page";
 
 export const metadata = {
-  title: "Contact | Daniel Atkinson",
+  title: "Contact",
   description:
     "Contact Daniel Atkinson about messy workflows, data, reporting, client-update, or handover problems."
 };

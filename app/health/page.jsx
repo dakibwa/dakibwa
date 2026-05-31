@@ -3,7 +3,7 @@ import { ArrowRight } from "lucide-react";
 import { PageFooter } from "@/components/page-footer";
 
 export const metadata = {
-  title: "Vitals | Daniel Atkinson",
+  title: "Vitals",
   description:
     "A public pointer to Daniel Atkinson's private Vitals system."
 };
