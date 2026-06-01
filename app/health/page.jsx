@@ -1,4 +1,3 @@
-import { PageFooter } from "@/components/page-footer";
 import { VitalsDashboardPreview } from "@/components/vitals-dashboard-preview";
 
 export const metadata = {
@@ -11,7 +10,6 @@ export default function HealthRoute() {
   return (
     <section className="health-page">
       <VitalsDashboardPreview />
-      <PageFooter />
     </section>
   );
 }
