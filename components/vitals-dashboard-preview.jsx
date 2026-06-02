@@ -22,7 +22,7 @@ import {
   X,
 } from "lucide-react";
 
-import healthData from "@/data/health-data.json";
+import healthData from "@/data/public-health-data.json";
 
 const tones = {
   green: "#208768",

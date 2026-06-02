@@ -1,0 +1,1330 @@
+{
+  "generatedAt": "2026-05-31T09:10:11.801Z",
+  "snapshotDate": "2026-05-31",
+  "sourceCoverage": [
+    {
+      "source": "whoop",
+      "rows": 681,
+      "firstDay": "2026-04-03",
+      "latestDay": "2026-05-04",
+      "metricCount": 21
+    },
+    {
+      "source": "strava",
+      "rows": 18,
+      "firstDay": "2026-04-02",
+      "latestDay": "2026-04-21",
+      "metricCount": 2
+    },
+    {
+      "source": "progress-pic",
+      "rows": 598,
+      "firstDay": "2025-04-17",
+      "latestDay": "2026-04-19",
+      "metricCount": 8
+    },
+    {
+      "source": "fitbit",
+      "rows": 228533,
+      "firstDay": "2023-10-08",
+      "latestDay": "2026-04-07",
+      "metricCount": 18
+    },
+    {
+      "source": "googlefit",
+      "rows": 79605,
+      "firstDay": "2023-03-26",
+      "latestDay": "2026-02-16",
+      "metricCount": 14
+    }
+  ],
+  "latest": {
+    "recovery_score": {
+      "date": "2026-05-04",
+      "metric": "recovery_score",
+      "value": 84,
+      "unit": "%",
+      "source": "whoop",
+      "previousValue": 67,
+      "delta": 17
+    },
+    "sleep_performance": {
+      "date": "2026-05-03",
+      "metric": "sleep_performance",
+      "value": 76,
+      "unit": "%",
+      "source": "whoop",
+      "previousValue": 86,
+      "delta": -10
+    },
+    "hrv": {
+      "date": "2026-05-04",
+      "metric": "hrv",
+      "value": 99.29903,
+      "unit": "ms",
+      "source": "whoop",
+      "previousValue": 91.9584,
+      "delta": 7.340630000000004
+    },
+    "heart_rate_resting": {
+      "date": "2026-05-04",
+      "metric": "heart_rate_resting",
+      "value": 47,
+      "unit": "bpm",
+      "source": "whoop",
+      "previousValue": 51,
+      "delta": -4
+    },
+    "sleep_duration": {
+      "date": "2026-05-03",
+      "metric": "sleep_duration",
+      "value": 447.84,
+      "unit": "minutes",
+      "source": "whoop",
+      "previousValue": 554.79,
+      "delta": -106.94999999999999
+    },
+    "strain": {
+      "date": "2026-05-03",
+      "metric": "strain",
+      "value": 4.0915422,
+      "unit": "whoop_strain",
+      "source": "whoop",
+      "previousValue": 4.051638,
+      "delta": 0.0399042000000005
+    },
+    "weight": {
+      "date": "2026-04-22",
+      "value": 65.8,
+      "unit": "kg",
+      "source": "bloodwork/body-composition",
+      "delta": -0.6000000000000085
+    },
+    "calories_burned": null,
+    "whoopAverages": {
+      "recovery7d": 67,
+      "hrv7d": 90.37653485714286,
+      "rhr7d": 50.857142857142854,
+      "sleep7d": 429.87142857142857
+    }
+  },
+  "nutrition": {
+    "latest": {
+      "date": "2026-02-26",
+      "kcal_7d": 2987.1,
+      "protein_7d": 122.5,
+      "fat_7d": 159,
+      "netcarb_7d": 238.7,
+      "fiber_7d": 7.9,
+      "starch_7d": 11.4,
+      "sugar_7d": 217.6
+    }
+  },
+  "reviewPrompts": [
+    {
+      "title": "Iron handling is the main follow-up thread",
+      "detail": "January showed low ferritin/iron saturation; April shows ferritin normalised with high transferrin saturation. Keep this tied to clinician review rather than simple self-optimisation.",
+      "priority": "Clinician"
+    },
+    {
+      "title": "Wearables show low resting pulse",
+      "detail": "WHOOP resting HR and Randox pulse both sit low. Treat as a tracking item unless symptoms change the context.",
+      "priority": "Monitor"
+    },
+    {
+      "title": "Sleep consistency is visible enough to manage",
+      "detail": "WHOOP has current recovery, sleep performance, HRV, RHR, and respiratory-rate coverage. Freshness matters because the latest curated WHOOP date is visible in the source panel.",
+      "priority": "Trend"
+    },
+    {
+      "title": "Nutrition data is useful but older",
+      "detail": "Cronometer rolling summaries are rich, but the latest logged nutrition window is earlier than the current WHOOP and bloodwork windows.",
+      "priority": "Freshness"
+    }
+  ],
+  "series": {
+    "sleep_duration": [
+      {
+        "date": "2026-04-09",
+        "metric": "sleep_duration",
+        "value": 416.6,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-10",
+        "metric": "sleep_duration",
+        "value": 400.21,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-11",
+        "metric": "sleep_duration",
+        "value": 341.46,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-12",
+        "metric": "sleep_duration",
+        "value": 538.92,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-13",
+        "metric": "sleep_duration",
+        "value": 402.07,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-14",
+        "metric": "sleep_duration",
+        "value": 362.48,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-15",
+        "metric": "sleep_duration",
+        "value": 454.12,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-16",
+        "metric": "sleep_duration",
+        "value": 356.01,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-17",
+        "metric": "sleep_duration",
+        "value": 390.62,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-18",
+        "metric": "sleep_duration",
+        "value": 369.98,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-19",
+        "metric": "sleep_duration",
+        "value": 460.88,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-20",
+        "metric": "sleep_duration",
+        "value": 333.98,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-21",
+        "metric": "sleep_duration",
+        "value": 320.75,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-22",
+        "metric": "sleep_duration",
+        "value": 393.38,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-23",
+        "metric": "sleep_duration",
+        "value": 407.7,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-25",
+        "metric": "sleep_duration",
+        "value": 418.02,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-26",
+        "metric": "sleep_duration",
+        "value": 526.58,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-27",
+        "metric": "sleep_duration",
+        "value": 442.48,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-28",
+        "metric": "sleep_duration",
+        "value": 369.24,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-29",
+        "metric": "sleep_duration",
+        "value": 420.07,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-30",
+        "metric": "sleep_duration",
+        "value": 352.83,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-01",
+        "metric": "sleep_duration",
+        "value": 421.85,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-02",
+        "metric": "sleep_duration",
+        "value": 554.79,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-03",
+        "metric": "sleep_duration",
+        "value": 447.84,
+        "unit": "minutes",
+        "source": "whoop"
+      }
+    ],
+    "recovery_score": [
+      {
+        "date": "2026-04-11",
+        "metric": "recovery_score",
+        "value": 76,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-12",
+        "metric": "recovery_score",
+        "value": 66,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-13",
+        "metric": "recovery_score",
+        "value": 69,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-14",
+        "metric": "recovery_score",
+        "value": 61,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-15",
+        "metric": "recovery_score",
+        "value": 55,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-16",
+        "metric": "recovery_score",
+        "value": 55,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-17",
+        "metric": "recovery_score",
+        "value": 33,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-18",
+        "metric": "recovery_score",
+        "value": 27,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-19",
+        "metric": "recovery_score",
+        "value": 30,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-20",
+        "metric": "recovery_score",
+        "value": 40,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-21",
+        "metric": "recovery_score",
+        "value": 34,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-22",
+        "metric": "recovery_score",
+        "value": 29,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-23",
+        "metric": "recovery_score",
+        "value": 33,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-24",
+        "metric": "recovery_score",
+        "value": 42,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-25",
+        "metric": "recovery_score",
+        "value": 32,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-26",
+        "metric": "recovery_score",
+        "value": 50,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-27",
+        "metric": "recovery_score",
+        "value": 82,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-28",
+        "metric": "recovery_score",
+        "value": 64,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-29",
+        "metric": "recovery_score",
+        "value": 74,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-30",
+        "metric": "recovery_score",
+        "value": 67,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-01",
+        "metric": "recovery_score",
+        "value": 48,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-02",
+        "metric": "recovery_score",
+        "value": 65,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-03",
+        "metric": "recovery_score",
+        "value": 67,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-04",
+        "metric": "recovery_score",
+        "value": 84,
+        "unit": "%",
+        "source": "whoop"
+      }
+    ],
+    "weight": [
+      {
+        "date": "2025-12-22",
+        "metric": "weight",
+        "value": 67.585,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-23",
+        "metric": "weight",
+        "value": 67.993,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-24",
+        "metric": "weight",
+        "value": 67.993,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-27",
+        "metric": "weight",
+        "value": 67.857,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-30",
+        "metric": "weight",
+        "value": 67.086,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-31",
+        "metric": "weight",
+        "value": 66.996,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-01",
+        "metric": "weight",
+        "value": 65.499,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-02",
+        "metric": "weight",
+        "value": 66.497,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-03",
+        "metric": "weight",
+        "value": 66.996,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-04",
+        "metric": "weight",
+        "value": 66.587,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-05",
+        "metric": "weight",
+        "value": 67.676,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-06",
+        "metric": "weight",
+        "value": 66.859,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-07",
+        "metric": "weight",
+        "value": 67.268,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-08",
+        "metric": "weight",
+        "value": 67.358,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-09",
+        "metric": "weight",
+        "value": 66.497,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-12",
+        "metric": "weight",
+        "value": 65.589,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-13",
+        "metric": "weight",
+        "value": 65.998,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-14",
+        "metric": "weight",
+        "value": 66.179,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-19",
+        "metric": "weight",
+        "value": 66.996,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-20",
+        "metric": "weight",
+        "value": 67.177,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-21",
+        "metric": "weight",
+        "value": 67.177,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-22",
+        "metric": "weight",
+        "value": 66.996,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-23",
+        "metric": "weight",
+        "value": 67.268,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-26",
+        "metric": "weight",
+        "value": 66.587,
+        "unit": "kg",
+        "source": "fitbit"
+      }
+    ],
+    "steps": [
+      {
+        "date": "2026-01-24",
+        "metric": "steps",
+        "value": 17020,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-25",
+        "metric": "steps",
+        "value": 8081,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-26",
+        "metric": "steps",
+        "value": 16214,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-27",
+        "metric": "steps",
+        "value": 15424,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-28",
+        "metric": "steps",
+        "value": 13012,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-29",
+        "metric": "steps",
+        "value": 33518,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-30",
+        "metric": "steps",
+        "value": 25553,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-31",
+        "metric": "steps",
+        "value": 29071,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-02-01",
+        "metric": "steps",
+        "value": 17351,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-02-02",
+        "metric": "steps",
+        "value": 30158,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-02-03",
+        "metric": "steps",
+        "value": 30195,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-02-04",
+        "metric": "steps",
+        "value": 35189,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-02-05",
+        "metric": "steps",
+        "value": 24117,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-02-06",
+        "metric": "steps",
+        "value": 45062,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-02-07",
+        "metric": "steps",
+        "value": 24843,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-02-08",
+        "metric": "steps",
+        "value": 31115,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-02-09",
+        "metric": "steps",
+        "value": 24412,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-02-10",
+        "metric": "steps",
+        "value": 35254,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-02-11",
+        "metric": "steps",
+        "value": 40368,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-02-12",
+        "metric": "steps",
+        "value": 25385,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-02-13",
+        "metric": "steps",
+        "value": 10743,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-02-14",
+        "metric": "steps",
+        "value": 36203,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-02-15",
+        "metric": "steps",
+        "value": 29441,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-02-16",
+        "metric": "steps",
+        "value": 18525,
+        "unit": "count",
+        "source": "fitbit"
+      }
+    ],
+    "calories_burned": [
+      {
+        "date": "2026-04-09",
+        "metric": "calories_burned",
+        "value": 2201.07,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-10",
+        "metric": "calories_burned",
+        "value": 1917.65,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-11",
+        "metric": "calories_burned",
+        "value": 2126.43,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-12",
+        "metric": "calories_burned",
+        "value": 2482.28,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-13",
+        "metric": "calories_burned",
+        "value": 1860.1,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-14",
+        "metric": "calories_burned",
+        "value": 1694.15,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-15",
+        "metric": "calories_burned",
+        "value": 1855.16,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-16",
+        "metric": "calories_burned",
+        "value": 2100.13,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-17",
+        "metric": "calories_burned",
+        "value": 831.33,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-18",
+        "metric": "calories_burned",
+        "value": 1628.44,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-19",
+        "metric": "calories_burned",
+        "value": 657.99,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-20",
+        "metric": "calories_burned",
+        "value": 757.48,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-21",
+        "metric": "calories_burned",
+        "value": 630.93,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-22",
+        "metric": "calories_burned",
+        "value": 1943.77,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-23",
+        "metric": "calories_burned",
+        "value": 2352.15,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-25",
+        "metric": "calories_burned",
+        "value": 1705.91,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-26",
+        "metric": "calories_burned",
+        "value": 2376.38,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-27",
+        "metric": "calories_burned",
+        "value": 2269.99,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-28",
+        "metric": "calories_burned",
+        "value": 2025.66,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-29",
+        "metric": "calories_burned",
+        "value": 1949.13,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-30",
+        "metric": "calories_burned",
+        "value": 2291.86,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-01",
+        "metric": "calories_burned",
+        "value": 2205.11,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-02",
+        "metric": "calories_burned",
+        "value": 744.9,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-03",
+        "metric": "calories_burned",
+        "value": 715.65,
+        "unit": "kcal",
+        "source": "whoop"
+      }
+    ],
+    "workout": [
+      {
+        "date": "2026-04-02",
+        "metric": "workout",
+        "value": 15.42,
+        "unit": "minutes",
+        "source": "strava"
+      },
+      {
+        "date": "2026-04-05",
+        "metric": "workout",
+        "value": 43.48,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-06",
+        "metric": "workout",
+        "value": 19.48,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-07",
+        "metric": "workout",
+        "value": 64.48,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-10",
+        "metric": "workout",
+        "value": 26.98,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-12",
+        "metric": "workout",
+        "value": 37.48,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-13",
+        "metric": "workout",
+        "value": 56.98,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-14",
+        "metric": "workout",
+        "value": 29.98,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-15",
+        "metric": "workout",
+        "value": 38.98,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-17",
+        "metric": "workout",
+        "value": 19.48,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-18",
+        "metric": "workout",
+        "value": 13.48,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-19",
+        "metric": "workout",
+        "value": 37.48,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-21",
+        "metric": "workout",
+        "value": 14.98,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-22",
+        "metric": "workout",
+        "value": 49.48,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-23",
+        "metric": "workout",
+        "value": 59.98,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-24",
+        "metric": "workout",
+        "value": 44.98,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-26",
+        "metric": "workout",
+        "value": 13.48,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-27",
+        "metric": "workout",
+        "value": 13.48,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-28",
+        "metric": "workout",
+        "value": 56.98,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-30",
+        "metric": "workout",
+        "value": 26.98,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-01",
+        "metric": "workout",
+        "value": 13.48,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-02",
+        "metric": "workout",
+        "value": 46.48,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-03",
+        "metric": "workout",
+        "value": 73.48,
+        "unit": "minutes",
+        "source": "whoop"
+      }
+    ],
+    "strain": [
+      {
+        "date": "2026-04-09",
+        "metric": "strain",
+        "value": 13.747195,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-10",
+        "metric": "strain",
+        "value": 7.685663,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-11",
+        "metric": "strain",
+        "value": 13.989682,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-12",
+        "metric": "strain",
+        "value": 15.497194,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-13",
+        "metric": "strain",
+        "value": 7.3916264,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-14",
+        "metric": "strain",
+        "value": 6.295437,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-15",
+        "metric": "strain",
+        "value": 6.8208714,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-16",
+        "metric": "strain",
+        "value": 10.66656,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-17",
+        "metric": "strain",
+        "value": 4.246789,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-18",
+        "metric": "strain",
+        "value": 11.897965,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-19",
+        "metric": "strain",
+        "value": 4.181212,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-20",
+        "metric": "strain",
+        "value": 4.1883082,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-21",
+        "metric": "strain",
+        "value": 4.275682,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-22",
+        "metric": "strain",
+        "value": 8.537286,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-23",
+        "metric": "strain",
+        "value": 11.744513,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-25",
+        "metric": "strain",
+        "value": 8.369494,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-26",
+        "metric": "strain",
+        "value": 12.685387,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-27",
+        "metric": "strain",
+        "value": 14.192183,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-28",
+        "metric": "strain",
+        "value": 10.99557,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-29",
+        "metric": "strain",
+        "value": 9.88269,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-04-30",
+        "metric": "strain",
+        "value": 13.234301,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-01",
+        "metric": "strain",
+        "value": 13.705402,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-02",
+        "metric": "strain",
+        "value": 4.051638,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-03",
+        "metric": "strain",
+        "value": 4.0915422,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      }
+    ]
+  }
+}
