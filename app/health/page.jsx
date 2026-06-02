@@ -3,7 +3,7 @@ import { VitalsDashboardPreview } from "@/components/vitals-dashboard-preview";
 export const metadata = {
   title: "Vitals",
   description:
-    "A public-safe Vitals Health Dashboard preview."
+    "A live aggregate Vitals Health Dashboard view."
 };
 
 export default function HealthRoute() {

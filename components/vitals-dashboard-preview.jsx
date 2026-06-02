@@ -16,13 +16,13 @@ import {
   FileText,
   HeartPulse,
   Info,
-  LockKeyhole,
   Moon,
   Plus,
-  Thermometer,
   Upload,
   X,
 } from "lucide-react";
+
+import healthData from "@/data/health-data.json";
 
 const tones = {
   green: "#208768",
@@ -32,24 +32,186 @@ const tones = {
   ink: "#081216"
 };
 
+function numberValue(value) {
+  const numeric = Number(value);
+  return Number.isFinite(numeric) ? numeric : null;
+}
+
+function formatNumber(value, digits = 0) {
+  const numeric = numberValue(value);
+  if (numeric === null) return "--";
+
+  return numeric.toLocaleString("en-GB", {
+    maximumFractionDigits: digits,
+    minimumFractionDigits: digits
+  });
+}
+
+function formatDate(value) {
+  if (!value) return "latest";
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return "latest";
+
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric"
+  }).format(parsed);
+}
+
+function formatShortDate(value) {
+  if (!value) return "latest";
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return "latest";
+
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "numeric",
+    month: "short"
+  }).format(parsed);
+}
+
+function formatDuration(minutes) {
+  const numeric = numberValue(minutes);
+  if (numeric === null) return "--";
+  const total = Math.round(numeric);
+  const hours = Math.floor(total / 60);
+  const mins = total % 60;
+
+  return `${hours}h ${String(mins).padStart(2, "0")}m`;
+}
+
+function signedDelta(value, unit = "", digits = 0) {
+  const numeric = numberValue(value);
+  if (numeric === null) return "No comparison";
+  const sign = numeric > 0 ? "+" : numeric < 0 ? "-" : "";
+  const formatted = formatNumber(Math.abs(numeric), digits);
+
+  return `${sign}${formatted}${unit ? ` ${unit}` : ""} vs previous`;
+}
+
+function signedDurationDelta(value) {
+  const numeric = numberValue(value);
+  if (numeric === null) return "No comparison";
+  const sign = numeric > 0 ? "+" : numeric < 0 ? "-" : "";
+
+  return `${sign}${formatDuration(Math.abs(numeric))} vs previous`;
+}
+
+function sourceName(source) {
+  const names = {
+    whoop: "WHOOP",
+    strava: "Strava",
+    "progress-pic": "Progress",
+    fitbit: "Fitbit",
+    googlefit: "Google Fit"
+  };
+
+  return names[source] || String(source || "Source");
+}
+
+function daysBetween(start, end) {
+  const startDate = new Date(`${start}T00:00:00Z`);
+  const endDate = new Date(`${end}T00:00:00Z`);
+  if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) return null;
+
+  return Math.max(0, Math.round((endDate.getTime() - startDate.getTime()) / 86400000));
+}
+
+function sourceFreshness(source) {
+  const ageDays = daysBetween(source?.latestDay, healthData.snapshotDate);
+  if (ageDays !== null && ageDays <= 7) return { label: "Current", color: tones.green, ageDays };
+  if (ageDays !== null && ageDays <= 35) return { label: "Review", color: tones.orange, ageDays };
+
+  return { label: "Older", color: tones.coral, ageDays };
+}
+
+function sparkPoints(points, fallback) {
+  const sample = (points || [])
+    .map((point) => numberValue(point.value))
+    .filter((value) => value !== null)
+    .slice(-9);
+
+  if (sample.length < 2) return fallback;
+
+  const min = Math.min(...sample);
+  const max = Math.max(...sample);
+  const range = max - min || 1;
+
+  return sample
+    .map((value, index) => {
+      const x = 80 + index * 16;
+      const y = 66 - ((value - min) / range) * 34;
+
+      return `${x},${Math.round(y)}`;
+    })
+    .join(" ");
+}
+
+function linePath(points, fallback) {
+  const sample = (points || [])
+    .map((point) => ({ ...point, value: numberValue(point.value) }))
+    .filter((point) => point.value !== null)
+    .slice(-12);
+
+  if (sample.length < 2) return fallback;
+
+  const min = Math.min(...sample.map((point) => point.value));
+  const max = Math.max(...sample.map((point) => point.value));
+  const range = max - min || 1;
+
+  return sample
+    .map((point, index) => {
+      const x = 22 + (index / (sample.length - 1)) * 574;
+      const y = 196 - ((point.value - min) / range) * 112;
+
+      return `${index === 0 ? "M" : "L"}${Math.round(x)} ${Math.round(y)}`;
+    })
+    .join("");
+}
+
+function compactReviewTitle(title) {
+  return String(title || "Review")
+    .replace(" is the main follow-up thread", "")
+    .replace("Wearables show ", "")
+    .replace(" is visible enough to manage", "")
+    .replace(" data is useful but older", " freshness");
+}
+
+const sourceCoverage = healthData.sourceCoverage || [];
+const latest = healthData.latest || {};
+const nutritionLatest = healthData.nutrition?.latest || {};
+const reviewPrompts = healthData.reviewPrompts || [];
+const series = healthData.series || {};
+
+const latestRecovery = latest.recovery_score || {};
+const latestSleepDuration = latest.sleep_duration || {};
+const latestSleepPerformance = latest.sleep_performance || {};
+const latestStrain = latest.strain || {};
+const latestHrv = latest.hrv || {};
+const latestRestingHeartRate = latest.heart_rate_resting || {};
+const latestWeight = latest.weight || {};
+const latestCalories = series.calories_burned?.at(-1) || latest.calories_burned || {};
+const latestSteps = series.steps?.at(-1) || {};
+const healthScore = Math.round(numberValue(latestRecovery.value) ?? 0);
+
 const snapshots = [
   {
-    label: "Latest local snapshot",
-    caption: "Private values hidden",
-    recency: "Current view",
-    summary: "A masked view of the newest local Vitals export."
+    label: `Snapshot ${formatShortDate(healthData.snapshotDate)}`,
+    caption: "Live aggregate health data",
+    recency: "Latest aggregate",
+    summary: `Generated ${formatDate(healthData.generatedAt)} from ${sourceCoverage.length} source groups.`
   },
   {
-    label: "Previous review window",
-    caption: "Trend shape only",
-    recency: "Earlier view",
-    summary: "A public-safe comparison state for checking interface behavior."
+    label: `WHOOP ${formatShortDate(latestRecovery.date)}`,
+    caption: "Wearable values visible",
+    recency: "Wearable window",
+    summary: `Recovery ${formatNumber(latestRecovery.value)}%, RHR ${formatNumber(latestRestingHeartRate.value)} bpm, HRV ${formatNumber(latestHrv.value)} ms.`
   },
   {
     label: "Source audit view",
     caption: "Freshness first",
     recency: "Audit view",
-    summary: "A source-led state for confirming where review attention goes."
+    summary: "Raw exports stay out of the repo while the aggregate website view shows values and source age."
   }
 ];
 
@@ -74,108 +236,158 @@ const baseTopStats = [
   {
     key: "score",
     label: "Health Score",
-    value: "Private",
-    unit: "",
-    status: "Local only",
-    trend: "Multi-source rollup",
+    value: formatNumber(healthScore),
+    unit: "%",
+    status: `Snapshot ${formatShortDate(healthData.snapshotDate)}`,
+    trend: "Recovery-led aggregate score",
     tone: "green",
-    ring: 72
+    ring: healthScore
   },
   {
     key: "recovery",
     label: "Recovery",
-    value: "Connected",
-    unit: "",
-    status: "Wearable source",
-    trend: "Latest value masked",
-    tone: "orange",
-    ring: 64
+    value: formatNumber(latestRecovery.value),
+    unit: "%",
+    status: `WHOOP ${formatShortDate(latestRecovery.date)}`,
+    trend: signedDelta(latestRecovery.delta, "%"),
+    tone: "green",
+    ring: Math.round(numberValue(latestRecovery.value) ?? 0)
   },
   {
     key: "sleep",
     label: "Sleep",
-    value: "--",
-    unit: "h -- m",
-    status: "Tracked",
-    trend: "Duration + quality",
+    value: formatDuration(latestSleepDuration.value),
+    unit: "",
+    status: `${formatNumber(latestSleepPerformance.value)}% performance`,
+    trend: signedDurationDelta(latestSleepDuration.delta),
     tone: "teal",
-    spark: "80,52 96,42 112,49 128,35 144,43 160,38 176,55 192,47 208,62"
+    spark: sparkPoints(series.sleep_duration, "80,52 96,42 112,49 128,35 144,43 160,38 176,55 192,47 208,62")
   },
   {
     key: "strain",
     label: "Strain",
-    value: "--",
+    value: formatNumber(latestStrain.value, 1),
     unit: "load",
-    status: "Training",
-    trend: "Load view available",
+    status: `WHOOP ${formatShortDate(latestStrain.date)}`,
+    trend: signedDelta(latestStrain.delta, "", 1),
     tone: "teal",
-    spark: "80,39 96,34 112,38 128,36 144,44 160,47 176,54 192,52 208,58"
+    spark: sparkPoints(series.strain, "80,39 96,34 112,38 128,36 144,44 160,47 176,54 192,52 208,58")
   }
 ];
 
 const miniMetrics = [
-  { key: "review", label: "Resting Heart Rate", value: "Private", detail: "Low-pulse review item", icon: HeartPulse, tone: "green" },
-  { key: "sources", label: "HRV", value: "Private", detail: "Wearable trend source", icon: Activity, tone: "teal" },
-  { key: "sources", label: "Body Temperature", value: "Private", detail: "No public value", icon: Thermometer, tone: "coral" },
-  { key: "sources", label: "Blood Oxygen", value: "Private", detail: "Private source row", icon: Droplet, tone: "teal" }
+  {
+    key: "review",
+    label: "Resting Heart Rate",
+    value: `${formatNumber(latestRestingHeartRate.value)} bpm`,
+    detail: signedDelta(latestRestingHeartRate.delta, "bpm"),
+    icon: HeartPulse,
+    tone: "green",
+    spark: sparkPoints(series.recovery_score, "18,57 38,61 58,50 78,54 98,49 118,58 138,52 158,55 178,45 198,53 218,47")
+  },
+  {
+    key: "sources",
+    label: "HRV",
+    value: `${formatNumber(latestHrv.value)} ms`,
+    detail: signedDelta(latestHrv.delta, "ms", 1),
+    icon: Activity,
+    tone: "teal",
+    spark: sparkPoints(series.recovery_score, "18,57 38,61 58,50 78,54 98,49 118,58 138,52 158,55 178,45 198,53 218,47")
+  },
+  {
+    key: "sources",
+    label: "Sleep Performance",
+    value: `${formatNumber(latestSleepPerformance.value)}%`,
+    detail: signedDelta(latestSleepPerformance.delta, "pp"),
+    icon: Moon,
+    tone: "coral",
+    spark: sparkPoints(series.sleep_duration, "18,57 38,61 58,50 78,54 98,49 118,58 138,52 158,55 178,45 198,53 218,47")
+  },
+  {
+    key: "sources",
+    label: "Weight",
+    value: `${formatNumber(latestWeight.value, 1)} kg`,
+    detail: `${signedDelta(latestWeight.delta, "kg", 1)} / ${formatShortDate(latestWeight.date)}`,
+    icon: Droplet,
+    tone: "teal",
+    spark: sparkPoints(series.weight, "18,57 38,61 58,50 78,54 98,49 118,58 138,52 158,55 178,45 198,53 218,47")
+  }
 ];
 
-const sourceRows = [
-  ["Wearable", "Connected", tones.green],
-  ["Training", "Connected", tones.teal],
-  ["Nutrition", "Older", tones.orange],
-  ["Labs", "Review", tones.coral],
-  ["Journal", "Queued", "#a8b6bd"]
-];
+const sourceRows = sourceCoverage.map((source) => {
+  const freshness = sourceFreshness(source);
+
+  return [sourceName(source.source), freshness.label, freshness.color, source];
+});
 
 const readinessRows = [
-  ["Wearable", ["high", "mid", "mid", "high", "high", "", "mid"]],
+  ["WHOOP", ["high", "mid", "mid", "high", "high", "", "mid"]],
   ["Training", ["mid", "mid", "high", "high", "watch", "", "mid"]],
   ["Nutrition", ["high", "mid", "", "mid", "mid", "watch", ""]],
   ["Labs", ["mid", "high", "high", "mid", "", "", ""]]
 ];
 
-const reviewRows = [
-  ["Iron handling", "Clinician", "Review thread"],
-  ["Low resting pulse", "Monitor", "Wearable + lab context"],
-  ["Sleep consistency", "Trend", "Manageable signal"],
-  ["Nutrition freshness", "Freshness", "Older window"]
-];
+const reviewRows = reviewPrompts.slice(0, 4).map((prompt) => [
+  compactReviewTitle(prompt.title),
+  prompt.priority,
+  prompt.detail
+]);
 
 const labRows = [
-  ["Bloodwork", "Private", "Latest verified panel"],
-  ["Iron markers", "Review", "Clinician context"],
-  ["Inflammation", "Private", "Source-backed"],
-  ["Body comp", "Private", "Local trend"],
-  ["Notes", "Queued", "Review prompt"]
+  ["Recovery", `${formatNumber(latestRecovery.value)}%`, `WHOOP ${formatShortDate(latestRecovery.date)}`],
+  ["RHR", `${formatNumber(latestRestingHeartRate.value)} bpm`, `WHOOP ${formatShortDate(latestRestingHeartRate.date)}`],
+  ["HRV", `${formatNumber(latestHrv.value)} ms`, `WHOOP ${formatShortDate(latestHrv.date)}`],
+  ["Weight", `${formatNumber(latestWeight.value, 1)} kg`, `Body comp ${formatShortDate(latestWeight.date)}`],
+  ["Nutrition", `${formatNumber(nutritionLatest.kcal_7d)} kcal`, `7d avg ${formatShortDate(nutritionLatest.date)}`]
 ];
 
-const barValues = [72, 58, 74, 73, 56, 75, 62];
+const nutritionBars = [
+  { label: "P", title: "Protein", value: nutritionLatest.protein_7d, scale: 150 },
+  { label: "F", title: "Fat", value: nutritionLatest.fat_7d, scale: 180 },
+  { label: "C", title: "Net carb", value: nutritionLatest.netcarb_7d, scale: 280 },
+  { label: "Fi", title: "Fiber", value: nutritionLatest.fiber_7d, scale: 35 },
+  { label: "St", title: "Starch", value: nutritionLatest.starch_7d, scale: 80 },
+  { label: "S", title: "Sugar", value: nutritionLatest.sugar_7d, scale: 240 },
+  { label: "K", title: "Calories", value: nutritionLatest.kcal_7d, scale: 3400 }
+].map((item) => ({
+  ...item,
+  height: `${Math.max(8, Math.min(100, ((numberValue(item.value) ?? 0) / item.scale) * 100))}%`
+}));
+
+const trendPaths = {
+  recovery: linePath(series.recovery_score, "M22 168L148 162L284 164L420 150L596 156"),
+  sleep: linePath(series.sleep_duration, "M22 110L174 104L318 104L462 86L596 102")
+};
 
 const panels = {
   review: {
     title: "Review Queue",
-    kicker: "Public-safe workflow",
-    body: "Review prompts are grouped by clinical usefulness, freshness, and source confidence. The public version shows the workflow without the underlying values.",
-    rows: ["Iron handling stays a clinician-review prompt.", "Low resting pulse is kept as a source-backed monitoring item.", "Nutrition freshness is visible without showing macros."]
+    kicker: "Live aggregate prompts",
+    body: "Review prompts are grouped by clinical usefulness, freshness, and source confidence. They surface the health signals directly while keeping diagnosis and treatment decisions out of the website copy.",
+    rows: reviewPrompts.map((prompt) => `${prompt.title}: ${prompt.detail}`)
   },
   sources: {
     title: "Source Freshness",
-    kicker: "Local connections",
-    body: "The live page can show connection health and routing while the raw exports stay ignored from git.",
-    rows: ["Wearable, training, nutrition, labs, and journal sources are separated.", "Freshness is visible as status only.", "Raw source rows remain outside the public repository."]
+    kicker: "Aggregate source map",
+    body: "The page can publish aggregate values and source freshness. Raw exports, identifiers, and source files still stay outside the public repository.",
+    rows: sourceCoverage.map((source) => {
+      const freshness = sourceFreshness(source);
+      const ageCopy = freshness.ageDays === null ? "unknown age" : `${freshness.ageDays} days behind snapshot`;
+
+      return `${sourceName(source.source)}: ${formatNumber(source.rows)} rows, latest ${formatDate(source.latestDay)}, ${ageCopy}.`;
+    })
   },
   labs: {
-    title: "Labs Summary",
-    kicker: "Values masked",
-    body: "Lab sections preserve the layout and review prompts, but the public site only publishes labels and status categories.",
-    rows: ["Latest panel is represented as a masked source group.", "Review markers explain why a clinician conversation may be useful.", "No public lab values are shipped."]
+    title: "Health Data Summary",
+    kicker: "Values visible",
+    body: "This panel shows the aggregate values already in the website data file. It is for tracking and review conversations, not diagnosis or treatment advice.",
+    rows: labRows.map(([label, value, detail]) => `${label}: ${value} / ${detail}`)
   },
   activity: {
     title: "Quick Actions",
-    kicker: "Prototype controls",
-    body: "Actions demonstrate the intended dashboard flow without uploading records or storing personal data on the public site.",
-    rows: ["Log Symptom opens a safe metadata flow.", "Add Measure is local-only in the private app.", "Share Report is shown as a review workflow, not a public export."]
+    kicker: "Dashboard controls",
+    body: "Actions demonstrate the intended dashboard flow. They change the visible interface only; they do not upload records or write new health source data.",
+    rows: ["Log Symptom opens the review context panel.", "Add Measure routes to current aggregate values.", "Share Report is shown as a review workflow, not a medical export."]
   }
 };
 
@@ -257,10 +469,7 @@ function MiniMetric({ metric, focus }) {
       </header>
       <strong>{metric.value}</strong>
       <small>{metric.detail}</small>
-      <TinySparkline
-        points="18,57 38,61 58,50 78,54 98,49 118,58 138,52 158,55 178,45 198,53 218,47"
-        color={tones[metric.tone]}
-      />
+      <TinySparkline points={metric.spark} color={tones[metric.tone]} />
     </article>
   );
 }
@@ -271,7 +480,7 @@ function ReadinessCard({ focus }) {
       <header className="vitals-card-heading">
         <div>
           <h2>Daily Readiness</h2>
-          <p>Public-safe source signal board</p>
+          <p>Live source signal board</p>
         </div>
         <Info size={14} strokeWidth={1.8} />
       </header>
@@ -311,14 +520,14 @@ function SourceCard({ focus, onOpen }) {
       <header className="vitals-card-heading">
         <div>
           <h2>Source Freshness</h2>
-          <p>Connections stay local; public page shows routing only</p>
+          <p>Aggregate values visible; source files stay separate</p>
         </div>
         <button type="button" onClick={onOpen}>Details <ArrowRight size={14} /></button>
       </header>
       <div className="vitals-source-layout">
         <div className="vitals-source-ring">
-          <strong>Local</strong>
-          <span>data stays private</span>
+          <strong>{sourceCoverage.length}</strong>
+          <span>source groups</span>
         </div>
         <div className="vitals-source-list">
           {sourceRows.map(([label, status, color]) => (
@@ -341,21 +550,21 @@ function TrendCard({ range, focus, onRangeClick }) {
     <article className={`vitals-card vitals-line-card${focusClass(focus, "review")}`}>
       <header className="vitals-card-heading">
         <div>
-          <h2>Heart Rate</h2>
-          <p>Trend shape, values hidden</p>
+          <h2>Recovery & Sleep</h2>
+          <p>Latest aggregate trend values</p>
         </div>
         <button type="button" onClick={onRangeClick}>{range} <ChevronDown size={14} /></button>
       </header>
       <div className="vitals-chart-legend">
-        <span><i className="green" /> Resting</span>
-        <span><i className="teal" /> Daily average</span>
+        <span><i className="green" /> Recovery</span>
+        <span><i className="teal" /> Sleep duration</span>
       </div>
-      <svg className="vitals-trend-chart" viewBox="0 0 620 260" role="img" aria-label="Private heart-rate trend shape">
+      <svg className="vitals-trend-chart" viewBox="0 0 620 260" role="img" aria-label="Live recovery and sleep trend">
         {[40, 92, 144, 196].map((y) => (
           <line key={y} x1="18" x2="598" y1={y} y2={y} />
         ))}
-        <path d="M22 168C76 154 110 160 148 162C196 166 236 160 284 164C334 168 374 154 420 150C470 145 520 160 596 156" className="green" />
-        <path d="M22 110C82 88 128 96 174 104C228 112 272 96 318 104C372 112 410 84 462 86C516 88 548 108 596 102" className="teal" />
+        <path d={trendPaths.recovery} className="green" />
+        <path d={trendPaths.sleep} className="teal" />
       </svg>
     </article>
   );
@@ -366,18 +575,20 @@ function NutritionCard({ focus }) {
     <article className={`vitals-card vitals-nutrition-card${focusClass(focus, "sources")}`}>
       <header className="vitals-card-heading">
         <div>
-          <h2>Nutrition Adherence</h2>
-          <p>Logged data window is available but older</p>
+          <h2>Nutrition</h2>
+          <p>7-day rolling average from {formatShortDate(nutritionLatest.date)}</p>
         </div>
         <Info size={14} />
       </header>
-      <strong>Review<span>freshness</span></strong>
-      <small>Private macros are not published.</small>
-      <div className="vitals-bars" aria-label="Nutrition adherence bars">
-        {barValues.map((value, index) => (
-          <span style={{ "--height": `${value}%` }} key={`${value}-${index}`}>
+      <strong>{formatNumber(nutritionLatest.kcal_7d)}<span>kcal / day</span></strong>
+      <small>
+        Protein {formatNumber(nutritionLatest.protein_7d, 1)}g / fat {formatNumber(nutritionLatest.fat_7d, 1)}g / net carb {formatNumber(nutritionLatest.netcarb_7d, 1)}g.
+      </small>
+      <div className="vitals-bars" aria-label="Nutrition aggregate bars">
+        {nutritionBars.map((item) => (
+          <span style={{ "--height": item.height }} title={`${item.title}: ${formatNumber(item.value, 1)}`} key={item.label}>
             <i />
-            <em>{["M", "T", "W", "T", "F", "S", "S"][index]}</em>
+            <em>{item.label}</em>
           </span>
         ))}
       </div>
@@ -420,10 +631,10 @@ function LabsCard({ focus, onOpen }) {
     <article className={`vitals-card vitals-labs-card${focusClass(focus, "labs")}`} id="vitals-labs">
       <header className="vitals-card-heading">
         <div>
-          <h2>Labs Summary</h2>
-          <p>Latest verified records stay local</p>
+          <h2>Health Data Summary</h2>
+          <p>Latest aggregate records from the website data file</p>
         </div>
-        <button type="button" onClick={onOpen}>View all labs <ArrowRight size={15} /></button>
+        <button type="button" onClick={onOpen}>View values <ArrowRight size={15} /></button>
       </header>
       <div className="vitals-lab-grid">
         {labRows.map(([label, value, detail]) => (
@@ -437,7 +648,7 @@ function LabsCard({ focus, onOpen }) {
       </div>
       <footer>
         <CheckCircle2 size={16} />
-        Public page preserves the dashboard shape without exposing lab values.
+        Aggregate values are visible; raw source exports and identifiers stay out of the repository.
       </footer>
     </article>
   );
@@ -458,15 +669,15 @@ function RecentCard({ focus, onOpenReview, onOpenSources, onOpenActions }) {
           <CalendarDays size={20} />
           <span>
             <strong>Clinician review thread</strong>
-            <small>Iron handling, pulse, and source freshness</small>
+            <small>{reviewPrompts[0]?.title || "Current health review prompt"}</small>
           </span>
           <button type="button" onClick={onOpenReview}>Open note</button>
         </div>
         <div>
           <CalendarDays size={20} />
           <span>
-            <strong>Local snapshot generated</strong>
-            <small>Ignored from the public repository</small>
+            <strong>Snapshot generated</strong>
+            <small>{formatDate(healthData.generatedAt)} / {sourceCoverage.length} source groups</small>
           </span>
           <button type="button" onClick={onOpenSources}>Review</button>
         </div>
@@ -478,9 +689,9 @@ function RecentCard({ focus, onOpenReview, onOpenSources, onOpenActions }) {
 
 function ActionsCard({ focus, onOpen }) {
   const actions = [
-    [ClipboardList, "Log Symptom", "activity"],
-    [Plus, "Add Measure", "activity"],
-    [Upload, "Upload Record", "sources"],
+    [ClipboardList, "Log Symptom", "review"],
+    [Plus, "Add Measure", "labs"],
+    [Upload, "Source Freshness", "sources"],
     [FileText, "Share Report", "review"]
   ];
 
@@ -489,7 +700,7 @@ function ActionsCard({ focus, onOpen }) {
       <header className="vitals-card-heading">
         <div>
           <h2>Quick Actions</h2>
-          <p>Prototype controls</p>
+          <p>Dashboard controls</p>
         </div>
       </header>
       <div>
@@ -522,7 +733,7 @@ export function VitalsDashboardPreview({ compact = false }) {
           stat.key === "score"
             ? snapshot.summary
             : stat.key === "recovery"
-              ? `${snapshot.recency} · ${range}`
+              ? `${snapshot.recency} / ${range} / ${stat.trend}`
               : stat.trend
       })),
     [range, snapshot]
@@ -578,7 +789,7 @@ export function VitalsDashboardPreview({ compact = false }) {
             <button type="button" className="vitals-icon-button" aria-label="Notifications" onClick={() => openPanel("review")}>
               <Bell size={20} strokeWidth={1.7} />
             </button>
-            <div className="vitals-avatar" aria-label="Private profile">
+            <div className="vitals-avatar" aria-label="Health profile">
               VT
             </div>
           </div>
@@ -656,8 +867,8 @@ export function VitalsDashboardPreview({ compact = false }) {
         ) : null}
 
         <footer className="vitals-privacy-note">
-          <LockKeyhole size={15} />
-          Private health values, generated snapshots, and raw source rows stay outside the public website repository.
+          <CheckCircle2 size={15} />
+          Live aggregate health values are published here; raw exports, identifiers, and source files stay out of the public repo.
         </footer>
       </div>
     </section>
