@@ -6,9 +6,14 @@ const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDir, "..");
 const healthDataPath = path.join(repoRoot, "data/health-data.json");
 const publicHealthDataPath = path.join(repoRoot, "data/public-health-data.json");
-const defaultWhoopDir =
-  "/Users/danatkinson/Documents/Source Library/evidence/personal/life-archive/Health/Whoop";
-const whoopDir = path.resolve(process.env.WHOOP_ARCHIVE_DIR || defaultWhoopDir);
+const sourceHealthDataPath = fs.existsSync(healthDataPath) ? healthDataPath : publicHealthDataPath;
+const whoopDirEnv = process.env.WHOOP_ARCHIVE_DIR?.trim();
+
+if (!whoopDirEnv) {
+  throw new Error("Set WHOOP_ARCHIVE_DIR to the local WHOOP aggregate JSON archive before refreshing Vitals.");
+}
+
+const whoopDir = path.resolve(whoopDirEnv);
 
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
@@ -248,7 +253,7 @@ function refreshHealthData(baseData) {
   };
 }
 
-const refreshed = refreshHealthData(readJson(healthDataPath));
+const refreshed = refreshHealthData(readJson(sourceHealthDataPath));
 const publicData = {
   generatedAt: refreshed.generatedAt,
   snapshotDate: refreshed.snapshotDate,
@@ -259,7 +264,9 @@ const publicData = {
   series: refreshed.series
 };
 
-writeJson(healthDataPath, refreshed);
+if (fs.existsSync(healthDataPath)) {
+  writeJson(healthDataPath, refreshed);
+}
 writeJson(publicHealthDataPath, publicData);
 
 console.log(
