@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-05-31T09:10:11.801Z",
-  "snapshotDate": "2026-05-31",
+  "generatedAt": "2026-06-04T07:38:59.702Z",
+  "snapshotDate": "2026-06-04",
   "sourceCoverage": [
     {
       "source": "whoop",
-      "rows": 681,
+      "rows": 450,
       "firstDay": "2026-04-03",
-      "latestDay": "2026-05-04",
+      "latestDay": "2026-06-04",
       "metricCount": 21
     },
     {
@@ -40,58 +40,58 @@
   ],
   "latest": {
     "recovery_score": {
-      "date": "2026-05-04",
+      "date": "2026-06-04",
       "metric": "recovery_score",
-      "value": 84,
+      "value": 36,
       "unit": "%",
       "source": "whoop",
-      "previousValue": 67,
-      "delta": 17
+      "previousValue": 65,
+      "delta": -29
     },
     "sleep_performance": {
-      "date": "2026-05-03",
+      "date": "2026-06-03",
       "metric": "sleep_performance",
-      "value": 76,
+      "value": 71,
       "unit": "%",
       "source": "whoop",
-      "previousValue": 86,
+      "previousValue": 81,
       "delta": -10
     },
     "hrv": {
-      "date": "2026-05-04",
+      "date": "2026-06-04",
       "metric": "hrv",
-      "value": 99.29903,
+      "value": 59.71,
       "unit": "ms",
       "source": "whoop",
-      "previousValue": 91.9584,
-      "delta": 7.340630000000004
+      "previousValue": 69.35,
+      "delta": -9.64
     },
     "heart_rate_resting": {
-      "date": "2026-05-04",
+      "date": "2026-06-04",
       "metric": "heart_rate_resting",
-      "value": 47,
+      "value": 46,
       "unit": "bpm",
       "source": "whoop",
-      "previousValue": 51,
-      "delta": -4
+      "previousValue": 46,
+      "delta": 0
     },
     "sleep_duration": {
-      "date": "2026-05-03",
+      "date": "2026-06-03",
       "metric": "sleep_duration",
-      "value": 447.84,
+      "value": 287.76,
       "unit": "minutes",
       "source": "whoop",
-      "previousValue": 554.79,
-      "delta": -106.94999999999999
+      "previousValue": 490.82,
+      "delta": -203.06
     },
     "strain": {
-      "date": "2026-05-03",
+      "date": "2026-06-03",
       "metric": "strain",
-      "value": 4.0915422,
+      "value": 0.12,
       "unit": "whoop_strain",
       "source": "whoop",
-      "previousValue": 4.051638,
-      "delta": 0.0399042000000005
+      "previousValue": 5.66,
+      "delta": -5.54
     },
     "weight": {
       "date": "2026-04-22",
@@ -100,12 +100,20 @@
       "source": "bloodwork/body-composition",
       "delta": -0.6000000000000085
     },
-    "calories_burned": null,
+    "calories_burned": {
+      "date": "2026-06-03",
+      "metric": "calories_burned",
+      "value": 552.06,
+      "unit": "kcal",
+      "source": "whoop",
+      "previousValue": 1803.45,
+      "delta": -1251.39
+    },
     "whoopAverages": {
-      "recovery7d": 67,
-      "hrv7d": 90.37653485714286,
-      "rhr7d": 50.857142857142854,
-      "sleep7d": 429.87142857142857
+      "recovery7d": 47.57,
+      "hrv7d": 64.76,
+      "rhr7d": 48.71,
+      "sleep7d": 441.29
     }
   },
   "nutrition": {
@@ -145,139 +153,6 @@
   "series": {
     "sleep_duration": [
       {
-        "date": "2026-04-09",
-        "metric": "sleep_duration",
-        "value": 416.6,
-        "unit": "minutes",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-10",
-        "metric": "sleep_duration",
-        "value": 400.21,
-        "unit": "minutes",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-11",
-        "metric": "sleep_duration",
-        "value": 341.46,
-        "unit": "minutes",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-12",
-        "metric": "sleep_duration",
-        "value": 538.92,
-        "unit": "minutes",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-13",
-        "metric": "sleep_duration",
-        "value": 402.07,
-        "unit": "minutes",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-14",
-        "metric": "sleep_duration",
-        "value": 362.48,
-        "unit": "minutes",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-15",
-        "metric": "sleep_duration",
-        "value": 454.12,
-        "unit": "minutes",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-16",
-        "metric": "sleep_duration",
-        "value": 356.01,
-        "unit": "minutes",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-17",
-        "metric": "sleep_duration",
-        "value": 390.62,
-        "unit": "minutes",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-18",
-        "metric": "sleep_duration",
-        "value": 369.98,
-        "unit": "minutes",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-19",
-        "metric": "sleep_duration",
-        "value": 460.88,
-        "unit": "minutes",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-20",
-        "metric": "sleep_duration",
-        "value": 333.98,
-        "unit": "minutes",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-21",
-        "metric": "sleep_duration",
-        "value": 320.75,
-        "unit": "minutes",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-22",
-        "metric": "sleep_duration",
-        "value": 393.38,
-        "unit": "minutes",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-23",
-        "metric": "sleep_duration",
-        "value": 407.7,
-        "unit": "minutes",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-25",
-        "metric": "sleep_duration",
-        "value": 418.02,
-        "unit": "minutes",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-26",
-        "metric": "sleep_duration",
-        "value": 526.58,
-        "unit": "minutes",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-27",
-        "metric": "sleep_duration",
-        "value": 442.48,
-        "unit": "minutes",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-28",
-        "metric": "sleep_duration",
-        "value": 369.24,
-        "unit": "minutes",
-        "source": "whoop"
-      },
-      {
         "date": "2026-04-29",
         "metric": "sleep_duration",
         "value": 420.07,
@@ -311,179 +186,2797 @@
         "value": 447.84,
         "unit": "minutes",
         "source": "whoop"
+      },
+      {
+        "date": "2026-05-04",
+        "metric": "sleep_duration",
+        "value": 455.51,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-05",
+        "metric": "sleep_duration",
+        "value": 390.92,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-06",
+        "metric": "sleep_duration",
+        "value": 395.45,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-07",
+        "metric": "sleep_duration",
+        "value": 474.13,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-09",
+        "metric": "sleep_duration",
+        "value": 367.76,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-10",
+        "metric": "sleep_duration",
+        "value": 489.81,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-11",
+        "metric": "sleep_duration",
+        "value": 507.74,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-12",
+        "metric": "sleep_duration",
+        "value": 350.62,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-13",
+        "metric": "sleep_duration",
+        "value": 491.34,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-14",
+        "metric": "sleep_duration",
+        "value": 521.64,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-16",
+        "metric": "sleep_duration",
+        "value": 474.62,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-17",
+        "metric": "sleep_duration",
+        "value": 459.38,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-18",
+        "metric": "sleep_duration",
+        "value": 376.88,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-20",
+        "metric": "sleep_duration",
+        "value": 444.62,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-22",
+        "metric": "sleep_duration",
+        "value": 391.38,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-23",
+        "metric": "sleep_duration",
+        "value": 529.73,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-24",
+        "metric": "sleep_duration",
+        "value": 339.48,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-25",
+        "metric": "sleep_duration",
+        "value": 469.47,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-26",
+        "metric": "sleep_duration",
+        "value": 431.02,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-27",
+        "metric": "sleep_duration",
+        "value": 402.93,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-28",
+        "metric": "sleep_duration",
+        "value": 482.01,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-29",
+        "metric": "sleep_duration",
+        "value": 435.16,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-31",
+        "metric": "sleep_duration",
+        "value": 540.62,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-06-01",
+        "metric": "sleep_duration",
+        "value": 449.74,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-06-02",
+        "metric": "sleep_duration",
+        "value": 490.82,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-06-03",
+        "metric": "sleep_duration",
+        "value": 287.76,
+        "unit": "minutes",
+        "source": "whoop"
       }
     ],
     "recovery_score": [
       {
-        "date": "2026-04-11",
+        "date": "2026-05-05",
         "metric": "recovery_score",
-        "value": 76,
+        "value": 89,
         "unit": "%",
         "source": "whoop"
       },
       {
-        "date": "2026-04-12",
-        "metric": "recovery_score",
-        "value": 66,
-        "unit": "%",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-13",
-        "metric": "recovery_score",
-        "value": 69,
-        "unit": "%",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-14",
-        "metric": "recovery_score",
-        "value": 61,
-        "unit": "%",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-15",
-        "metric": "recovery_score",
-        "value": 55,
-        "unit": "%",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-16",
-        "metric": "recovery_score",
-        "value": 55,
-        "unit": "%",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-17",
-        "metric": "recovery_score",
-        "value": 33,
-        "unit": "%",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-18",
-        "metric": "recovery_score",
-        "value": 27,
-        "unit": "%",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-19",
-        "metric": "recovery_score",
-        "value": 30,
-        "unit": "%",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-20",
-        "metric": "recovery_score",
-        "value": 40,
-        "unit": "%",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-21",
-        "metric": "recovery_score",
-        "value": 34,
-        "unit": "%",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-22",
-        "metric": "recovery_score",
-        "value": 29,
-        "unit": "%",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-23",
-        "metric": "recovery_score",
-        "value": 33,
-        "unit": "%",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-24",
-        "metric": "recovery_score",
-        "value": 42,
-        "unit": "%",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-25",
-        "metric": "recovery_score",
-        "value": 32,
-        "unit": "%",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-26",
-        "metric": "recovery_score",
-        "value": 50,
-        "unit": "%",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-27",
-        "metric": "recovery_score",
-        "value": 82,
-        "unit": "%",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-28",
+        "date": "2026-05-06",
         "metric": "recovery_score",
         "value": 64,
         "unit": "%",
         "source": "whoop"
       },
       {
-        "date": "2026-04-29",
+        "date": "2026-05-07",
         "metric": "recovery_score",
-        "value": 74,
+        "value": 51,
         "unit": "%",
         "source": "whoop"
       },
       {
-        "date": "2026-04-30",
+        "date": "2026-05-08",
         "metric": "recovery_score",
-        "value": 67,
+        "value": 46,
         "unit": "%",
         "source": "whoop"
       },
       {
-        "date": "2026-05-01",
+        "date": "2026-05-09",
         "metric": "recovery_score",
-        "value": 48,
+        "value": 49,
         "unit": "%",
         "source": "whoop"
       },
       {
-        "date": "2026-05-02",
+        "date": "2026-05-10",
+        "metric": "recovery_score",
+        "value": 58,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-11",
+        "metric": "recovery_score",
+        "value": 63,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-12",
+        "metric": "recovery_score",
+        "value": 96,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-13",
+        "metric": "recovery_score",
+        "value": 73,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-14",
+        "metric": "recovery_score",
+        "value": 70,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-15",
+        "metric": "recovery_score",
+        "value": 79,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-16",
+        "metric": "recovery_score",
+        "value": 85,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-17",
+        "metric": "recovery_score",
+        "value": 91,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-18",
+        "metric": "recovery_score",
+        "value": 60,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-19",
+        "metric": "recovery_score",
+        "value": 62,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-20",
+        "metric": "recovery_score",
+        "value": 34,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-21",
+        "metric": "recovery_score",
+        "value": 52,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-22",
+        "metric": "recovery_score",
+        "value": 45,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-23",
+        "metric": "recovery_score",
+        "value": 53,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-24",
+        "metric": "recovery_score",
+        "value": 62,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-25",
+        "metric": "recovery_score",
+        "value": 52,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-26",
+        "metric": "recovery_score",
+        "value": 76,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-27",
+        "metric": "recovery_score",
+        "value": 38,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-28",
+        "metric": "recovery_score",
+        "value": 36,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-29",
+        "metric": "recovery_score",
+        "value": 33,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-30",
+        "metric": "recovery_score",
+        "value": 34,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-31",
+        "metric": "recovery_score",
+        "value": 50,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-06-01",
+        "metric": "recovery_score",
+        "value": 47,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-06-02",
+        "metric": "recovery_score",
+        "value": 68,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-06-03",
         "metric": "recovery_score",
         "value": 65,
         "unit": "%",
         "source": "whoop"
       },
       {
-        "date": "2026-05-03",
+        "date": "2026-06-04",
         "metric": "recovery_score",
-        "value": 67,
-        "unit": "%",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-05-04",
-        "metric": "recovery_score",
-        "value": 84,
+        "value": 36,
         "unit": "%",
         "source": "whoop"
       }
     ],
     "weight": [
+      {
+        "date": "2024-10-27",
+        "metric": "weight",
+        "value": 61.6,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-10-28",
+        "metric": "weight",
+        "value": 62.2,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-10-29",
+        "metric": "weight",
+        "value": 61.3,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-10-30",
+        "metric": "weight",
+        "value": 61,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-11-01",
+        "metric": "weight",
+        "value": 61.2,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-11-02",
+        "metric": "weight",
+        "value": 61.4,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-11-03",
+        "metric": "weight",
+        "value": 61.9,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-11-04",
+        "metric": "weight",
+        "value": 62.9,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-11-05",
+        "metric": "weight",
+        "value": 61.7,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-11-06",
+        "metric": "weight",
+        "value": 62.1,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-11-07",
+        "metric": "weight",
+        "value": 62.2,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-11-08",
+        "metric": "weight",
+        "value": 62.2,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-11-09",
+        "metric": "weight",
+        "value": 61.6,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-11-10",
+        "metric": "weight",
+        "value": 61,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-11-11",
+        "metric": "weight",
+        "value": 61.9,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-11-12",
+        "metric": "weight",
+        "value": 62.1,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-11-13",
+        "metric": "weight",
+        "value": 62.4,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-11-14",
+        "metric": "weight",
+        "value": 62.4,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-11-15",
+        "metric": "weight",
+        "value": 61.7,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-11-16",
+        "metric": "weight",
+        "value": 61.8,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-11-17",
+        "metric": "weight",
+        "value": 61.9,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-11-18",
+        "metric": "weight",
+        "value": 62.2,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-11-19",
+        "metric": "weight",
+        "value": 62.5,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-11-20",
+        "metric": "weight",
+        "value": 62.6,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-11-21",
+        "metric": "weight",
+        "value": 63,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-11-22",
+        "metric": "weight",
+        "value": 63.5,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-11-23",
+        "metric": "weight",
+        "value": 63,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-11-24",
+        "metric": "weight",
+        "value": 62.4,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-11-25",
+        "metric": "weight",
+        "value": 62.3,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-11-26",
+        "metric": "weight",
+        "value": 63.1,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-11-27",
+        "metric": "weight",
+        "value": 63.2,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-11-28",
+        "metric": "weight",
+        "value": 63.2,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-11-29",
+        "metric": "weight",
+        "value": 62.5,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-12-01",
+        "metric": "weight",
+        "value": 62.8,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-12-02",
+        "metric": "weight",
+        "value": 63.3,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-12-03",
+        "metric": "weight",
+        "value": 63.5,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-12-04",
+        "metric": "weight",
+        "value": 63.6,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-12-05",
+        "metric": "weight",
+        "value": 62.8,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-12-06",
+        "metric": "weight",
+        "value": 62.9,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-12-07",
+        "metric": "weight",
+        "value": 62.5,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-12-09",
+        "metric": "weight",
+        "value": 63,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-12-10",
+        "metric": "weight",
+        "value": 63.2,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-12-11",
+        "metric": "weight",
+        "value": 63.5,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-12-12",
+        "metric": "weight",
+        "value": 63.2,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-12-13",
+        "metric": "weight",
+        "value": 62.9,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-12-14",
+        "metric": "weight",
+        "value": 63.1,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-12-15",
+        "metric": "weight",
+        "value": 63,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-12-16",
+        "metric": "weight",
+        "value": 63.3,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-12-17",
+        "metric": "weight",
+        "value": 63,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-12-18",
+        "metric": "weight",
+        "value": 63.4,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-12-19",
+        "metric": "weight",
+        "value": 63.8,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-12-23",
+        "metric": "weight",
+        "value": 63.6,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-12-24",
+        "metric": "weight",
+        "value": 62.6,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-12-28",
+        "metric": "weight",
+        "value": 62.2,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-12-29",
+        "metric": "weight",
+        "value": 63.3,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-12-30",
+        "metric": "weight",
+        "value": 63.1,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2024-12-31",
+        "metric": "weight",
+        "value": 62.7,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-01-01",
+        "metric": "weight",
+        "value": 62.4,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-01-02",
+        "metric": "weight",
+        "value": 62.7,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-01-03",
+        "metric": "weight",
+        "value": 62.6,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-01-04",
+        "metric": "weight",
+        "value": 62.3,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-01-05",
+        "metric": "weight",
+        "value": 62.5,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-01-06",
+        "metric": "weight",
+        "value": 63.2,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-01-07",
+        "metric": "weight",
+        "value": 63.3,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-01-08",
+        "metric": "weight",
+        "value": 64.2,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-01-09",
+        "metric": "weight",
+        "value": 63.8,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-01-10",
+        "metric": "weight",
+        "value": 63.9,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-01-11",
+        "metric": "weight",
+        "value": 64.2,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-01-22",
+        "metric": "weight",
+        "value": 62.8,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-01-23",
+        "metric": "weight",
+        "value": 63.2,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-01-24",
+        "metric": "weight",
+        "value": 63.1,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-01-27",
+        "metric": "weight",
+        "value": 64.2,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-02-01",
+        "metric": "weight",
+        "value": 64,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-02-02",
+        "metric": "weight",
+        "value": 63.8,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-02-04",
+        "metric": "weight",
+        "value": 64,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-02-05",
+        "metric": "weight",
+        "value": 64.3,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-02-06",
+        "metric": "weight",
+        "value": 64.2,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-02-07",
+        "metric": "weight",
+        "value": 64.1,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-02-08",
+        "metric": "weight",
+        "value": 64,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-02-10",
+        "metric": "weight",
+        "value": 63.5,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-02-11",
+        "metric": "weight",
+        "value": 63.8,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-02-12",
+        "metric": "weight",
+        "value": 63.8,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-02-13",
+        "metric": "weight",
+        "value": 63.8,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-02-14",
+        "metric": "weight",
+        "value": 63.6,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-02-15",
+        "metric": "weight",
+        "value": 63,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-02-16",
+        "metric": "weight",
+        "value": 63.3,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-02-17",
+        "metric": "weight",
+        "value": 63.5,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-02-18",
+        "metric": "weight",
+        "value": 63.9,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-02-19",
+        "metric": "weight",
+        "value": 64,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-02-20",
+        "metric": "weight",
+        "value": 63.8,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-02-21",
+        "metric": "weight",
+        "value": 63.7,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-02-22",
+        "metric": "weight",
+        "value": 63.8,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-02-23",
+        "metric": "weight",
+        "value": 64.8,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-02-24",
+        "metric": "weight",
+        "value": 64.2,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-02-25",
+        "metric": "weight",
+        "value": 64.6,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-02-26",
+        "metric": "weight",
+        "value": 64.5,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-02-27",
+        "metric": "weight",
+        "value": 65.1,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-02-28",
+        "metric": "weight",
+        "value": 64.8,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-03-01",
+        "metric": "weight",
+        "value": 65.3,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-03-03",
+        "metric": "weight",
+        "value": 66.1,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-03-04",
+        "metric": "weight",
+        "value": 66.1,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-03-05",
+        "metric": "weight",
+        "value": 65.4,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-03-06",
+        "metric": "weight",
+        "value": 65.771,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-03-07",
+        "metric": "weight",
+        "value": 66.497,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-03-16",
+        "metric": "weight",
+        "value": 65.771,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-03-17",
+        "metric": "weight",
+        "value": 65.272,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-03-18",
+        "metric": "weight",
+        "value": 64.864,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-03-19",
+        "metric": "weight",
+        "value": 64.773,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-03-20",
+        "metric": "weight",
+        "value": 65,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-03-21",
+        "metric": "weight",
+        "value": 64.773,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-03-22",
+        "metric": "weight",
+        "value": 64.682,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-03-23",
+        "metric": "weight",
+        "value": 63.866,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-03-24",
+        "metric": "weight",
+        "value": 64.864,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-03-25",
+        "metric": "weight",
+        "value": 64.773,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-03-26",
+        "metric": "weight",
+        "value": 65.09,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-03-27",
+        "metric": "weight",
+        "value": 64.682,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-03-28",
+        "metric": "weight",
+        "value": 64.274,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-03-29",
+        "metric": "weight",
+        "value": 63.956,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-03-30",
+        "metric": "weight",
+        "value": 63.9,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-03-31",
+        "metric": "weight",
+        "value": 63.775,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-04-01",
+        "metric": "weight",
+        "value": 64.1,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-04-02",
+        "metric": "weight",
+        "value": 64.1,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-04-03",
+        "metric": "weight",
+        "value": 64.682,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-04-04",
+        "metric": "weight",
+        "value": 64.9,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-04-05",
+        "metric": "weight",
+        "value": 64.3,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-04-06",
+        "metric": "weight",
+        "value": 64.183,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-04-07",
+        "metric": "weight",
+        "value": 65.181,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-04-08",
+        "metric": "weight",
+        "value": 65.5,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-04-09",
+        "metric": "weight",
+        "value": 65.3,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-04-10",
+        "metric": "weight",
+        "value": 65.5,
+        "unit": "kg",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-04-11",
+        "metric": "weight",
+        "value": 65.363,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-04-12",
+        "metric": "weight",
+        "value": 65.589,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-04-13",
+        "metric": "weight",
+        "value": 64.773,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-04-14",
+        "metric": "weight",
+        "value": 65,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-04-15",
+        "metric": "weight",
+        "value": 65.499,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-04-16",
+        "metric": "weight",
+        "value": 65.499,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-04-17",
+        "metric": "weight",
+        "value": 65.589,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-04-18",
+        "metric": "weight",
+        "value": 65.272,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-04-19",
+        "metric": "weight",
+        "value": 64.682,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-04-20",
+        "metric": "weight",
+        "value": 65.09,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-04-21",
+        "metric": "weight",
+        "value": 64.682,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-04-22",
+        "metric": "weight",
+        "value": 64.455,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-04-23",
+        "metric": "weight",
+        "value": 63.866,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-04-24",
+        "metric": "weight",
+        "value": 64.455,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-04-25",
+        "metric": "weight",
+        "value": 64.455,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-04-26",
+        "metric": "weight",
+        "value": 64.682,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-04-27",
+        "metric": "weight",
+        "value": 63.956,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-04-28",
+        "metric": "weight",
+        "value": 64.365,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-04-29",
+        "metric": "weight",
+        "value": 65.363,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-04-30",
+        "metric": "weight",
+        "value": 64.864,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-01",
+        "metric": "weight",
+        "value": 65.68,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-02",
+        "metric": "weight",
+        "value": 64.455,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-03",
+        "metric": "weight",
+        "value": 64.365,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-04",
+        "metric": "weight",
+        "value": 64.365,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-05",
+        "metric": "weight",
+        "value": 63.684,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-06",
+        "metric": "weight",
+        "value": 65.272,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-07",
+        "metric": "weight",
+        "value": 65.68,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-08",
+        "metric": "weight",
+        "value": 65,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-09",
+        "metric": "weight",
+        "value": 64.773,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-10",
+        "metric": "weight",
+        "value": 66.497,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-11",
+        "metric": "weight",
+        "value": 64.592,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-12",
+        "metric": "weight",
+        "value": 65.272,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-13",
+        "metric": "weight",
+        "value": 67.177,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-14",
+        "metric": "weight",
+        "value": 66.996,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-15",
+        "metric": "weight",
+        "value": 64.864,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-16",
+        "metric": "weight",
+        "value": 65.589,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-17",
+        "metric": "weight",
+        "value": 66.27,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-18",
+        "metric": "weight",
+        "value": 65.589,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-19",
+        "metric": "weight",
+        "value": 67.585,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-20",
+        "metric": "weight",
+        "value": 65.68,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-21",
+        "metric": "weight",
+        "value": 67.767,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-22",
+        "metric": "weight",
+        "value": 65.68,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-23",
+        "metric": "weight",
+        "value": 67.086,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-24",
+        "metric": "weight",
+        "value": 65.499,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-25",
+        "metric": "weight",
+        "value": 66.27,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-26",
+        "metric": "weight",
+        "value": 66.179,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-27",
+        "metric": "weight",
+        "value": 66.587,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-29",
+        "metric": "weight",
+        "value": 65.499,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-30",
+        "metric": "weight",
+        "value": 65.771,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-31",
+        "metric": "weight",
+        "value": 66.27,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-06-01",
+        "metric": "weight",
+        "value": 65.499,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-06-02",
+        "metric": "weight",
+        "value": 66.179,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-06-03",
+        "metric": "weight",
+        "value": 65.771,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-06-04",
+        "metric": "weight",
+        "value": 66.27,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-06-05",
+        "metric": "weight",
+        "value": 65.771,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-06-06",
+        "metric": "weight",
+        "value": 65.862,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-06-07",
+        "metric": "weight",
+        "value": 65.68,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-06-08",
+        "metric": "weight",
+        "value": 65,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-06-09",
+        "metric": "weight",
+        "value": 65.771,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-06-10",
+        "metric": "weight",
+        "value": 65.272,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-06-11",
+        "metric": "weight",
+        "value": 65.862,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-06-12",
+        "metric": "weight",
+        "value": 65.998,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-06-13",
+        "metric": "weight",
+        "value": 66.361,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-06-17",
+        "metric": "weight",
+        "value": 65.181,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-06-19",
+        "metric": "weight",
+        "value": 65.771,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-06-20",
+        "metric": "weight",
+        "value": 65.181,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-06-21",
+        "metric": "weight",
+        "value": 64.864,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-06-22",
+        "metric": "weight",
+        "value": 65,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-06-23",
+        "metric": "weight",
+        "value": 65.363,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-06-24",
+        "metric": "weight",
+        "value": 64.864,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-06-25",
+        "metric": "weight",
+        "value": 64.365,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-06-26",
+        "metric": "weight",
+        "value": 64.592,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-06-27",
+        "metric": "weight",
+        "value": 65.09,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-06-28",
+        "metric": "weight",
+        "value": 64.682,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-04",
+        "metric": "weight",
+        "value": 65.68,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-05",
+        "metric": "weight",
+        "value": 64.864,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-06",
+        "metric": "weight",
+        "value": 64.093,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-07",
+        "metric": "weight",
+        "value": 64.455,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-08",
+        "metric": "weight",
+        "value": 64.773,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-09",
+        "metric": "weight",
+        "value": 65.68,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-10",
+        "metric": "weight",
+        "value": 65.363,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-11",
+        "metric": "weight",
+        "value": 65.68,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-14",
+        "metric": "weight",
+        "value": 67.268,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-15",
+        "metric": "weight",
+        "value": 67.177,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-16",
+        "metric": "weight",
+        "value": 67.177,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-21",
+        "metric": "weight",
+        "value": 66.996,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-22",
+        "metric": "weight",
+        "value": 66.179,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-23",
+        "metric": "weight",
+        "value": 66.088,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-24",
+        "metric": "weight",
+        "value": 65.862,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-25",
+        "metric": "weight",
+        "value": 66.678,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-26",
+        "metric": "weight",
+        "value": 66.179,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-28",
+        "metric": "weight",
+        "value": 67.767,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-29",
+        "metric": "weight",
+        "value": 67.086,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-30",
+        "metric": "weight",
+        "value": 66.769,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-31",
+        "metric": "weight",
+        "value": 67.358,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-01",
+        "metric": "weight",
+        "value": 67.585,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-04",
+        "metric": "weight",
+        "value": 67.676,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-05",
+        "metric": "weight",
+        "value": 68.084,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-06",
+        "metric": "weight",
+        "value": 67.993,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-07",
+        "metric": "weight",
+        "value": 67.086,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-08",
+        "metric": "weight",
+        "value": 67.268,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-09",
+        "metric": "weight",
+        "value": 67.857,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-10",
+        "metric": "weight",
+        "value": 67.767,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-11",
+        "metric": "weight",
+        "value": 67.358,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-18",
+        "metric": "weight",
+        "value": 66.996,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-19",
+        "metric": "weight",
+        "value": 66.497,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-20",
+        "metric": "weight",
+        "value": 66.361,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-21",
+        "metric": "weight",
+        "value": 66.587,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-22",
+        "metric": "weight",
+        "value": 66.361,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-23",
+        "metric": "weight",
+        "value": 66.769,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-24",
+        "metric": "weight",
+        "value": 67.086,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-25",
+        "metric": "weight",
+        "value": 67.676,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-26",
+        "metric": "weight",
+        "value": 67.494,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-27",
+        "metric": "weight",
+        "value": 67.268,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-28",
+        "metric": "weight",
+        "value": 67.993,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-29",
+        "metric": "weight",
+        "value": 67.268,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-30",
+        "metric": "weight",
+        "value": 66.859,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-31",
+        "metric": "weight",
+        "value": 67.857,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-01",
+        "metric": "weight",
+        "value": 67.767,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-02",
+        "metric": "weight",
+        "value": 67.585,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-03",
+        "metric": "weight",
+        "value": 66.678,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-04",
+        "metric": "weight",
+        "value": 66.859,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-05",
+        "metric": "weight",
+        "value": 66.996,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-06",
+        "metric": "weight",
+        "value": 66.996,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-08",
+        "metric": "weight",
+        "value": 67.585,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-09",
+        "metric": "weight",
+        "value": 67.676,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-10",
+        "metric": "weight",
+        "value": 67.857,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-11",
+        "metric": "weight",
+        "value": 67.358,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-12",
+        "metric": "weight",
+        "value": 66.996,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-13",
+        "metric": "weight",
+        "value": 65.68,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-14",
+        "metric": "weight",
+        "value": 66.088,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-15",
+        "metric": "weight",
+        "value": 66.678,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-16",
+        "metric": "weight",
+        "value": 67.177,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-17",
+        "metric": "weight",
+        "value": 67.268,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-18",
+        "metric": "weight",
+        "value": 66.769,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-19",
+        "metric": "weight",
+        "value": 66.587,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-20",
+        "metric": "weight",
+        "value": 67.177,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-29",
+        "metric": "weight",
+        "value": 66.769,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-30",
+        "metric": "weight",
+        "value": 66.361,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-01",
+        "metric": "weight",
+        "value": 65.771,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-02",
+        "metric": "weight",
+        "value": 65.862,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-03",
+        "metric": "weight",
+        "value": 65.363,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-04",
+        "metric": "weight",
+        "value": 65.499,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-05",
+        "metric": "weight",
+        "value": 66.179,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-06",
+        "metric": "weight",
+        "value": 66.497,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-07",
+        "metric": "weight",
+        "value": 65.998,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-08",
+        "metric": "weight",
+        "value": 65.862,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-09",
+        "metric": "weight",
+        "value": 65.499,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-10",
+        "metric": "weight",
+        "value": 65.862,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-11",
+        "metric": "weight",
+        "value": 66.179,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-12",
+        "metric": "weight",
+        "value": 66.179,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-13",
+        "metric": "weight",
+        "value": 66.27,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-14",
+        "metric": "weight",
+        "value": 66.587,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-15",
+        "metric": "weight",
+        "value": 66.859,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-16",
+        "metric": "weight",
+        "value": 66.996,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-17",
+        "metric": "weight",
+        "value": 67.086,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-18",
+        "metric": "weight",
+        "value": 67.494,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-19",
+        "metric": "weight",
+        "value": 67.767,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-20",
+        "metric": "weight",
+        "value": 67.857,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-21",
+        "metric": "weight",
+        "value": 67.268,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-24",
+        "metric": "weight",
+        "value": 67.676,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-25",
+        "metric": "weight",
+        "value": 67.585,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-26",
+        "metric": "weight",
+        "value": 66.361,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-27",
+        "metric": "weight",
+        "value": 66.179,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-28",
+        "metric": "weight",
+        "value": 66.996,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-29",
+        "metric": "weight",
+        "value": 67.086,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-30",
+        "metric": "weight",
+        "value": 66.859,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-31",
+        "metric": "weight",
+        "value": 66.996,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-01",
+        "metric": "weight",
+        "value": 67.585,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-02",
+        "metric": "weight",
+        "value": 68.175,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-03",
+        "metric": "weight",
+        "value": 68.492,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-04",
+        "metric": "weight",
+        "value": 68.266,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-05",
+        "metric": "weight",
+        "value": 68.583,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-06",
+        "metric": "weight",
+        "value": 69.4,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-07",
+        "metric": "weight",
+        "value": 69.989,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-08",
+        "metric": "weight",
+        "value": 70.579,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-17",
+        "metric": "weight",
+        "value": 69.49,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-18",
+        "metric": "weight",
+        "value": 69.4,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-19",
+        "metric": "weight",
+        "value": 68.855,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-20",
+        "metric": "weight",
+        "value": 69.4,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-21",
+        "metric": "weight",
+        "value": 69.989,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-22",
+        "metric": "weight",
+        "value": 69.989,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-23",
+        "metric": "weight",
+        "value": 69.581,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-24",
+        "metric": "weight",
+        "value": 70.488,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-25",
+        "metric": "weight",
+        "value": 69.899,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-26",
+        "metric": "weight",
+        "value": 70.261,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-27",
+        "metric": "weight",
+        "value": 70.171,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-28",
+        "metric": "weight",
+        "value": 70.896,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-29",
+        "metric": "weight",
+        "value": 70.261,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-30",
+        "metric": "weight",
+        "value": 70.67,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-01",
+        "metric": "weight",
+        "value": 69.672,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-02",
+        "metric": "weight",
+        "value": 69.581,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-03",
+        "metric": "weight",
+        "value": 69.4,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-04",
+        "metric": "weight",
+        "value": 68.674,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-05",
+        "metric": "weight",
+        "value": 68.991,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-06",
+        "metric": "weight",
+        "value": 68.356,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-07",
+        "metric": "weight",
+        "value": 68.356,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-08",
+        "metric": "weight",
+        "value": 67.676,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-09",
+        "metric": "weight",
+        "value": 68.356,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-10",
+        "metric": "weight",
+        "value": 68.674,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-11",
+        "metric": "weight",
+        "value": 68.855,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-12",
+        "metric": "weight",
+        "value": 68.492,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-13",
+        "metric": "weight",
+        "value": 67.494,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-14",
+        "metric": "weight",
+        "value": 67.585,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-15",
+        "metric": "weight",
+        "value": 68.084,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-16",
+        "metric": "weight",
+        "value": 68.175,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-17",
+        "metric": "weight",
+        "value": 68.492,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-18",
+        "metric": "weight",
+        "value": 67.767,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-19",
+        "metric": "weight",
+        "value": 67.857,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-20",
+        "metric": "weight",
+        "value": 67.268,
+        "unit": "kg",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-21",
+        "metric": "weight",
+        "value": 66.996,
+        "unit": "kg",
+        "source": "fitbit"
+      },
       {
         "date": "2025-12-22",
         "metric": "weight",
@@ -655,6 +3148,2386 @@
     ],
     "steps": [
       {
+        "date": "2023-10-13",
+        "metric": "steps",
+        "value": 34,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-10-14",
+        "metric": "steps",
+        "value": 21811,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-10-15",
+        "metric": "steps",
+        "value": 11788,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-10-16",
+        "metric": "steps",
+        "value": 10249,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-10-17",
+        "metric": "steps",
+        "value": 9279,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-10-18",
+        "metric": "steps",
+        "value": 13498,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-10-19",
+        "metric": "steps",
+        "value": 15237,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-10-20",
+        "metric": "steps",
+        "value": 5964,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-10-21",
+        "metric": "steps",
+        "value": 27564,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-10-22",
+        "metric": "steps",
+        "value": 18382,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-10-23",
+        "metric": "steps",
+        "value": 11837,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-10-24",
+        "metric": "steps",
+        "value": 17206,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-10-25",
+        "metric": "steps",
+        "value": 13596,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-10-26",
+        "metric": "steps",
+        "value": 11705,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-10-27",
+        "metric": "steps",
+        "value": 11096,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-10-28",
+        "metric": "steps",
+        "value": 18310,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-10-29",
+        "metric": "steps",
+        "value": 24591,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-10-30",
+        "metric": "steps",
+        "value": 16229,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-10-31",
+        "metric": "steps",
+        "value": 10113,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-11-01",
+        "metric": "steps",
+        "value": 21287,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-11-02",
+        "metric": "steps",
+        "value": 15323,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-11-03",
+        "metric": "steps",
+        "value": 10165,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-11-04",
+        "metric": "steps",
+        "value": 14828,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-11-05",
+        "metric": "steps",
+        "value": 20928,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-11-06",
+        "metric": "steps",
+        "value": 14124,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-11-07",
+        "metric": "steps",
+        "value": 13216,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-11-08",
+        "metric": "steps",
+        "value": 15916,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-11-09",
+        "metric": "steps",
+        "value": 11139,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-11-10",
+        "metric": "steps",
+        "value": 16422,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-11-11",
+        "metric": "steps",
+        "value": 21138,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-11-12",
+        "metric": "steps",
+        "value": 15457,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-11-13",
+        "metric": "steps",
+        "value": 12959,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-11-14",
+        "metric": "steps",
+        "value": 12043,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-11-15",
+        "metric": "steps",
+        "value": 16091,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-11-16",
+        "metric": "steps",
+        "value": 6698,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-11-17",
+        "metric": "steps",
+        "value": 13157,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-11-18",
+        "metric": "steps",
+        "value": 24416,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-11-19",
+        "metric": "steps",
+        "value": 16274,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-11-20",
+        "metric": "steps",
+        "value": 13137,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-11-21",
+        "metric": "steps",
+        "value": 11991,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-11-22",
+        "metric": "steps",
+        "value": 7496,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-11-23",
+        "metric": "steps",
+        "value": 14424,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-11-24",
+        "metric": "steps",
+        "value": 13648,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-11-25",
+        "metric": "steps",
+        "value": 23090,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-11-26",
+        "metric": "steps",
+        "value": 17537,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-11-27",
+        "metric": "steps",
+        "value": 11988,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-11-28",
+        "metric": "steps",
+        "value": 12301,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-11-29",
+        "metric": "steps",
+        "value": 10206,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-11-30",
+        "metric": "steps",
+        "value": 13055,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-12-01",
+        "metric": "steps",
+        "value": 12221,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-12-02",
+        "metric": "steps",
+        "value": 29650,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-12-03",
+        "metric": "steps",
+        "value": 17528,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-12-04",
+        "metric": "steps",
+        "value": 11478,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-12-05",
+        "metric": "steps",
+        "value": 12603,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-12-06",
+        "metric": "steps",
+        "value": 10828,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-12-07",
+        "metric": "steps",
+        "value": 11536,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-12-08",
+        "metric": "steps",
+        "value": 13033,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-12-09",
+        "metric": "steps",
+        "value": 16540,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-12-10",
+        "metric": "steps",
+        "value": 8555,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-12-11",
+        "metric": "steps",
+        "value": 10733,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-12-12",
+        "metric": "steps",
+        "value": 15426,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-12-13",
+        "metric": "steps",
+        "value": 20057,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-12-14",
+        "metric": "steps",
+        "value": 6005,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-12-15",
+        "metric": "steps",
+        "value": 9744,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-12-16",
+        "metric": "steps",
+        "value": 14735,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-12-17",
+        "metric": "steps",
+        "value": 12824,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-12-18",
+        "metric": "steps",
+        "value": 9808,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-12-19",
+        "metric": "steps",
+        "value": 10624,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-12-20",
+        "metric": "steps",
+        "value": 15589,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-12-21",
+        "metric": "steps",
+        "value": 14731,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-12-22",
+        "metric": "steps",
+        "value": 12537,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-12-23",
+        "metric": "steps",
+        "value": 12374,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-12-24",
+        "metric": "steps",
+        "value": 14813,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-12-25",
+        "metric": "steps",
+        "value": 8346,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-12-26",
+        "metric": "steps",
+        "value": 19324,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-12-27",
+        "metric": "steps",
+        "value": 13102,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-12-28",
+        "metric": "steps",
+        "value": 17063,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-12-29",
+        "metric": "steps",
+        "value": 10429,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-12-30",
+        "metric": "steps",
+        "value": 12859,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2023-12-31",
+        "metric": "steps",
+        "value": 13291,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2024-01-01",
+        "metric": "steps",
+        "value": 11128,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2024-01-02",
+        "metric": "steps",
+        "value": 14135,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2024-01-03",
+        "metric": "steps",
+        "value": 14343,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2024-01-04",
+        "metric": "steps",
+        "value": 13191,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2024-01-05",
+        "metric": "steps",
+        "value": 9398,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2024-01-06",
+        "metric": "steps",
+        "value": 20907,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2024-01-07",
+        "metric": "steps",
+        "value": 17095,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2024-01-08",
+        "metric": "steps",
+        "value": 16316,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2024-01-09",
+        "metric": "steps",
+        "value": 12940,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2024-01-10",
+        "metric": "steps",
+        "value": 14289,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2024-01-11",
+        "metric": "steps",
+        "value": 14508,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2024-01-12",
+        "metric": "steps",
+        "value": 5948,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2024-01-13",
+        "metric": "steps",
+        "value": 6401,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-04-22",
+        "metric": "steps",
+        "value": 3240,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-04-23",
+        "metric": "steps",
+        "value": 19444,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-04-24",
+        "metric": "steps",
+        "value": 8525,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-04-25",
+        "metric": "steps",
+        "value": 11448,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-04-27",
+        "metric": "steps",
+        "value": 11394,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-04-28",
+        "metric": "steps",
+        "value": 28668,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-04-29",
+        "metric": "steps",
+        "value": 9024,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-04-30",
+        "metric": "steps",
+        "value": 14334,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-01",
+        "metric": "steps",
+        "value": 7564,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-02",
+        "metric": "steps",
+        "value": 31959,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-03",
+        "metric": "steps",
+        "value": 10985,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-04",
+        "metric": "steps",
+        "value": 3669,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-10",
+        "metric": "steps",
+        "value": 10521,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-11",
+        "metric": "steps",
+        "value": 35787,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-12",
+        "metric": "steps",
+        "value": 6167,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-14",
+        "metric": "steps",
+        "value": 5908,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-15",
+        "metric": "steps",
+        "value": 7217,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-18",
+        "metric": "steps",
+        "value": 2912,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-19",
+        "metric": "steps",
+        "value": 4367,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-20",
+        "metric": "steps",
+        "value": 13525,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-21",
+        "metric": "steps",
+        "value": 10313,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-24",
+        "metric": "steps",
+        "value": 4549,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-26",
+        "metric": "steps",
+        "value": 4638,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-27",
+        "metric": "steps",
+        "value": 3032,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-29",
+        "metric": "steps",
+        "value": 11177,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-30",
+        "metric": "steps",
+        "value": 5026,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-05-31",
+        "metric": "steps",
+        "value": 2522,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-06-01",
+        "metric": "steps",
+        "value": 6608,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-06-02",
+        "metric": "steps",
+        "value": 3180,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-06-20",
+        "metric": "steps",
+        "value": 7140,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-06-21",
+        "metric": "steps",
+        "value": 16963,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-06-22",
+        "metric": "steps",
+        "value": 14514,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-06-23",
+        "metric": "steps",
+        "value": 23659,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-06-24",
+        "metric": "steps",
+        "value": 17440,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-06-25",
+        "metric": "steps",
+        "value": 7926,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-06-26",
+        "metric": "steps",
+        "value": 7835,
+        "unit": "count",
+        "source": "googlefit"
+      },
+      {
+        "date": "2025-06-27",
+        "metric": "steps",
+        "value": 15472,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-06-28",
+        "metric": "steps",
+        "value": 7806,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-06-29",
+        "metric": "steps",
+        "value": 10676,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-06-30",
+        "metric": "steps",
+        "value": 7422,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-01",
+        "metric": "steps",
+        "value": 17250,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-02",
+        "metric": "steps",
+        "value": 11369,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-03",
+        "metric": "steps",
+        "value": 10937,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-04",
+        "metric": "steps",
+        "value": 23310,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-05",
+        "metric": "steps",
+        "value": 22645,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-06",
+        "metric": "steps",
+        "value": 22133,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-07",
+        "metric": "steps",
+        "value": 13089,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-08",
+        "metric": "steps",
+        "value": 21058,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-09",
+        "metric": "steps",
+        "value": 16106,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-10",
+        "metric": "steps",
+        "value": 18840,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-11",
+        "metric": "steps",
+        "value": 11639,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-12",
+        "metric": "steps",
+        "value": 25714,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-13",
+        "metric": "steps",
+        "value": 6693,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-14",
+        "metric": "steps",
+        "value": 8539,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-15",
+        "metric": "steps",
+        "value": 11678,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-16",
+        "metric": "steps",
+        "value": 15757,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-17",
+        "metric": "steps",
+        "value": 29928,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-18",
+        "metric": "steps",
+        "value": 40954,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-19",
+        "metric": "steps",
+        "value": 33514,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-20",
+        "metric": "steps",
+        "value": 6260,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-21",
+        "metric": "steps",
+        "value": 12285,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-22",
+        "metric": "steps",
+        "value": 16699,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-23",
+        "metric": "steps",
+        "value": 15054,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-24",
+        "metric": "steps",
+        "value": 13945,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-25",
+        "metric": "steps",
+        "value": 9997,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-26",
+        "metric": "steps",
+        "value": 7140,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-27",
+        "metric": "steps",
+        "value": 10701,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-28",
+        "metric": "steps",
+        "value": 8903,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-29",
+        "metric": "steps",
+        "value": 14221,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-30",
+        "metric": "steps",
+        "value": 11058,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-07-31",
+        "metric": "steps",
+        "value": 13520,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-01",
+        "metric": "steps",
+        "value": 19324,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-02",
+        "metric": "steps",
+        "value": 13673,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-03",
+        "metric": "steps",
+        "value": 17662,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-04",
+        "metric": "steps",
+        "value": 10198,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-05",
+        "metric": "steps",
+        "value": 11456,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-06",
+        "metric": "steps",
+        "value": 15502,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-07",
+        "metric": "steps",
+        "value": 9902,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-08",
+        "metric": "steps",
+        "value": 18781,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-09",
+        "metric": "steps",
+        "value": 29092,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-10",
+        "metric": "steps",
+        "value": 12316,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-11",
+        "metric": "steps",
+        "value": 30453,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-12",
+        "metric": "steps",
+        "value": 43834,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-13",
+        "metric": "steps",
+        "value": 27098,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-14",
+        "metric": "steps",
+        "value": 32516,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-15",
+        "metric": "steps",
+        "value": 33894,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-16",
+        "metric": "steps",
+        "value": 35178,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-17",
+        "metric": "steps",
+        "value": 34831,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-18",
+        "metric": "steps",
+        "value": 13815,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-19",
+        "metric": "steps",
+        "value": 12026,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-20",
+        "metric": "steps",
+        "value": 16209,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-21",
+        "metric": "steps",
+        "value": 18475,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-22",
+        "metric": "steps",
+        "value": 16861,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-23",
+        "metric": "steps",
+        "value": 17413,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-24",
+        "metric": "steps",
+        "value": 16740,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-25",
+        "metric": "steps",
+        "value": 22221,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-26",
+        "metric": "steps",
+        "value": 1000,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-27",
+        "metric": "steps",
+        "value": 12446,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-28",
+        "metric": "steps",
+        "value": 2412,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-29",
+        "metric": "steps",
+        "value": 4911,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-30",
+        "metric": "steps",
+        "value": 7239,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-08-31",
+        "metric": "steps",
+        "value": 16604,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-01",
+        "metric": "steps",
+        "value": 11816,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-02",
+        "metric": "steps",
+        "value": 6504,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-03",
+        "metric": "steps",
+        "value": 16390,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-04",
+        "metric": "steps",
+        "value": 18338,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-05",
+        "metric": "steps",
+        "value": 14452,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-06",
+        "metric": "steps",
+        "value": 20639,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-07",
+        "metric": "steps",
+        "value": 16459,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-08",
+        "metric": "steps",
+        "value": 4843,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-09",
+        "metric": "steps",
+        "value": 15372,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-10",
+        "metric": "steps",
+        "value": 15126,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-11",
+        "metric": "steps",
+        "value": 9060,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-12",
+        "metric": "steps",
+        "value": 18275,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-13",
+        "metric": "steps",
+        "value": 30602,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-14",
+        "metric": "steps",
+        "value": 11518,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-15",
+        "metric": "steps",
+        "value": 4865,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-16",
+        "metric": "steps",
+        "value": 19177,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-17",
+        "metric": "steps",
+        "value": 12772,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-18",
+        "metric": "steps",
+        "value": 17272,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-19",
+        "metric": "steps",
+        "value": 17550,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-20",
+        "metric": "steps",
+        "value": 11623,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-21",
+        "metric": "steps",
+        "value": 22326,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-22",
+        "metric": "steps",
+        "value": 26074,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-23",
+        "metric": "steps",
+        "value": 15859,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-24",
+        "metric": "steps",
+        "value": 15523,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-25",
+        "metric": "steps",
+        "value": 3238,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-26",
+        "metric": "steps",
+        "value": 16148,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-27",
+        "metric": "steps",
+        "value": 23440,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-28",
+        "metric": "steps",
+        "value": 15487,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-29",
+        "metric": "steps",
+        "value": 14037,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-09-30",
+        "metric": "steps",
+        "value": 19752,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-01",
+        "metric": "steps",
+        "value": 16910,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-02",
+        "metric": "steps",
+        "value": 10384,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-03",
+        "metric": "steps",
+        "value": 32615,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-04",
+        "metric": "steps",
+        "value": 18960,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-05",
+        "metric": "steps",
+        "value": 8701,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-06",
+        "metric": "steps",
+        "value": 22345,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-07",
+        "metric": "steps",
+        "value": 17876,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-08",
+        "metric": "steps",
+        "value": 16335,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-09",
+        "metric": "steps",
+        "value": 18596,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-10",
+        "metric": "steps",
+        "value": 20108,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-11",
+        "metric": "steps",
+        "value": 31351,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-12",
+        "metric": "steps",
+        "value": 10927,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-13",
+        "metric": "steps",
+        "value": 13368,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-14",
+        "metric": "steps",
+        "value": 17067,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-15",
+        "metric": "steps",
+        "value": 17235,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-16",
+        "metric": "steps",
+        "value": 15579,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-17",
+        "metric": "steps",
+        "value": 19353,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-18",
+        "metric": "steps",
+        "value": 7296,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-19",
+        "metric": "steps",
+        "value": 10142,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-20",
+        "metric": "steps",
+        "value": 17512,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-21",
+        "metric": "steps",
+        "value": 28477,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-22",
+        "metric": "steps",
+        "value": 47644,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-23",
+        "metric": "steps",
+        "value": 29299,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-24",
+        "metric": "steps",
+        "value": 24265,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-25",
+        "metric": "steps",
+        "value": 26807,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-26",
+        "metric": "steps",
+        "value": 26751,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-27",
+        "metric": "steps",
+        "value": 14794,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-28",
+        "metric": "steps",
+        "value": 14775,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-29",
+        "metric": "steps",
+        "value": 15960,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-30",
+        "metric": "steps",
+        "value": 24392,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-10-31",
+        "metric": "steps",
+        "value": 19491,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-01",
+        "metric": "steps",
+        "value": 21549,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-02",
+        "metric": "steps",
+        "value": 33865,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-03",
+        "metric": "steps",
+        "value": 10211,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-04",
+        "metric": "steps",
+        "value": 14958,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-05",
+        "metric": "steps",
+        "value": 34328,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-06",
+        "metric": "steps",
+        "value": 13521,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-07",
+        "metric": "steps",
+        "value": 16523,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-08",
+        "metric": "steps",
+        "value": 17581,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-09",
+        "metric": "steps",
+        "value": 35795,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-10",
+        "metric": "steps",
+        "value": 15152,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-11",
+        "metric": "steps",
+        "value": 21403,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-12",
+        "metric": "steps",
+        "value": 10147,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-13",
+        "metric": "steps",
+        "value": 14476,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-14",
+        "metric": "steps",
+        "value": 28131,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-15",
+        "metric": "steps",
+        "value": 32852,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-16",
+        "metric": "steps",
+        "value": 17063,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-17",
+        "metric": "steps",
+        "value": 16854,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-18",
+        "metric": "steps",
+        "value": 14389,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-19",
+        "metric": "steps",
+        "value": 13568,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-20",
+        "metric": "steps",
+        "value": 9887,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-21",
+        "metric": "steps",
+        "value": 33301,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-22",
+        "metric": "steps",
+        "value": 20550,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-23",
+        "metric": "steps",
+        "value": 10905,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-24",
+        "metric": "steps",
+        "value": 12376,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-25",
+        "metric": "steps",
+        "value": 11801,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-26",
+        "metric": "steps",
+        "value": 18198,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-27",
+        "metric": "steps",
+        "value": 13671,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-28",
+        "metric": "steps",
+        "value": 19999,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-29",
+        "metric": "steps",
+        "value": 16918,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-11-30",
+        "metric": "steps",
+        "value": 21684,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-01",
+        "metric": "steps",
+        "value": 11400,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-02",
+        "metric": "steps",
+        "value": 13807,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-03",
+        "metric": "steps",
+        "value": 16320,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-04",
+        "metric": "steps",
+        "value": 13639,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-05",
+        "metric": "steps",
+        "value": 33997,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-06",
+        "metric": "steps",
+        "value": 25056,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-07",
+        "metric": "steps",
+        "value": 11359,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-08",
+        "metric": "steps",
+        "value": 13231,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-09",
+        "metric": "steps",
+        "value": 16440,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-10",
+        "metric": "steps",
+        "value": 13759,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-11",
+        "metric": "steps",
+        "value": 9775,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-12",
+        "metric": "steps",
+        "value": 25428,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-13",
+        "metric": "steps",
+        "value": 21876,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-14",
+        "metric": "steps",
+        "value": 19315,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-15",
+        "metric": "steps",
+        "value": 12502,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-16",
+        "metric": "steps",
+        "value": 12619,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-17",
+        "metric": "steps",
+        "value": 18126,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-18",
+        "metric": "steps",
+        "value": 14350,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-19",
+        "metric": "steps",
+        "value": 13766,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-20",
+        "metric": "steps",
+        "value": 14652,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-21",
+        "metric": "steps",
+        "value": 12059,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-22",
+        "metric": "steps",
+        "value": 25778,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-23",
+        "metric": "steps",
+        "value": 9715,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-24",
+        "metric": "steps",
+        "value": 9855,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-25",
+        "metric": "steps",
+        "value": 13804,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-26",
+        "metric": "steps",
+        "value": 21565,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-27",
+        "metric": "steps",
+        "value": 17386,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-28",
+        "metric": "steps",
+        "value": 32284,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-29",
+        "metric": "steps",
+        "value": 17172,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-30",
+        "metric": "steps",
+        "value": 11270,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2025-12-31",
+        "metric": "steps",
+        "value": 8884,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-01",
+        "metric": "steps",
+        "value": 16522,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-02",
+        "metric": "steps",
+        "value": 8025,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-03",
+        "metric": "steps",
+        "value": 15660,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-04",
+        "metric": "steps",
+        "value": 8771,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-05",
+        "metric": "steps",
+        "value": 13053,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-06",
+        "metric": "steps",
+        "value": 13180,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-07",
+        "metric": "steps",
+        "value": 11649,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-08",
+        "metric": "steps",
+        "value": 12907,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-09",
+        "metric": "steps",
+        "value": 18152,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-10",
+        "metric": "steps",
+        "value": 25005,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-11",
+        "metric": "steps",
+        "value": 15196,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-12",
+        "metric": "steps",
+        "value": 16628,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-13",
+        "metric": "steps",
+        "value": 22548,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-14",
+        "metric": "steps",
+        "value": 18201,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-15",
+        "metric": "steps",
+        "value": 31117,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-16",
+        "metric": "steps",
+        "value": 29389,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-17",
+        "metric": "steps",
+        "value": 47392,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-18",
+        "metric": "steps",
+        "value": 14410,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-19",
+        "metric": "steps",
+        "value": 18848,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-20",
+        "metric": "steps",
+        "value": 20118,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-21",
+        "metric": "steps",
+        "value": 11557,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-22",
+        "metric": "steps",
+        "value": 10910,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
+        "date": "2026-01-23",
+        "metric": "steps",
+        "value": 16421,
+        "unit": "count",
+        "source": "fitbit"
+      },
+      {
         "date": "2026-01-24",
         "metric": "steps",
         "value": 17020,
@@ -825,139 +5698,6 @@
     ],
     "calories_burned": [
       {
-        "date": "2026-04-09",
-        "metric": "calories_burned",
-        "value": 2201.07,
-        "unit": "kcal",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-10",
-        "metric": "calories_burned",
-        "value": 1917.65,
-        "unit": "kcal",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-11",
-        "metric": "calories_burned",
-        "value": 2126.43,
-        "unit": "kcal",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-12",
-        "metric": "calories_burned",
-        "value": 2482.28,
-        "unit": "kcal",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-13",
-        "metric": "calories_burned",
-        "value": 1860.1,
-        "unit": "kcal",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-14",
-        "metric": "calories_burned",
-        "value": 1694.15,
-        "unit": "kcal",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-15",
-        "metric": "calories_burned",
-        "value": 1855.16,
-        "unit": "kcal",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-16",
-        "metric": "calories_burned",
-        "value": 2100.13,
-        "unit": "kcal",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-17",
-        "metric": "calories_burned",
-        "value": 831.33,
-        "unit": "kcal",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-18",
-        "metric": "calories_burned",
-        "value": 1628.44,
-        "unit": "kcal",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-19",
-        "metric": "calories_burned",
-        "value": 657.99,
-        "unit": "kcal",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-20",
-        "metric": "calories_burned",
-        "value": 757.48,
-        "unit": "kcal",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-21",
-        "metric": "calories_burned",
-        "value": 630.93,
-        "unit": "kcal",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-22",
-        "metric": "calories_burned",
-        "value": 1943.77,
-        "unit": "kcal",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-23",
-        "metric": "calories_burned",
-        "value": 2352.15,
-        "unit": "kcal",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-25",
-        "metric": "calories_burned",
-        "value": 1705.91,
-        "unit": "kcal",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-26",
-        "metric": "calories_burned",
-        "value": 2376.38,
-        "unit": "kcal",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-27",
-        "metric": "calories_burned",
-        "value": 2269.99,
-        "unit": "kcal",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-28",
-        "metric": "calories_burned",
-        "value": 2025.66,
-        "unit": "kcal",
-        "source": "whoop"
-      },
-      {
         "date": "2026-04-29",
         "metric": "calories_burned",
         "value": 1949.13,
@@ -981,121 +5721,205 @@
       {
         "date": "2026-05-02",
         "metric": "calories_burned",
-        "value": 744.9,
+        "value": 2071.69,
         "unit": "kcal",
         "source": "whoop"
       },
       {
         "date": "2026-05-03",
         "metric": "calories_burned",
-        "value": 715.65,
+        "value": 1868.44,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-04",
+        "metric": "calories_burned",
+        "value": 1862.71,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-05",
+        "metric": "calories_burned",
+        "value": 1866.36,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-06",
+        "metric": "calories_burned",
+        "value": 2109.58,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-07",
+        "metric": "calories_burned",
+        "value": 1945.49,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-09",
+        "metric": "calories_burned",
+        "value": 1739.58,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-10",
+        "metric": "calories_burned",
+        "value": 3819.32,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-11",
+        "metric": "calories_burned",
+        "value": 2053.81,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-12",
+        "metric": "calories_burned",
+        "value": 1913.78,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-13",
+        "metric": "calories_burned",
+        "value": 1708.07,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-14",
+        "metric": "calories_burned",
+        "value": 2500.91,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-16",
+        "metric": "calories_burned",
+        "value": 4274.43,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-17",
+        "metric": "calories_burned",
+        "value": 2304.29,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-18",
+        "metric": "calories_burned",
+        "value": 1725.66,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-20",
+        "metric": "calories_burned",
+        "value": 3941.88,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-22",
+        "metric": "calories_burned",
+        "value": 1794.78,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-23",
+        "metric": "calories_burned",
+        "value": 3663.22,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-24",
+        "metric": "calories_burned",
+        "value": 1609.34,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-25",
+        "metric": "calories_burned",
+        "value": 1846.05,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-26",
+        "metric": "calories_burned",
+        "value": 1834.04,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-27",
+        "metric": "calories_burned",
+        "value": 1673.33,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-28",
+        "metric": "calories_burned",
+        "value": 1994.39,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-29",
+        "metric": "calories_burned",
+        "value": 3987.71,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-31",
+        "metric": "calories_burned",
+        "value": 3316.77,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-06-01",
+        "metric": "calories_burned",
+        "value": 1767.5,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-06-02",
+        "metric": "calories_burned",
+        "value": 1803.45,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-06-03",
+        "metric": "calories_burned",
+        "value": 552.06,
         "unit": "kcal",
         "source": "whoop"
       }
     ],
     "workout": [
       {
-        "date": "2026-04-02",
-        "metric": "workout",
-        "value": 15.42,
-        "unit": "minutes",
-        "source": "strava"
-      },
-      {
-        "date": "2026-04-05",
-        "metric": "workout",
-        "value": 43.48,
-        "unit": "minutes",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-06",
-        "metric": "workout",
-        "value": 19.48,
-        "unit": "minutes",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-07",
-        "metric": "workout",
-        "value": 64.48,
-        "unit": "minutes",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-10",
-        "metric": "workout",
-        "value": 26.98,
-        "unit": "minutes",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-12",
-        "metric": "workout",
-        "value": 37.48,
-        "unit": "minutes",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-13",
-        "metric": "workout",
-        "value": 56.98,
-        "unit": "minutes",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-14",
-        "metric": "workout",
-        "value": 29.98,
-        "unit": "minutes",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-15",
-        "metric": "workout",
-        "value": 38.98,
-        "unit": "minutes",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-17",
-        "metric": "workout",
-        "value": 19.48,
-        "unit": "minutes",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-18",
-        "metric": "workout",
-        "value": 13.48,
-        "unit": "minutes",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-19",
-        "metric": "workout",
-        "value": 37.48,
-        "unit": "minutes",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-21",
-        "metric": "workout",
-        "value": 14.98,
-        "unit": "minutes",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-22",
-        "metric": "workout",
-        "value": 49.48,
-        "unit": "minutes",
-        "source": "whoop"
-      },
-      {
         "date": "2026-04-23",
         "metric": "workout",
-        "value": 59.98,
+        "value": 80.97,
         "unit": "minutes",
         "source": "whoop"
       },
@@ -1116,14 +5940,14 @@
       {
         "date": "2026-04-27",
         "metric": "workout",
-        "value": 13.48,
+        "value": 110.93,
         "unit": "minutes",
         "source": "whoop"
       },
       {
         "date": "2026-04-28",
         "metric": "workout",
-        "value": 56.98,
+        "value": 95.97,
         "unit": "minutes",
         "source": "whoop"
       },
@@ -1137,14 +5961,14 @@
       {
         "date": "2026-05-01",
         "metric": "workout",
-        "value": 13.48,
+        "value": 68.95,
         "unit": "minutes",
         "source": "whoop"
       },
       {
         "date": "2026-05-02",
         "metric": "workout",
-        "value": 46.48,
+        "value": 190.42,
         "unit": "minutes",
         "source": "whoop"
       },
@@ -1154,174 +5978,377 @@
         "value": 73.48,
         "unit": "minutes",
         "source": "whoop"
+      },
+      {
+        "date": "2026-05-04",
+        "metric": "workout",
+        "value": 95.98,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-07",
+        "metric": "workout",
+        "value": 34.48,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-11",
+        "metric": "workout",
+        "value": 70.47,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-12",
+        "metric": "workout",
+        "value": 29.98,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-13",
+        "metric": "workout",
+        "value": 70.48,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-16",
+        "metric": "workout",
+        "value": 17.98,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-17",
+        "metric": "workout",
+        "value": 58.47,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-18",
+        "metric": "workout",
+        "value": 83.97,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-20",
+        "metric": "workout",
+        "value": 18.98,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-21",
+        "metric": "workout",
+        "value": 99.9,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-22",
+        "metric": "workout",
+        "value": 185.9,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-23",
+        "metric": "workout",
+        "value": 75.95,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-24",
+        "metric": "workout",
+        "value": 266.9,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-25",
+        "metric": "workout",
+        "value": 136.92,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-26",
+        "metric": "workout",
+        "value": 51.97,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-27",
+        "metric": "workout",
+        "value": 114.97,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-28",
+        "metric": "workout",
+        "value": 111.97,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-29",
+        "metric": "workout",
+        "value": 227.93,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-30",
+        "metric": "workout",
+        "value": 339.92,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-31",
+        "metric": "workout",
+        "value": 19.98,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-06-02",
+        "metric": "workout",
+        "value": 117.95,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-06-03",
+        "metric": "workout",
+        "value": 42.98,
+        "unit": "minutes",
+        "source": "whoop"
       }
     ],
     "strain": [
       {
-        "date": "2026-04-09",
-        "metric": "strain",
-        "value": 13.747195,
-        "unit": "whoop_strain",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-10",
-        "metric": "strain",
-        "value": 7.685663,
-        "unit": "whoop_strain",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-11",
-        "metric": "strain",
-        "value": 13.989682,
-        "unit": "whoop_strain",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-12",
-        "metric": "strain",
-        "value": 15.497194,
-        "unit": "whoop_strain",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-13",
-        "metric": "strain",
-        "value": 7.3916264,
-        "unit": "whoop_strain",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-14",
-        "metric": "strain",
-        "value": 6.295437,
-        "unit": "whoop_strain",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-15",
-        "metric": "strain",
-        "value": 6.8208714,
-        "unit": "whoop_strain",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-16",
-        "metric": "strain",
-        "value": 10.66656,
-        "unit": "whoop_strain",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-17",
-        "metric": "strain",
-        "value": 4.246789,
-        "unit": "whoop_strain",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-18",
-        "metric": "strain",
-        "value": 11.897965,
-        "unit": "whoop_strain",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-19",
-        "metric": "strain",
-        "value": 4.181212,
-        "unit": "whoop_strain",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-20",
-        "metric": "strain",
-        "value": 4.1883082,
-        "unit": "whoop_strain",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-21",
-        "metric": "strain",
-        "value": 4.275682,
-        "unit": "whoop_strain",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-22",
-        "metric": "strain",
-        "value": 8.537286,
-        "unit": "whoop_strain",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-23",
-        "metric": "strain",
-        "value": 11.744513,
-        "unit": "whoop_strain",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-25",
-        "metric": "strain",
-        "value": 8.369494,
-        "unit": "whoop_strain",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-26",
-        "metric": "strain",
-        "value": 12.685387,
-        "unit": "whoop_strain",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-27",
-        "metric": "strain",
-        "value": 14.192183,
-        "unit": "whoop_strain",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-28",
-        "metric": "strain",
-        "value": 10.99557,
-        "unit": "whoop_strain",
-        "source": "whoop"
-      },
-      {
         "date": "2026-04-29",
         "metric": "strain",
-        "value": 9.88269,
+        "value": 9.88,
         "unit": "whoop_strain",
         "source": "whoop"
       },
       {
         "date": "2026-04-30",
         "metric": "strain",
-        "value": 13.234301,
+        "value": 13.23,
         "unit": "whoop_strain",
         "source": "whoop"
       },
       {
         "date": "2026-05-01",
         "metric": "strain",
-        "value": 13.705402,
+        "value": 13.71,
         "unit": "whoop_strain",
         "source": "whoop"
       },
       {
         "date": "2026-05-02",
         "metric": "strain",
-        "value": 4.051638,
+        "value": 11.49,
         "unit": "whoop_strain",
         "source": "whoop"
       },
       {
         "date": "2026-05-03",
         "metric": "strain",
-        "value": 4.0915422,
+        "value": 9.13,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-04",
+        "metric": "strain",
+        "value": 7.78,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-05",
+        "metric": "strain",
+        "value": 7.35,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-06",
+        "metric": "strain",
+        "value": 12.2,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-07",
+        "metric": "strain",
+        "value": 8.22,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-09",
+        "metric": "strain",
+        "value": 7.83,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-10",
+        "metric": "strain",
+        "value": 12.85,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-11",
+        "metric": "strain",
+        "value": 11.13,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-12",
+        "metric": "strain",
+        "value": 10.42,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-13",
+        "metric": "strain",
+        "value": 6.13,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-14",
+        "metric": "strain",
+        "value": 12.93,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-16",
+        "metric": "strain",
+        "value": 14.01,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-17",
+        "metric": "strain",
+        "value": 15.79,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-18",
+        "metric": "strain",
+        "value": 4.94,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-20",
+        "metric": "strain",
+        "value": 12.5,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-22",
+        "metric": "strain",
+        "value": 8.79,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-23",
+        "metric": "strain",
+        "value": 12.25,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-24",
+        "metric": "strain",
+        "value": 6.67,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-25",
+        "metric": "strain",
+        "value": 7.83,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-26",
+        "metric": "strain",
+        "value": 8.78,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-27",
+        "metric": "strain",
+        "value": 5.81,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-28",
+        "metric": "strain",
+        "value": 10.23,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-29",
+        "metric": "strain",
+        "value": 18.97,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-05-31",
+        "metric": "strain",
+        "value": 9.25,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-06-01",
+        "metric": "strain",
+        "value": 9.87,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-06-02",
+        "metric": "strain",
+        "value": 5.66,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-06-03",
+        "metric": "strain",
+        "value": 0.12,
         "unit": "whoop_strain",
         "source": "whoop"
       }
