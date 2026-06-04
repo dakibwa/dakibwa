@@ -1,3 +1,4 @@
+import { ProjectSurfaceNav } from "@/components/project-surface-nav";
 import { vitalsAppUrl } from "@/components/site-data";
 import { VitalsDashboardPreview } from "@/components/vitals-dashboard-preview";
 
@@ -9,7 +10,8 @@ export const metadata = {
 
 export default function HealthRoute() {
   return (
-    <section className="health-page" aria-label="Vitals">
+    <section className="project-surface-page health-page" aria-label="Vitals">
+      <ProjectSurfaceNav title="Vitals" />
       {vitalsAppUrl ? (
         <div className="vitals-app-shell">
           <iframe
