@@ -1,5 +1,6 @@
 import { ProjectAppGate } from "@/components/project-app-gate";
 import { vitalsAppUrl } from "@/components/site-data";
+import { VitalsDashboardPreview } from "@/components/vitals-dashboard-preview";
 
 export const metadata = {
   title: "Vitals App",
@@ -8,6 +9,14 @@ export const metadata = {
 };
 
 export default function HealthRoute() {
+  if (!vitalsAppUrl) {
+    return (
+      <section className="health-page">
+        <VitalsDashboardPreview />
+      </section>
+    );
+  }
+
   return (
     <section className="health-page">
       <ProjectAppGate
