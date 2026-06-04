@@ -8,12 +8,28 @@ const healthDataPath = path.join(repoRoot, "data/health-data.json");
 const publicHealthDataPath = path.join(repoRoot, "data/public-health-data.json");
 const sourceHealthDataPath = fs.existsSync(healthDataPath) ? healthDataPath : publicHealthDataPath;
 const whoopDirEnv = process.env.WHOOP_ARCHIVE_DIR?.trim();
+const whoopClientId = process.env.WHOOP_CLIENT_ID?.trim();
+const whoopClientSecret = process.env.WHOOP_CLIENT_SECRET?.trim();
+const whoopRefreshToken = process.env.WHOOP_REFRESH_TOKEN?.trim();
+const whoopApiDays = Number(process.env.WHOOP_API_DAYS || 45);
 
-if (!whoopDirEnv) {
-  throw new Error("Set WHOOP_ARCHIVE_DIR to the local WHOOP aggregate JSON archive before refreshing Vitals.");
+if (!whoopDirEnv && (!whoopClientId || !whoopClientSecret || !whoopRefreshToken)) {
+  throw new Error(
+    "Set WHOOP_ARCHIVE_DIR for a local archive refresh, or WHOOP_CLIENT_ID, WHOOP_CLIENT_SECRET, and WHOOP_REFRESH_TOKEN for a direct API refresh."
+  );
 }
 
-const whoopDir = path.resolve(whoopDirEnv);
+const whoopDir = whoopDirEnv ? path.resolve(whoopDirEnv) : null;
+const WHOOP_API = "https://api.prod.whoop.com/developer";
+const WHOOP_TOKEN_URL = "https://api.prod.whoop.com/oauth/oauth2/token";
+const USER_AGENT = "akibwa-vitals-refresh/1";
+
+const COLLECTIONS = {
+  recovery: "/v2/recovery",
+  sleep: "/v2/activity/sleep",
+  cycles: "/v2/cycle",
+  workouts: "/v2/activity/workout"
+};
 
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
@@ -61,6 +77,120 @@ function readDaily(kind) {
     .filter((day) => day.records.length > 0);
 }
 
+function primaryTimestamp(kind, record) {
+  if (kind === "recovery") return record.created_at || record.updated_at || "";
+  return record.start || record.created_at || "";
+}
+
+function groupRecordsByDay(kind, records) {
+  const byDay = new Map();
+
+  for (const record of records) {
+    const day = String(primaryTimestamp(kind, record) || "unknown").slice(0, 10);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) continue;
+    byDay.set(day, [...(byDay.get(day) || []), record]);
+  }
+
+  return [...byDay.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([date, dayRecords]) => ({ date, records: dayRecords }));
+}
+
+async function refreshWhoopAccessToken() {
+  const body = new URLSearchParams({
+    grant_type: "refresh_token",
+    refresh_token: whoopRefreshToken,
+    client_id: whoopClientId,
+    client_secret: whoopClientSecret,
+    scope: process.env.WHOOP_SCOPE || "offline read:profile read:recovery read:sleep read:cycles read:workout read:body_measurement"
+  });
+
+  const response = await fetch(WHOOP_TOKEN_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "User-Agent": USER_AGENT
+    },
+    body
+  });
+
+  if (!response.ok) {
+    throw new Error(`WHOOP token refresh failed with HTTP ${response.status}`);
+  }
+
+  const token = await response.json();
+  return {
+    accessToken: token.access_token,
+    refreshTokenRotated: Boolean(token.refresh_token && token.refresh_token !== whoopRefreshToken)
+  };
+}
+
+async function whoopApiGet(pathname, token, params) {
+  const url = new URL(`${WHOOP_API}${pathname}`);
+  for (const [key, value] of Object.entries(params || {})) {
+    url.searchParams.set(key, value);
+  }
+
+  const response = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "User-Agent": USER_AGENT
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(`WHOOP ${pathname} failed with HTTP ${response.status}`);
+  }
+
+  return response.json();
+}
+
+async function fetchWhoopCollection(kind, token, start, end) {
+  const records = [];
+  let nextToken = null;
+
+  for (let page = 0; page < 80; page += 1) {
+    const data = await whoopApiGet(COLLECTIONS[kind], token, {
+      start: start.toISOString().replace(/\.\d{3}Z$/, ".000Z"),
+      end: end.toISOString().replace(/\.\d{3}Z$/, ".000Z"),
+      limit: "25",
+      ...(nextToken ? { nextToken } : {})
+    });
+
+    records.push(...(Array.isArray(data.records) ? data.records : []));
+    nextToken = data.next_token;
+    if (!nextToken) break;
+  }
+
+  return groupRecordsByDay(kind, records);
+}
+
+async function readWhoopDays() {
+  if (whoopDir) {
+    return {
+      recovery: readDaily("recovery"),
+      sleep: readDaily("sleep"),
+      cycles: readDaily("cycles"),
+      workouts: readDaily("workouts"),
+      refreshTokenRotated: false,
+      mode: "archive"
+    };
+  }
+
+  const { accessToken, refreshTokenRotated } = await refreshWhoopAccessToken();
+  const end = new Date();
+  const start = new Date(end.getTime() - Math.max(14, whoopApiDays) * 86400000);
+  const entries = await Promise.all(
+    Object.keys(COLLECTIONS).map(async (kind) => [kind, await fetchWhoopCollection(kind, accessToken, start, end)])
+  );
+
+  return {
+    ...Object.fromEntries(entries),
+    refreshTokenRotated,
+    mode: "api"
+  };
+}
+
 function latestRecord(records, valueForRecord) {
   return records
     .filter((record) => Number.isFinite(Number(valueForRecord(record))))
@@ -102,11 +232,23 @@ function averageLast(points, count) {
   return round(values.reduce((sum, value) => sum + value, 0) / values.length);
 }
 
-function updateWhoopSeries() {
-  const recoveryDays = readDaily("recovery");
-  const sleepDays = readDaily("sleep");
-  const cycleDays = readDaily("cycles");
-  const workoutDays = readDaily("workouts");
+function mergePoints(existingPoints = [], freshPoints = []) {
+  const byDate = new Map();
+  for (const point of existingPoints) {
+    if (point?.date) byDate.set(point.date, point);
+  }
+  for (const point of freshPoints) {
+    if (point?.date) byDate.set(point.date, point);
+  }
+  return [...byDate.values()].sort((a, b) => a.date.localeCompare(b.date));
+}
+
+async function updateWhoopSeries(baseData) {
+  const whoopDays = await readWhoopDays();
+  const recoveryDays = whoopDays.recovery;
+  const sleepDays = whoopDays.sleep;
+  const cycleDays = whoopDays.cycles;
+  const workoutDays = whoopDays.workouts;
 
   const recoveryScore = recoveryDays
     .map(({ date, records }) => {
@@ -195,23 +337,42 @@ function updateWhoopSeries() {
     (total, points) => total + points.length,
     0
   );
+  const existingWhoop = (baseData.sourceCoverage || []).find((source) => source.source === "whoop") || {};
+  const freshSeries = {
+    recovery_score: recoveryScore,
+    sleep_duration: sleepDuration,
+    calories_burned: caloriesBurned,
+    workout,
+    strain
+  };
+  const series = Object.fromEntries(
+    Object.entries(freshSeries).map(([metric, points]) => {
+      const merged = whoopDays.mode === "api" ? mergePoints(baseData.series?.[metric] || [], points) : points;
+      return [metric, merged.slice(-31)];
+    })
+  );
+  const latestDay = allDates.at(-1) || existingWhoop.latestDay || null;
+  const firstDay =
+    existingWhoop.firstDay && allDates[0]
+      ? [existingWhoop.firstDay, allDates[0]].sort()[0]
+      : existingWhoop.firstDay || allDates[0] || null;
 
   return {
     sourceCoverage: {
       source: "whoop",
-      rows,
-      firstDay: allDates[0] || null,
-      latestDay: allDates.at(-1) || null,
+      rows: whoopDays.mode === "api" ? Math.max(Number(existingWhoop.rows) || 0, rows) : rows,
+      firstDay,
+      latestDay,
       metricCount: 21
     },
     latest: {
-      recovery_score: latest(recoveryScore),
-      sleep_performance: latest(sleepPerformance),
-      hrv: latest(hrv),
-      heart_rate_resting: latest(restingHeartRate),
-      sleep_duration: latest(sleepDuration),
-      strain: latest(strain),
-      calories_burned: latest(caloriesBurned),
+      recovery_score: latest(recoveryScore) || baseData.latest?.recovery_score || null,
+      sleep_performance: latest(sleepPerformance) || baseData.latest?.sleep_performance || null,
+      hrv: latest(hrv) || baseData.latest?.hrv || null,
+      heart_rate_resting: latest(restingHeartRate) || baseData.latest?.heart_rate_resting || null,
+      sleep_duration: latest(sleepDuration) || baseData.latest?.sleep_duration || null,
+      strain: latest(strain) || baseData.latest?.strain || null,
+      calories_burned: latest(caloriesBurned) || baseData.latest?.calories_burned || null,
       whoopAverages: {
         recovery7d: averageLast(recoveryScore, 7),
         hrv7d: averageLast(hrv, 7),
@@ -219,18 +380,14 @@ function updateWhoopSeries() {
         sleep7d: averageLast(sleepDuration, 7)
       }
     },
-    series: {
-      recovery_score: recoveryScore.slice(-31),
-      sleep_duration: sleepDuration.slice(-31),
-      calories_burned: caloriesBurned.slice(-31),
-      workout: workout.slice(-31),
-      strain: strain.slice(-31)
-    }
+    series,
+    refreshTokenRotated: whoopDays.refreshTokenRotated,
+    mode: whoopDays.mode
   };
 }
 
-function refreshHealthData(baseData) {
-  const whoop = updateWhoopSeries();
+async function refreshHealthData(baseData) {
+  const whoop = await updateWhoopSeries(baseData);
   const generatedAt = new Date().toISOString();
   const snapshotDate = generatedAt.slice(0, 10);
 
@@ -249,11 +406,27 @@ function refreshHealthData(baseData) {
     latest: {
       ...(baseData.latest || {}),
       ...whoop.latest
+    },
+    refreshMeta: {
+      mode: whoop.mode,
+      refreshTokenRotated: whoop.refreshTokenRotated
     }
   };
 }
 
-const refreshed = refreshHealthData(readJson(sourceHealthDataPath));
+function stableVitalsData(data) {
+  const comparable = {
+    sourceCoverage: data.sourceCoverage,
+    latest: data.latest,
+    nutrition: data.nutrition,
+    reviewPrompts: data.reviewPrompts,
+    series: data.series
+  };
+  return JSON.stringify(comparable);
+}
+
+const existingPublicData = fs.existsSync(publicHealthDataPath) ? readJson(publicHealthDataPath) : null;
+const refreshed = await refreshHealthData(readJson(sourceHealthDataPath));
 const publicData = {
   generatedAt: refreshed.generatedAt,
   snapshotDate: refreshed.snapshotDate,
@@ -263,11 +436,25 @@ const publicData = {
   reviewPrompts: refreshed.reviewPrompts,
   series: refreshed.series
 };
+const changed = !existingPublicData || stableVitalsData(existingPublicData) !== stableVitalsData(publicData);
+
+if (!changed) {
+  publicData.generatedAt = existingPublicData.generatedAt;
+  publicData.snapshotDate = existingPublicData.snapshotDate;
+  refreshed.generatedAt = existingPublicData.generatedAt;
+  refreshed.snapshotDate = existingPublicData.snapshotDate;
+}
 
 if (fs.existsSync(healthDataPath)) {
   writeJson(healthDataPath, refreshed);
 }
 writeJson(publicHealthDataPath, publicData);
+
+if (process.env.GITHUB_ACTIONS === "true" && refreshed.refreshMeta.refreshTokenRotated) {
+  console.warn(
+    "::warning::WHOOP returned a rotated refresh token. Update the WHOOP_REFRESH_TOKEN secret or move token persistence to a backend before relying on scheduled refreshes."
+  );
+}
 
 console.log(
   JSON.stringify(
@@ -279,7 +466,10 @@ console.log(
         sleep: publicData.latest.sleep_duration?.date,
         strain: publicData.latest.strain?.date,
         calories: publicData.latest.calories_burned?.date
-      }
+      },
+      changed,
+      mode: refreshed.refreshMeta.mode,
+      refreshTokenRotated: refreshed.refreshMeta.refreshTokenRotated
     },
     null,
     2

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-04T08:23:03.241Z",
+  "generatedAt": "2026-06-04T08:48:20.698Z",
   "snapshotDate": "2026-06-04",
   "sourceCoverage": [
     {
@@ -42,56 +42,56 @@
     "recovery_score": {
       "date": "2026-06-04",
       "metric": "recovery_score",
-      "value": 36,
+      "value": 39,
       "unit": "%",
       "source": "whoop",
       "previousValue": 65,
-      "delta": -29
+      "delta": -26
     },
     "sleep_performance": {
       "date": "2026-06-03",
       "metric": "sleep_performance",
-      "value": 71,
+      "value": 84,
       "unit": "%",
       "source": "whoop",
       "previousValue": 81,
-      "delta": -10
+      "delta": 3
     },
     "hrv": {
       "date": "2026-06-04",
       "metric": "hrv",
-      "value": 59.71,
+      "value": 58.64,
       "unit": "ms",
       "source": "whoop",
       "previousValue": 69.35,
-      "delta": -9.64
+      "delta": -10.71
     },
     "heart_rate_resting": {
       "date": "2026-06-04",
       "metric": "heart_rate_resting",
-      "value": 46,
+      "value": 47,
       "unit": "bpm",
       "source": "whoop",
       "previousValue": 46,
-      "delta": 0
+      "delta": 1
     },
     "sleep_duration": {
       "date": "2026-06-03",
       "metric": "sleep_duration",
-      "value": 287.76,
+      "value": 432.51,
       "unit": "minutes",
       "source": "whoop",
       "previousValue": 490.82,
-      "delta": -203.06
+      "delta": -58.31
     },
     "strain": {
       "date": "2026-06-03",
       "metric": "strain",
-      "value": 0.12,
+      "value": 4.42,
       "unit": "whoop_strain",
       "source": "whoop",
       "previousValue": 5.66,
-      "delta": -5.54
+      "delta": -1.24
     },
     "weight": {
       "date": "2026-04-22",
@@ -103,17 +103,17 @@
     "calories_burned": {
       "date": "2026-06-03",
       "metric": "calories_burned",
-      "value": 552.06,
+      "value": 669.09,
       "unit": "kcal",
       "source": "whoop",
       "previousValue": 1803.45,
-      "delta": -1251.39
+      "delta": -1134.36
     },
     "whoopAverages": {
-      "recovery7d": 47.57,
-      "hrv7d": 64.76,
-      "rhr7d": 48.71,
-      "sleep7d": 441.29
+      "recovery7d": 48,
+      "hrv7d": 64.61,
+      "rhr7d": 48.86,
+      "sleep7d": 461.97
     }
   },
   "nutrition": {
@@ -365,7 +365,7 @@
       {
         "date": "2026-06-03",
         "metric": "sleep_duration",
-        "value": 287.76,
+        "value": 432.51,
         "unit": "minutes",
         "source": "whoop"
       }
@@ -584,7 +584,7 @@
       {
         "date": "2026-06-04",
         "metric": "recovery_score",
-        "value": 36,
+        "value": 39,
         "unit": "%",
         "source": "whoop"
       }
@@ -5910,7 +5910,7 @@
       {
         "date": "2026-06-03",
         "metric": "calories_burned",
-        "value": 552.06,
+        "value": 669.09,
         "unit": "kcal",
         "source": "whoop"
       }
@@ -6348,7 +6348,7 @@
       {
         "date": "2026-06-03",
         "metric": "strain",
-        "value": 0.12,
+        "value": 4.42,
         "unit": "whoop_strain",
         "source": "whoop"
       }
