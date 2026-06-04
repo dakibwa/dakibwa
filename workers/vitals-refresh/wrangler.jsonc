@@ -1,0 +1,23 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "akibwa-vitals-refresh",
+  "main": "src/index.js",
+  "compatibility_date": "2026-06-04",
+  "workers_dev": true,
+  "triggers": {
+    "crons": ["30 7 * * *"]
+  },
+  "vars": {
+    "PUBLIC_SEED_URL": "https://raw.githubusercontent.com/dakibwa/dakibwa/main/data/public-health-data.json",
+    "WHOOP_API_DAYS": "45"
+  },
+  "kv_namespaces": [
+    {
+      "binding": "VITALS_KV",
+      "id": "2b1633501a16491ead51308f0fbb2a23"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  }
+}

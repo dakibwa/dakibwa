@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Activity,
   ArrowRight,
@@ -22,7 +22,11 @@ import {
   X,
 } from "lucide-react";
 
-import healthData from "@/data/public-health-data.json";
+import fallbackHealthData from "@/data/public-health-data.json";
+
+const remoteVitalsDataUrl = (
+  process.env.NEXT_PUBLIC_VITALS_DATA_URL || "https://akibwa-vitals-refresh.dakibwa.workers.dev/vitals"
+).trim();
 
 const tones = {
   green: "#208768",
@@ -117,8 +121,8 @@ function daysBetween(start, end) {
   return Math.max(0, Math.round((endDate.getTime() - startDate.getTime()) / 86400000));
 }
 
-function sourceFreshness(source) {
-  const ageDays = daysBetween(source?.latestDay, healthData.snapshotDate);
+function sourceFreshness(source, snapshotDate) {
+  const ageDays = daysBetween(source?.latestDay, snapshotDate);
   if (ageDays !== null && ageDays <= 7) return { label: "Current", color: tones.green, ageDays };
   if (ageDays !== null && ageDays <= 35) return { label: "Review", color: tones.orange, ageDays };
 
@@ -177,6 +181,29 @@ function compactReviewTitle(title) {
     .replace(" data is useful but older", " freshness");
 }
 
+const focusOptions = [
+  { key: "all", label: "All" },
+  { key: "review", label: "Review" },
+  { key: "sources", label: "Sources" },
+  { key: "labs", label: "Labs" },
+  { key: "activity", label: "Activity" }
+];
+
+const focusCards = {
+  review: ["review", "readiness", "labs", "recent"],
+  sources: ["sources", "readiness", "recent"],
+  labs: ["labs", "review"],
+  activity: ["activity", "recent", "strain"]
+};
+
+const readinessRows = [
+  ["WHOOP", ["high", "mid", "mid", "high", "high", "", "mid"]],
+  ["Training", ["mid", "mid", "high", "high", "watch", "", "mid"]],
+  ["Nutrition", ["high", "mid", "", "mid", "mid", "watch", ""]],
+  ["Labs", ["mid", "high", "high", "mid", "", "", ""]]
+];
+
+function buildVitalsModel(healthData) {
 const sourceCoverage = healthData.sourceCoverage || [];
 const latest = healthData.latest || {};
 const nutritionLatest = healthData.nutrition?.latest || {};
@@ -315,7 +342,7 @@ const miniMetrics = [
 ];
 
 const sourceRows = sourceCoverage.map((source) => {
-  const freshness = sourceFreshness(source);
+  const freshness = sourceFreshness(source, healthData.snapshotDate);
 
   return [sourceName(source.source), freshness.label, freshness.color, source];
 });
@@ -371,7 +398,7 @@ const panels = {
     kicker: "Aggregate source map",
     body: "The page can publish aggregate values and source freshness. Raw exports, identifiers, and source files still stay outside the public repository.",
     rows: sourceCoverage.map((source) => {
-      const freshness = sourceFreshness(source);
+      const freshness = sourceFreshness(source, healthData.snapshotDate);
       const ageCopy = freshness.ageDays === null ? "unknown age" : `${freshness.ageDays} days behind snapshot`;
 
       return `${sourceName(source.source)}: ${formatNumber(source.rows)} rows, latest ${formatDate(source.latestDay)}, ${ageCopy}.`;
@@ -390,6 +417,24 @@ const panels = {
     rows: ["Log Symptom opens the review context panel.", "Add Measure routes to current aggregate values.", "Share Report is shown as a review workflow, not a medical export."]
   }
 };
+
+  return {
+    healthData,
+    sourceCoverage,
+    reviewPrompts,
+    snapshots,
+    ranges,
+    baseTopStats,
+    miniMetrics,
+    sourceRows,
+    reviewRows,
+    labRows,
+    nutritionLatest,
+    nutritionBars,
+    trendPaths,
+    panels
+  };
+}
 
 function isFocused(focus, key) {
   if (focus === "all") {
@@ -514,7 +559,7 @@ function ReadinessCard({ focus }) {
   );
 }
 
-function SourceCard({ focus, onOpen }) {
+function SourceCard({ focus, model, onOpen }) {
   return (
     <article className={`vitals-card vitals-source-card${focusClass(focus, "sources")}`}>
       <header className="vitals-card-heading">
@@ -526,11 +571,11 @@ function SourceCard({ focus, onOpen }) {
       </header>
       <div className="vitals-source-layout">
         <div className="vitals-source-ring">
-          <strong>{sourceCoverage.length}</strong>
+          <strong>{model.sourceCoverage.length}</strong>
           <span>source groups</span>
         </div>
         <div className="vitals-source-list">
-          {sourceRows.map(([label, status, color]) => (
+          {model.sourceRows.map(([label, status, color]) => (
             <div key={label}>
               <span>
                 <i style={{ background: color }} />
@@ -545,7 +590,7 @@ function SourceCard({ focus, onOpen }) {
   );
 }
 
-function TrendCard({ range, focus, onRangeClick }) {
+function TrendCard({ range, focus, model, onRangeClick }) {
   return (
     <article className={`vitals-card vitals-line-card${focusClass(focus, "review")}`}>
       <header className="vitals-card-heading">
@@ -563,29 +608,29 @@ function TrendCard({ range, focus, onRangeClick }) {
         {[40, 92, 144, 196].map((y) => (
           <line key={y} x1="18" x2="598" y1={y} y2={y} />
         ))}
-        <path d={trendPaths.recovery} className="green" />
-        <path d={trendPaths.sleep} className="teal" />
+        <path d={model.trendPaths.recovery} className="green" />
+        <path d={model.trendPaths.sleep} className="teal" />
       </svg>
     </article>
   );
 }
 
-function NutritionCard({ focus }) {
+function NutritionCard({ focus, model }) {
   return (
     <article className={`vitals-card vitals-nutrition-card${focusClass(focus, "sources")}`}>
       <header className="vitals-card-heading">
         <div>
           <h2>Nutrition</h2>
-          <p>7-day rolling average from {formatShortDate(nutritionLatest.date)}</p>
+          <p>7-day rolling average from {formatShortDate(model.nutritionLatest.date)}</p>
         </div>
         <Info size={14} />
       </header>
-      <strong>{formatNumber(nutritionLatest.kcal_7d)}<span>kcal / day</span></strong>
+      <strong>{formatNumber(model.nutritionLatest.kcal_7d)}<span>kcal / day</span></strong>
       <small>
-        Protein {formatNumber(nutritionLatest.protein_7d, 1)}g / fat {formatNumber(nutritionLatest.fat_7d, 1)}g / net carb {formatNumber(nutritionLatest.netcarb_7d, 1)}g.
+        Protein {formatNumber(model.nutritionLatest.protein_7d, 1)}g / fat {formatNumber(model.nutritionLatest.fat_7d, 1)}g / net carb {formatNumber(model.nutritionLatest.netcarb_7d, 1)}g.
       </small>
       <div className="vitals-bars" aria-label="Nutrition aggregate bars">
-        {nutritionBars.map((item) => (
+        {model.nutritionBars.map((item) => (
           <span style={{ "--height": item.height }} title={`${item.title}: ${formatNumber(item.value, 1)}`} key={item.label}>
             <i />
             <em>{item.label}</em>
@@ -596,7 +641,7 @@ function NutritionCard({ focus }) {
   );
 }
 
-function ReviewCard({ focus, onOpen }) {
+function ReviewCard({ focus, model, onOpen }) {
   return (
     <article className={`vitals-card vitals-review-card${focusClass(focus, "review")}`}>
       <header className="vitals-card-heading">
@@ -607,7 +652,7 @@ function ReviewCard({ focus, onOpen }) {
         <Info size={14} />
       </header>
       <div className="vitals-review-list">
-        {reviewRows.map(([label, status, detail], index) => (
+        {model.reviewRows.map(([label, status, detail], index) => (
           <div key={label}>
             {index < 2 ? <CheckCircle2 size={17} /> : <Circle size={17} />}
             <span>
@@ -626,7 +671,7 @@ function ReviewCard({ focus, onOpen }) {
   );
 }
 
-function LabsCard({ focus, onOpen }) {
+function LabsCard({ focus, model, onOpen }) {
   return (
     <article className={`vitals-card vitals-labs-card${focusClass(focus, "labs")}`} id="vitals-labs">
       <header className="vitals-card-heading">
@@ -637,7 +682,7 @@ function LabsCard({ focus, onOpen }) {
         <button type="button" onClick={onOpen}>View values <ArrowRight size={15} /></button>
       </header>
       <div className="vitals-lab-grid">
-        {labRows.map(([label, value, detail]) => (
+        {model.labRows.map(([label, value, detail]) => (
           <div key={label}>
             <span>{label}</span>
             <strong>{value}</strong>
@@ -654,7 +699,7 @@ function LabsCard({ focus, onOpen }) {
   );
 }
 
-function RecentCard({ focus, onOpenReview, onOpenSources, onOpenActions }) {
+function RecentCard({ focus, model, onOpenReview, onOpenSources, onOpenActions }) {
   return (
     <article className={`vitals-card vitals-recent-card${focusClass(focus, "recent")}`}>
       <header className="vitals-card-heading">
@@ -669,7 +714,7 @@ function RecentCard({ focus, onOpenReview, onOpenSources, onOpenActions }) {
           <CalendarDays size={20} />
           <span>
             <strong>Clinician review thread</strong>
-            <small>{reviewPrompts[0]?.title || "Current health review prompt"}</small>
+            <small>{model.reviewPrompts[0]?.title || "Current health review prompt"}</small>
           </span>
           <button type="button" onClick={onOpenReview}>Open note</button>
         </div>
@@ -677,7 +722,7 @@ function RecentCard({ focus, onOpenReview, onOpenSources, onOpenActions }) {
           <CalendarDays size={20} />
           <span>
             <strong>Snapshot generated</strong>
-            <small>{formatDate(healthData.generatedAt)} / {sourceCoverage.length} source groups</small>
+            <small>{formatDate(model.healthData.generatedAt)} / {model.sourceCoverage.length} source groups</small>
           </span>
           <button type="button" onClick={onOpenSources}>Review</button>
         </div>
@@ -715,19 +760,41 @@ function ActionsCard({ focus, onOpen }) {
   );
 }
 
-export function VitalsDashboardPreview({ compact = false }) {
+export function VitalsDashboardPreview({ compact = false, dataUrl = remoteVitalsDataUrl }) {
+  const [runtimeHealthData, setRuntimeHealthData] = useState(fallbackHealthData);
   const [snapshotIndex, setSnapshotIndex] = useState(0);
   const [rangeIndex, setRangeIndex] = useState(0);
   const [focus, setFocus] = useState("all");
   const [activePanel, setActivePanel] = useState(null);
 
-  const snapshot = snapshots[snapshotIndex];
-  const range = ranges[rangeIndex];
-  const panel = activePanel ? panels[activePanel] : null;
+  useEffect(() => {
+    const url = String(dataUrl || "").trim();
+    if (!url) return undefined;
+
+    let cancelled = false;
+
+    fetch(url, { cache: "no-store" })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data) => {
+        if (!cancelled && data?.sourceCoverage && data?.latest && data?.series) {
+          setRuntimeHealthData(data);
+        }
+      })
+      .catch(() => {});
+
+    return () => {
+      cancelled = true;
+    };
+  }, [dataUrl]);
+
+  const model = useMemo(() => buildVitalsModel(runtimeHealthData), [runtimeHealthData]);
+  const snapshot = model.snapshots[snapshotIndex] || model.snapshots[0];
+  const range = model.ranges[rangeIndex] || model.ranges[0];
+  const panel = activePanel ? model.panels[activePanel] : null;
 
   const topStats = useMemo(
     () =>
-      baseTopStats.map((stat) => ({
+      model.baseTopStats.map((stat) => ({
         ...stat,
         trend:
           stat.key === "score"
@@ -736,11 +803,11 @@ export function VitalsDashboardPreview({ compact = false }) {
               ? `${snapshot.recency} / ${range} / ${stat.trend}`
               : stat.trend
       })),
-    [range, snapshot]
+    [model.baseTopStats, range, snapshot]
   );
 
   function moveSnapshot(direction) {
-    setSnapshotIndex((current) => (current + direction + snapshots.length) % snapshots.length);
+    setSnapshotIndex((current) => (current + direction + model.snapshots.length) % model.snapshots.length);
   }
 
   function openPanel(key) {
@@ -774,7 +841,7 @@ export function VitalsDashboardPreview({ compact = false }) {
               </button>
             </div>
             <div className="vitals-range-control" aria-label="Dashboard range">
-              {ranges.map((option, index) => (
+              {model.ranges.map((option, index) => (
                 <button
                   type="button"
                   className={index === rangeIndex ? "is-active" : ""}
@@ -796,7 +863,7 @@ export function VitalsDashboardPreview({ compact = false }) {
         </header>
 
         <section className="vitals-source-strip" aria-label="Source freshness summary">
-          {sourceRows.map(([label, status, color]) => (
+          {model.sourceRows.map(([label, status, color]) => (
             <button type="button" onClick={() => openPanel(label === "Labs" ? "labs" : "sources")} key={label}>
               <i style={{ background: color }} />
               <span>{label}</span>
@@ -825,22 +892,24 @@ export function VitalsDashboardPreview({ compact = false }) {
           ))}
           <ReadinessCard focus={focus} />
 
-          {miniMetrics.map((metric) => (
+          {model.miniMetrics.map((metric) => (
             <MiniMetric metric={metric} focus={focus} key={metric.label} />
           ))}
-          <ReviewCard focus={focus} onOpen={() => openPanel("sources")} />
+          <ReviewCard focus={focus} model={model} onOpen={() => openPanel("sources")} />
 
           <TrendCard
             range={range}
             focus={focus}
-            onRangeClick={() => setRangeIndex((current) => (current + 1) % ranges.length)}
+            model={model}
+            onRangeClick={() => setRangeIndex((current) => (current + 1) % model.ranges.length)}
           />
-          <SourceCard focus={focus} onOpen={() => openPanel("sources")} />
-          <NutritionCard focus={focus} />
+          <SourceCard focus={focus} model={model} onOpen={() => openPanel("sources")} />
+          <NutritionCard focus={focus} model={model} />
 
-          <LabsCard focus={focus} onOpen={() => openPanel("labs")} />
+          <LabsCard focus={focus} model={model} onOpen={() => openPanel("labs")} />
           <RecentCard
             focus={focus}
+            model={model}
             onOpenReview={() => openPanel("review")}
             onOpenSources={() => openPanel("sources")}
             onOpenActions={() => openPanel("activity")}
