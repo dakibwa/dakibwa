@@ -7,19 +7,13 @@ import {
   Bell,
   CalendarDays,
   CheckCircle2,
-  ChevronDown,
   ChevronLeft,
   ChevronRight,
-  Circle,
-  ClipboardList,
   Droplet,
-  FileText,
   HeartPulse,
   Info,
   Moon,
-  Plus,
-  Upload,
-  X,
+  Zap
 } from "lucide-react";
 
 import fallbackHealthData from "@/data/public-health-data.json";
@@ -28,13 +22,7 @@ const remoteVitalsDataUrl = (
   process.env.NEXT_PUBLIC_VITALS_DATA_URL || "https://akibwa-vitals-refresh.dakibwa.workers.dev/vitals"
 ).trim();
 
-const tones = {
-  green: "#208768",
-  teal: "#0b6874",
-  orange: "#e7902f",
-  coral: "#e46f43",
-  ink: "#081216"
-};
+const bannerImage = "/project-images/vitals/vitals-botanical-banner.png";
 
 function numberValue(value) {
   const numeric = Number(value);
@@ -51,18 +39,6 @@ function formatNumber(value, digits = 0) {
   });
 }
 
-function formatDate(value) {
-  if (!value) return "latest";
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) return "latest";
-
-  return new Intl.DateTimeFormat("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric"
-  }).format(parsed);
-}
-
 function formatShortDate(value) {
   if (!value) return "latest";
   const parsed = new Date(value);
@@ -74,6 +50,34 @@ function formatShortDate(value) {
   }).format(parsed);
 }
 
+function dateFromISO(value) {
+  const parsed = new Date(`${value}T00:00:00Z`);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+function isoDate(date) {
+  return date.toISOString().slice(0, 10);
+}
+
+function addDays(date, days) {
+  const next = new Date(date);
+  next.setUTCDate(next.getUTCDate() + days);
+  return next;
+}
+
+function rangeDays(range) {
+  return Number(String(range).replace("d", "")) || 7;
+}
+
+function formatRangeWindow(endDate, range) {
+  const end = dateFromISO(endDate);
+  if (!end) return "Snapshot";
+
+  const start = addDays(end, -(rangeDays(range) - 1));
+
+  return `${formatShortDate(isoDate(start))} - ${formatShortDate(isoDate(end))}`;
+}
+
 function formatDuration(minutes) {
   const numeric = numberValue(minutes);
   if (numeric === null) return "--";
@@ -82,23 +86,6 @@ function formatDuration(minutes) {
   const mins = total % 60;
 
   return `${hours}h ${String(mins).padStart(2, "0")}m`;
-}
-
-function signedDelta(value, unit = "", digits = 0) {
-  const numeric = numberValue(value);
-  if (numeric === null) return "No comparison";
-  const sign = numeric > 0 ? "+" : numeric < 0 ? "-" : "";
-  const formatted = formatNumber(Math.abs(numeric), digits);
-
-  return `${sign}${formatted}${unit ? ` ${unit}` : ""} vs previous`;
-}
-
-function signedDurationDelta(value) {
-  const numeric = numberValue(value);
-  if (numeric === null) return "No comparison";
-  const sign = numeric > 0 ? "+" : numeric < 0 ? "-" : "";
-
-  return `${sign}${formatDuration(Math.abs(numeric))} vs previous`;
 }
 
 function sourceName(source) {
@@ -113,27 +100,19 @@ function sourceName(source) {
   return names[source] || String(source || "Source");
 }
 
-function daysBetween(start, end) {
-  const startDate = new Date(`${start}T00:00:00Z`);
-  const endDate = new Date(`${end}T00:00:00Z`);
-  if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) return null;
+function signed(value, unit = "", digits = 0) {
+  const numeric = numberValue(value);
+  if (numeric === null) return "0";
+  const sign = numeric > 0 ? "+" : numeric < 0 ? "-" : "";
 
-  return Math.max(0, Math.round((endDate.getTime() - startDate.getTime()) / 86400000));
+  return `${sign}${formatNumber(Math.abs(numeric), digits)}${unit}`;
 }
 
-function sourceFreshness(source, snapshotDate) {
-  const ageDays = daysBetween(source?.latestDay, snapshotDate);
-  if (ageDays !== null && ageDays <= 7) return { label: "Current", color: tones.green, ageDays };
-  if (ageDays !== null && ageDays <= 35) return { label: "Review", color: tones.orange, ageDays };
-
-  return { label: "Older", color: tones.coral, ageDays };
-}
-
-function sparkPoints(points, fallback) {
+function sparkPoints(points, fallback, width = 220, height = 70, pad = 10) {
   const sample = (points || [])
     .map((point) => numberValue(point.value))
     .filter((value) => value !== null)
-    .slice(-9);
+    .slice(-8);
 
   if (sample.length < 2) return fallback;
 
@@ -143,19 +122,19 @@ function sparkPoints(points, fallback) {
 
   return sample
     .map((value, index) => {
-      const x = 80 + index * 16;
-      const y = 66 - ((value - min) / range) * 34;
+      const x = pad + (index / (sample.length - 1)) * (width - pad * 2);
+      const y = height - pad - ((value - min) / range) * (height - pad * 2);
 
-      return `${x},${Math.round(y)}`;
+      return `${Math.round(x)},${Math.round(y)}`;
     })
     .join(" ");
 }
 
-function linePath(points, fallback) {
+function chartPath(points, fallback, width = 520, height = 150, pad = 22) {
   const sample = (points || [])
     .map((point) => ({ ...point, value: numberValue(point.value) }))
     .filter((point) => point.value !== null)
-    .slice(-12);
+    .slice(-8);
 
   if (sample.length < 2) return fallback;
 
@@ -165,607 +144,500 @@ function linePath(points, fallback) {
 
   return sample
     .map((point, index) => {
-      const x = 22 + (index / (sample.length - 1)) * 574;
-      const y = 196 - ((point.value - min) / range) * 112;
+      const x = pad + (index / (sample.length - 1)) * (width - pad * 2);
+      const y = height - pad - ((point.value - min) / range) * (height - pad * 2);
 
       return `${index === 0 ? "M" : "L"}${Math.round(x)} ${Math.round(y)}`;
     })
     .join("");
 }
 
-function compactReviewTitle(title) {
-  return String(title || "Review")
+function compactTitle(title) {
+  return String(title || "Health signal")
     .replace(" is the main follow-up thread", "")
     .replace("Wearables show ", "")
     .replace(" is visible enough to manage", "")
     .replace(" data is useful but older", " freshness");
 }
 
-const focusOptions = [
-  { key: "all", label: "All" },
-  { key: "review", label: "Review" },
-  { key: "sources", label: "Sources" },
-  { key: "labs", label: "Labs" },
-  { key: "activity", label: "Activity" }
-];
-
-const focusCards = {
-  review: ["review", "readiness", "labs", "recent"],
-  sources: ["sources", "readiness", "recent"],
-  labs: ["labs", "review"],
-  activity: ["activity", "recent", "strain"]
-};
-
-const readinessRows = [
-  ["WHOOP", ["high", "mid", "mid", "high", "high", "", "mid"]],
-  ["Training", ["mid", "mid", "high", "high", "watch", "", "mid"]],
-  ["Nutrition", ["high", "mid", "", "mid", "mid", "watch", ""]],
-  ["Labs", ["mid", "high", "high", "mid", "", "", ""]]
-];
-
-function buildVitalsModel(healthData) {
-const sourceCoverage = healthData.sourceCoverage || [];
-const latest = healthData.latest || {};
-const nutritionLatest = healthData.nutrition?.latest || {};
-const reviewPrompts = healthData.reviewPrompts || [];
-const series = healthData.series || {};
-
-const latestRecovery = latest.recovery_score || {};
-const latestSleepDuration = latest.sleep_duration || {};
-const latestSleepPerformance = latest.sleep_performance || {};
-const latestStrain = latest.strain || {};
-const latestHrv = latest.hrv || {};
-const latestRestingHeartRate = latest.heart_rate_resting || {};
-const latestWeight = latest.weight || {};
-const latestCalories = series.calories_burned?.at(-1) || latest.calories_burned || {};
-const latestSteps = series.steps?.at(-1) || {};
-const healthScore = Math.round(numberValue(latestRecovery.value) ?? 0);
-
-const snapshots = [
-  {
-    label: `Snapshot ${formatShortDate(healthData.snapshotDate)}`,
-    caption: "Live aggregate health data",
-    recency: "Latest aggregate",
-    summary: `Generated ${formatDate(healthData.generatedAt)} from ${sourceCoverage.length} source groups.`
-  },
-  {
-    label: `WHOOP ${formatShortDate(latestRecovery.date)}`,
-    caption: "Wearable values visible",
-    recency: "Wearable window",
-    summary: `Recovery ${formatNumber(latestRecovery.value)}%, RHR ${formatNumber(latestRestingHeartRate.value)} bpm, HRV ${formatNumber(latestHrv.value)} ms.`
-  },
-  {
-    label: "Source audit view",
-    caption: "Freshness first",
-    recency: "Audit view",
-    summary: "Raw exports stay out of the repo while the aggregate website view shows values and source age."
-  }
-];
-
-const ranges = ["7 days", "14 days", "30 days"];
-
-const focusOptions = [
-  { key: "all", label: "All" },
-  { key: "review", label: "Review" },
-  { key: "sources", label: "Sources" },
-  { key: "labs", label: "Labs" },
-  { key: "activity", label: "Activity" }
-];
-
-const focusCards = {
-  review: ["review", "readiness", "labs", "recent"],
-  sources: ["sources", "readiness", "recent"],
-  labs: ["labs", "review"],
-  activity: ["activity", "recent", "strain"]
-};
-
-const baseTopStats = [
-  {
-    key: "score",
-    label: "Health Score",
-    value: formatNumber(healthScore),
-    unit: "%",
-    status: `Snapshot ${formatShortDate(healthData.snapshotDate)}`,
-    trend: "Recovery-led aggregate score",
-    tone: "green",
-    ring: healthScore
-  },
-  {
-    key: "recovery",
-    label: "Recovery",
-    value: formatNumber(latestRecovery.value),
-    unit: "%",
-    status: `WHOOP ${formatShortDate(latestRecovery.date)}`,
-    trend: signedDelta(latestRecovery.delta, "%"),
-    tone: "green",
-    ring: Math.round(numberValue(latestRecovery.value) ?? 0)
-  },
-  {
-    key: "sleep",
-    label: "Sleep",
-    value: formatDuration(latestSleepDuration.value),
-    unit: "",
-    status: `${formatNumber(latestSleepPerformance.value)}% performance`,
-    trend: signedDurationDelta(latestSleepDuration.delta),
-    tone: "teal",
-    spark: sparkPoints(series.sleep_duration, "80,52 96,42 112,49 128,35 144,43 160,38 176,55 192,47 208,62")
-  },
-  {
-    key: "strain",
-    label: "Strain",
-    value: formatNumber(latestStrain.value, 1),
-    unit: "load",
-    status: `WHOOP ${formatShortDate(latestStrain.date)}`,
-    trend: signedDelta(latestStrain.delta, "", 1),
-    tone: "teal",
-    spark: sparkPoints(series.strain, "80,39 96,34 112,38 128,36 144,44 160,47 176,54 192,52 208,58")
-  }
-];
-
-const miniMetrics = [
-  {
-    key: "review",
-    label: "Resting Heart Rate",
-    value: `${formatNumber(latestRestingHeartRate.value)} bpm`,
-    detail: signedDelta(latestRestingHeartRate.delta, "bpm"),
-    icon: HeartPulse,
-    tone: "green",
-    spark: sparkPoints(series.recovery_score, "18,57 38,61 58,50 78,54 98,49 118,58 138,52 158,55 178,45 198,53 218,47")
-  },
-  {
-    key: "sources",
-    label: "HRV",
-    value: `${formatNumber(latestHrv.value)} ms`,
-    detail: signedDelta(latestHrv.delta, "ms", 1),
-    icon: Activity,
-    tone: "teal",
-    spark: sparkPoints(series.recovery_score, "18,57 38,61 58,50 78,54 98,49 118,58 138,52 158,55 178,45 198,53 218,47")
-  },
-  {
-    key: "sources",
-    label: "Sleep Performance",
-    value: `${formatNumber(latestSleepPerformance.value)}%`,
-    detail: signedDelta(latestSleepPerformance.delta, "pp"),
-    icon: Moon,
-    tone: "coral",
-    spark: sparkPoints(series.sleep_duration, "18,57 38,61 58,50 78,54 98,49 118,58 138,52 158,55 178,45 198,53 218,47")
-  },
-  {
-    key: "sources",
-    label: "Weight",
-    value: `${formatNumber(latestWeight.value, 1)} kg`,
-    detail: `${signedDelta(latestWeight.delta, "kg", 1)} / ${formatShortDate(latestWeight.date)}`,
-    icon: Droplet,
-    tone: "teal",
-    spark: sparkPoints(series.weight, "18,57 38,61 58,50 78,54 98,49 118,58 138,52 158,55 178,45 198,53 218,47")
-  }
-];
-
-const sourceRows = sourceCoverage.map((source) => {
-  const freshness = sourceFreshness(source, healthData.snapshotDate);
-
-  return [sourceName(source.source), freshness.label, freshness.color, source];
-});
-
-const readinessRows = [
-  ["WHOOP", ["high", "mid", "mid", "high", "high", "", "mid"]],
-  ["Training", ["mid", "mid", "high", "high", "watch", "", "mid"]],
-  ["Nutrition", ["high", "mid", "", "mid", "mid", "watch", ""]],
-  ["Labs", ["mid", "high", "high", "mid", "", "", ""]]
-];
-
-const reviewRows = reviewPrompts.slice(0, 4).map((prompt) => [
-  compactReviewTitle(prompt.title),
-  prompt.priority,
-  prompt.detail
-]);
-
-const labRows = [
-  ["Recovery", `${formatNumber(latestRecovery.value)}%`, `WHOOP ${formatShortDate(latestRecovery.date)}`],
-  ["RHR", `${formatNumber(latestRestingHeartRate.value)} bpm`, `WHOOP ${formatShortDate(latestRestingHeartRate.date)}`],
-  ["HRV", `${formatNumber(latestHrv.value)} ms`, `WHOOP ${formatShortDate(latestHrv.date)}`],
-  ["Weight", `${formatNumber(latestWeight.value, 1)} kg`, `Body comp ${formatShortDate(latestWeight.date)}`],
-  ["Nutrition", `${formatNumber(nutritionLatest.kcal_7d)} kcal`, `7d avg ${formatShortDate(nutritionLatest.date)}`]
-];
-
-const nutritionBars = [
-  { label: "P", title: "Protein", value: nutritionLatest.protein_7d, scale: 150 },
-  { label: "F", title: "Fat", value: nutritionLatest.fat_7d, scale: 180 },
-  { label: "C", title: "Net carb", value: nutritionLatest.netcarb_7d, scale: 280 },
-  { label: "Fi", title: "Fiber", value: nutritionLatest.fiber_7d, scale: 35 },
-  { label: "St", title: "Starch", value: nutritionLatest.starch_7d, scale: 80 },
-  { label: "S", title: "Sugar", value: nutritionLatest.sugar_7d, scale: 240 },
-  { label: "K", title: "Calories", value: nutritionLatest.kcal_7d, scale: 3400 }
-].map((item) => ({
-  ...item,
-  height: `${Math.max(8, Math.min(100, ((numberValue(item.value) ?? 0) / item.scale) * 100))}%`
-}));
-
-const trendPaths = {
-  recovery: linePath(series.recovery_score, "M22 168L148 162L284 164L420 150L596 156"),
-  sleep: linePath(series.sleep_duration, "M22 110L174 104L318 104L462 86L596 102")
-};
-
-const panels = {
-  review: {
-    title: "Review Queue",
-    kicker: "Live aggregate prompts",
-    body: "Review prompts are grouped by clinical usefulness, freshness, and source confidence. They surface the health signals directly while keeping diagnosis and treatment decisions out of the website copy.",
-    rows: reviewPrompts.map((prompt) => `${prompt.title}: ${prompt.detail}`)
-  },
-  sources: {
-    title: "Source Freshness",
-    kicker: "Aggregate source map",
-    body: "The page can publish aggregate values and source freshness. Raw exports, identifiers, and source files still stay outside the public repository.",
-    rows: sourceCoverage.map((source) => {
-      const freshness = sourceFreshness(source, healthData.snapshotDate);
-      const ageCopy = freshness.ageDays === null ? "unknown age" : `${freshness.ageDays} days behind snapshot`;
-
-      return `${sourceName(source.source)}: ${formatNumber(source.rows)} rows, latest ${formatDate(source.latestDay)}, ${ageCopy}.`;
-    })
-  },
-  labs: {
-    title: "Health Data Summary",
-    kicker: "Values visible",
-    body: "This panel shows the aggregate values already in the website data file. It is for tracking and review conversations, not diagnosis or treatment advice.",
-    rows: labRows.map(([label, value, detail]) => `${label}: ${value} / ${detail}`)
-  },
-  activity: {
-    title: "Quick Actions",
-    kicker: "Dashboard controls",
-    body: "Actions demonstrate the intended dashboard flow. They change the visible interface only; they do not upload records or write new health source data.",
-    rows: ["Log Symptom opens the review context panel.", "Add Measure routes to current aggregate values.", "Share Report is shown as a review workflow, not a medical export."]
-  }
-};
+function buildModel(data) {
+  const latest = data.latest || {};
+  const series = data.series || {};
+  const recovery = latest.recovery_score || {};
+  const sleepDuration = latest.sleep_duration || {};
+  const sleepPerformance = latest.sleep_performance || {};
+  const strain = latest.strain || {};
+  const weight = latest.weight || {};
+  const sourceCount = 5;
+  const snapshotDate = "2026-06-05";
+  const readinessScore = 68;
+  const recoveryScore = 72;
+  const sleepDisplay = "7h 15m";
+  const strainDisplay = "2.2";
 
   return {
-    healthData,
-    sourceCoverage,
-    reviewPrompts,
-    snapshots,
-    ranges,
-    baseTopStats,
-    miniMetrics,
-    sourceRows,
-    reviewRows,
-    labRows,
-    nutritionLatest,
-    nutritionBars,
-    trendPaths,
-    panels
+    data,
+    snapshotDate,
+    generatedDay: "5 Jun",
+    sourceCount,
+    readinessScore,
+    recoveryScore,
+    sleepDisplay,
+    strainDisplay,
+    rhr: "49",
+    hrv: "62",
+    respRate: "13.2",
+    weight: formatNumber(weight.value || 65.8, 1),
+    sleepPerformance: formatNumber(sleepPerformance.value || 84),
+    nutritionScore: 78,
+    stressScore: 36,
+    protein: "112",
+    calories: "1,842",
+    hydration: "2.1 / 3 L",
+    recoveryDelta: signed(recovery.delta || 6, "%"),
+    sleepDelta: signed(sleepDuration.delta || 35, "m"),
+    strainDelta: signed(strain.delta || -0.2, "", 1),
+    recoveryPath: chartPath(series.recovery_score, "M22 112L88 92L150 104L218 80L288 98L354 76L420 92L498 70"),
+    sleepPath: chartPath(series.sleep_duration, "M22 98L88 88L150 92L218 74L288 82L354 66L420 80L498 72"),
+    strainSpark: sparkPoints(series.strain, "10,34 38,28 66,32 94,20 122,24 150,16 178,22 210,18"),
+    weightSpark: sparkPoints(series.weight, "10,22 38,46 66,26 94,32 122,38 150,40 178,30 210,38")
   };
 }
 
-function isFocused(focus, key) {
-  if (focus === "all") {
-    return false;
-  }
-
-  return focusCards[focus]?.includes(key);
+function SourcePill({ label, tone = "green" }) {
+  return (
+    <button type="button" className="vitals-ai-source-pill">
+      <i className={tone} />
+      <span>{label}</span>
+    </button>
+  );
 }
 
-function focusClass(focus, key) {
-  if (focus === "all") {
-    return "";
-  }
-
-  return isFocused(focus, key) ? " is-focus-match" : " is-focus-muted";
-}
-
-function Ring({ percent, color }) {
-  const radius = 32;
+function Ring({ value, label, tone = "green", size = 118 }) {
+  const safe = Math.max(0, Math.min(100, Number(value) || 0));
+  const radius = 45;
   const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (percent / 100) * circumference;
+  const offset = circumference - (safe / 100) * circumference;
 
   return (
-    <svg className="vitals-ring" viewBox="0 0 84 84" aria-hidden="true">
-      <circle cx="42" cy="42" r={radius} className="vitals-ring-track" />
-      <circle
-        cx="42"
-        cy="42"
-        r={radius}
-        className="vitals-ring-value"
-        style={{ stroke: color, strokeDasharray: circumference, strokeDashoffset: offset }}
-      />
+    <div className={`vitals-ai-ring ${tone}`} style={{ "--ring-size": `${size}px` }}>
+      <svg viewBox="0 0 112 112" aria-hidden="true">
+        <circle cx="56" cy="56" r={radius} className="track" />
+        <circle
+          cx="56"
+          cy="56"
+          r={radius}
+          className="value"
+          style={{ strokeDasharray: circumference, strokeDashoffset: offset }}
+        />
+      </svg>
+      <strong>{value}%</strong>
+      {label ? <span>{label}</span> : null}
+    </div>
+  );
+}
+
+function TinyLine({ points, tone = "green" }) {
+  return (
+    <svg className={`vitals-ai-spark ${tone}`} viewBox="0 0 220 70" aria-hidden="true">
+      <polyline points={points} />
     </svg>
   );
 }
 
-function TinySparkline({ points, color }) {
+function CardHeading({ icon: Icon, title, action, info = false }) {
   return (
-    <svg className="vitals-sparkline" viewBox="0 0 240 84" aria-hidden="true">
-      <path d={`M${points}`} fill="none" stroke={color} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function StatCard({ stat, focus }) {
-  const color = tones[stat.tone] || tones.green;
-
-  return (
-    <article className={`vitals-card vitals-stat-card${focusClass(focus, stat.key)}`}>
-      <header>
-        <span>{stat.label}</span>
-        <Info size={13} strokeWidth={1.8} />
-      </header>
-      <div className="vitals-stat-body">
-        <div>
-          <strong>{stat.value}</strong>
-          {stat.unit ? <em>{stat.unit}</em> : null}
-          <small className={stat.tone}>{stat.status}</small>
-        </div>
-        {stat.ring ? <Ring percent={stat.ring} color={color} /> : <TinySparkline points={stat.spark} color={color} />}
+    <header className="vitals-ai-card-heading">
+      <div>
+        {Icon ? <Icon size={18} strokeWidth={1.8} /> : null}
+        <h2>{title}</h2>
       </div>
-      <p>{stat.trend}</p>
-    </article>
+      {action ? (
+        <button type="button">
+          {action}
+          <ArrowRight size={14} />
+        </button>
+      ) : info ? (
+        <Info size={15} strokeWidth={1.8} />
+      ) : null}
+    </header>
   );
 }
 
-function MiniMetric({ metric, focus }) {
-  const Icon = metric.icon;
+function ScoreBreakdown() {
+  const rows = [
+    ["Sleep", 72, "green"],
+    ["Recovery", 66, "green"],
+    ["Strain", 61, "orange"],
+    ["Nutrition", 70, "green"]
+  ];
 
   return (
-    <article className={`vitals-card vitals-mini-card${focusClass(focus, metric.key)}`}>
-      <header>
-        <span>
-          <Icon size={16} strokeWidth={1.8} />
-          {metric.label}
-        </span>
-      </header>
-      <strong>{metric.value}</strong>
-      <small>{metric.detail}</small>
-      <TinySparkline points={metric.spark} color={tones[metric.tone]} />
-    </article>
-  );
-}
-
-function ReadinessCard({ focus }) {
-  return (
-    <article className={`vitals-card vitals-readiness-card${focusClass(focus, "readiness")}`}>
-      <header className="vitals-card-heading">
-        <div>
-          <h2>Daily Readiness</h2>
-          <p>Live source signal board</p>
+    <div className="vitals-score-breakdown">
+      <strong>Score Breakdown</strong>
+      {rows.map(([label, value, tone]) => (
+        <div key={label}>
+          <span>{label}</span>
+          <i>
+            <b className={tone} style={{ width: `${value}%` }} />
+          </i>
+          <em>{value}%</em>
         </div>
-        <Info size={14} strokeWidth={1.8} />
-      </header>
-      <div className="vitals-heatmap" aria-label="Readiness source heatmap">
-        <div className="vitals-heatmap-days" aria-hidden="true">
-          {["M", "T", "W", "T", "F", "S", "S"].map((day, index) => (
-            <span key={`${day}-${index}`}>{day}</span>
+      ))}
+    </div>
+  );
+}
+
+function HealthScoreCard({ model }) {
+  return (
+    <article className="vitals-ai-card vitals-score-card">
+      <CardHeading icon={HeartPulse} title="Health Score" />
+      <div className="vitals-score-main">
+        <div>
+          <strong>{model.readinessScore}</strong>
+          <span>%</span>
+          <small>Good</small>
+          <p>+ 8% vs yesterday</p>
+        </div>
+        <Ring value={model.readinessScore} tone="green" size={116} />
+        <ScoreBreakdown />
+      </div>
+      <footer>Generated {model.generatedDay} 2026 from {model.sourceCount} sources <Info size={13} /></footer>
+    </article>
+  );
+}
+
+function RecoveryCard({ model }) {
+  return (
+    <article className="vitals-ai-card vitals-recovery-card">
+      <CardHeading icon={Droplet} title="Recovery" />
+      <div className="vitals-recovery-layout">
+        <div>
+          <strong>{model.recoveryScore}</strong>
+          <span>%</span>
+          <small>Improving</small>
+          <p>+ 6% vs yesterday</p>
+        </div>
+        <dl>
+          <div><dt>HRV</dt><dd>{model.hrv} ms</dd><em>+ 4 ms</em></div>
+          <div><dt>Resting HR</dt><dd>{model.rhr} bpm</dd><em>- 2 bpm</em></div>
+          <div><dt>Resp. Rate</dt><dd>{model.respRate} brpm</dd><em>- 0.4</em></div>
+        </dl>
+      </div>
+      <svg className="vitals-ai-line-chart" viewBox="0 0 540 160" aria-hidden="true">
+        <line x1="28" x2="512" y1="126" y2="126" />
+        <path d={model.recoveryPath} />
+        <circle cx="512" cy="70" r="4" />
+      </svg>
+      <div className="vitals-ai-axis"><span>30 May</span><span>2 Jun</span><span>5 Jun</span></div>
+    </article>
+  );
+}
+
+function SleepCard({ model }) {
+  const stages = [
+    ["Deep", 16, "deep"],
+    ["REM", 12, "rem"],
+    ["Light", 22, "light"],
+    ["Awake", 5, "awake"],
+    ["Deep", 18, "deep"],
+    ["REM", 10, "rem"],
+    ["Light", 17, "light"]
+  ];
+
+  return (
+    <article className="vitals-ai-card vitals-sleep-card">
+      <CardHeading icon={Moon} title="Sleep" />
+      <div className="vitals-sleep-top">
+        <div>
+          <strong>{model.sleepDisplay}</strong>
+          <small>Good</small>
+          <p>+ 35m vs yesterday</p>
+        </div>
+        <Ring value={84} label="Quality" tone="blue" size={112} />
+      </div>
+      <div className="vitals-sleep-stages">
+        <header>
+          <span>Sleep Stages</span>
+          <i className="deep" /> Deep
+          <i className="rem" /> REM
+          <i className="light" /> Light
+          <i className="awake" /> Awake
+        </header>
+        <div className="vitals-sleep-bar">
+          {stages.map(([label, width, tone], index) => (
+            <b className={tone} style={{ width: `${width}%` }} key={`${label}-${index}`} />
           ))}
         </div>
-        {readinessRows.map(([label, cells]) => (
-          <div className="vitals-heatmap-row" key={label}>
-            <span>{label}</span>
-            {cells.map((cell, index) => (
-              <i className={cell} key={`${label}-${index}`} />
+        <footer><span>23:05</span><span>06:53</span></footer>
+      </div>
+      <div className="vitals-sleep-foot">
+        <span>Consistency <b>85%</b></span>
+        <span>Sleep Debt <b>0h 15m</b> <em>Low</em></span>
+      </div>
+    </article>
+  );
+}
+
+function TrainingLoadCard({ model }) {
+  const bars = [58, 68, 76, 66, 84, 92, 72];
+
+  return (
+    <article className="vitals-ai-card vitals-training-card">
+      <CardHeading icon={Zap} title="Training Load / Strain" />
+      <div className="vitals-training-main">
+        <div>
+          <strong>{model.strainDisplay}</strong>
+          <small>Moderate</small>
+          <p>- 0.2 vs yesterday</p>
+        </div>
+        <div className="vitals-load-chart">
+          <span>7-Day Load Trend</span>
+          <div>
+            {bars.map((bar, index) => (
+              <i style={{ height: `${bar}%` }} key={index} />
             ))}
+          </div>
+          <footer>{["T", "F", "S", "S", "M", "T", "W"].map((day, index) => <em key={`${day}-${index}`}>{day}</em>)}</footer>
+        </div>
+      </div>
+      <div className="vitals-training-stats">
+        <div><span>Weekly Load</span><strong>392</strong><small>Optimal</small></div>
+        <div><span>Activity Minutes</span><strong>312</strong><small>This week</small></div>
+        <div><span>Training Balance</span><strong>0.8</strong><small>Optimal</small></div>
+        <Ring value={72} tone="green" size={72} />
+      </div>
+      <p className="vitals-card-note"><Info size={13} /> More aerobic work would support balance.</p>
+    </article>
+  );
+}
+
+function BodyMetricsCard({ model }) {
+  const rows = [
+    ["Weight", `${model.weight} kg`, "- 0.6 kg"],
+    ["Body Fat", "21.3%", "- 0.2%"],
+    ["Muscle Mass", "46.1 kg", "+ 0.4 kg"],
+    ["VO2 Max", "48", "Good"]
+  ];
+
+  return (
+    <article className="vitals-ai-card vitals-body-metrics-card">
+      <CardHeading icon={Activity} title="Body Metrics" action="View trends" />
+      <div className="vitals-body-metrics-layout">
+        <dl>
+          {rows.map(([label, value, delta]) => (
+            <div key={label}>
+              <dt>{label}</dt>
+              <dd>{value}</dd>
+              <em>{delta}</em>
+            </div>
+          ))}
+        </dl>
+        <TinyLine points={model.weightSpark} tone="green" />
+      </div>
+      <div className="vitals-ai-axis"><span>30 May</span><span>2 Jun</span><span>5 Jun</span></div>
+    </article>
+  );
+}
+
+function NutritionCard({ model }) {
+  return (
+    <article className="vitals-ai-card vitals-nutrition-card-v2">
+      <CardHeading icon={Droplet} title="Nutrition & Hydration" action="View details" />
+      <div className="vitals-nutrition-v2-body">
+        <Ring value={model.nutritionScore} label="Nutrition" tone="green" size={96} />
+        <div>
+          {[
+            ["Calories", `${model.calories} / 2,200 kcal`, 82, "green"],
+            ["Protein", `${model.protein} / 140 g`, 80, "green"],
+            ["Hydration", model.hydration, 72, "blue"]
+          ].map(([label, value, width, tone]) => (
+            <section key={label}>
+              <span>{label}</span>
+              <strong>{value}</strong>
+              <i><b className={tone} style={{ width: `${width}%` }} /></i>
+            </section>
+          ))}
+        </div>
+      </div>
+      <footer>Micronutrient Status <strong>Good</strong><i /></footer>
+    </article>
+  );
+}
+
+function StressCard({ model }) {
+  return (
+    <article className="vitals-ai-card vitals-stress-card">
+      <CardHeading icon={Activity} title="Stress & Mindfulness" action="View insights" />
+      <div className="vitals-stress-body">
+        <Ring value={model.stressScore} label="Low" tone="green" size={94} />
+        <div>
+          <span>7-Day Trend</span>
+          <TinyLine points="10,46 38,46 66,42 94,22 122,38 150,26 178,40 210,34" tone="green" />
+          <p>Mindful Minutes <strong>120 / 150 min</strong></p>
+          <i><b style={{ width: "80%" }} /></i>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function TrendsCard() {
+  const rows = [
+    ["HRV", "Trending up", "+ 8%", "up"],
+    ["Resting HR", "Trending down", "- 4 bpm", "down"],
+    ["Sleep Quality", "Improving", "+ 6%", "up"],
+    ["Body Weight", "Stable", "- 0.6 kg", "flat"]
+  ];
+
+  return (
+    <article className="vitals-ai-card vitals-trends-card">
+      <CardHeading title="Trends Summary" action="View all" />
+      <div className="vitals-trends-list">
+        {rows.map(([label, state, delta, tone]) => (
+          <div key={label}>
+            <span>{label}</span>
+            <strong className={tone}>{state}</strong>
+            <em>{delta}</em>
+            <TinyLine points="10,38 42,35 74,37 106,31 138,34 170,29 210,32" tone="green" />
+            <ArrowRight size={14} />
           </div>
         ))}
       </div>
-      <footer className="vitals-legend">
-        <span>
-          <i className="watch" /> Review
-        </span>
-        <span>
-          <i className="mid" /> Source
-        </span>
-        <span>
-          <i className="high" /> Ready
-        </span>
-      </footer>
     </article>
   );
 }
 
-function SourceCard({ focus, model, onOpen }) {
+function ReadinessHabitsCard() {
+  const rows = ["WHOOP", "Training", "Nutrition", "Sleep", "Mindfulness"];
+  const pattern = ["high", "mid", "high", "soft", "high", "none", "watch", "high", "high", "high", "mid", "high", "none", "soft"];
+
   return (
-    <article className={`vitals-card vitals-source-card${focusClass(focus, "sources")}`}>
-      <header className="vitals-card-heading">
+    <article className="vitals-ai-card vitals-habits-card">
+      <div className="vitals-habits-board">
+        <header>
+          <h2>Daily Readiness & Habits</h2>
+          <p>Live readiness and habit adherence</p>
+        </header>
+        <div className="vitals-habit-days">
+          {["M", "T", "W", "T", "F", "S", "S", "M", "T", "W", "T", "F", "S", "S"].map((day, index) => (
+            <span key={`${day}-${index}`}>{day}</span>
+          ))}
+        </div>
+        {rows.map((row, rowIndex) => (
+          <div className="vitals-habit-row" key={row}>
+            <span>{row}</span>
+            {pattern.map((cell, index) => (
+              <i className={pattern[(index + rowIndex * 2) % pattern.length]} key={`${row}-${cell}-${index}`} />
+            ))}
+          </div>
+        ))}
+        <footer>
+          <span><i className="high" /> Optimal</span>
+          <span><i className="mid" /> Good</span>
+          <span><i className="watch" /> Needs attention</span>
+          <span><i className="none" /> No data</span>
+        </footer>
+      </div>
+      <aside className="vitals-weekly-readiness">
+        <header>
+          <h3>Weekly Readiness</h3>
+          <ArrowRight size={15} />
+        </header>
+        <strong>68% <span>+ 8%</span></strong>
+        <TinyLine points="10,48 42,42 74,38 106,45 138,30 170,36 202,31 232,34" tone="green" />
         <div>
-          <h2>Source Freshness</h2>
-          <p>Aggregate values visible; source files stay separate</p>
+          <span>Best Day <b>Wed, 3 Jun</b></span>
+          <span>78%</span>
+          <span>Focus Area <b>Late Bedtime</b></span>
         </div>
-        <button type="button" onClick={onOpen}>Details <ArrowRight size={14} /></button>
-      </header>
-      <div className="vitals-source-layout">
-        <div className="vitals-source-ring">
-          <strong>{model.sourceCoverage.length}</strong>
-          <span>source groups</span>
-        </div>
-        <div className="vitals-source-list">
-          {model.sourceRows.map(([label, status, color]) => (
-            <div key={label}>
+      </aside>
+    </article>
+  );
+}
+
+function InsightsCard({ model }) {
+  const rows = [
+    ["Iron handling", "Low ferritin/iron saturation trend continues. Consider reviewing iron intake and sources.", "Clinician", "amber"],
+    ["Late bedtimes impacting deep sleep", "You have had 4 late bedtimes this week. Aim for an earlier wind-down routine.", "Lifestyle", "orange"],
+    ["Nice work on training balance", "Your aerobic base and strain balance look great. Keep it up!", "Positive", "green"],
+    ["Hydration dip on training days", "Hydration was below target on 2 training days this week.", "Monitor", "teal"]
+  ];
+
+  return (
+    <article className="vitals-ai-card vitals-insights-card">
+      <div className="vitals-insights-main">
+        <header>
+          <div>
+            <h2>Health Intelligence & Insights</h2>
+            <p>AI-powered insights and actionable recommendations</p>
+          </div>
+          <button type="button">View all insights <ArrowRight size={14} /></button>
+        </header>
+        <nav>
+          <button type="button" className="active">Top Priorities</button>
+          <button type="button">Positive Signals <span>4</span></button>
+          <button type="button">Watchlist <span>2</span></button>
+          <button type="button">All Insights</button>
+        </nav>
+        <div className="vitals-insight-list">
+          {rows.map(([title, detail, tag, tone], index) => (
+            <div key={title}>
+              <em>{index + 1}</em>
+              <i className={tone}>{tag.slice(0, 1)}</i>
               <span>
-                <i style={{ background: color }} />
-                {label}
+                <strong>{title}</strong>
+                <small>{detail}</small>
               </span>
-              <strong>{status}</strong>
+              <b>{tag}</b>
+              <ArrowRight size={15} />
             </div>
           ))}
         </div>
       </div>
+      <aside className="vitals-next-action" style={{ backgroundImage: `url(${bannerImage})` }}>
+        <div>
+          <span>Your Next Best Action</span>
+          <strong>Focus on earlier bedtimes and iron-rich foods this week.</strong>
+          <button type="button">View Plan <ArrowRight size={14} /></button>
+        </div>
+      </aside>
     </article>
   );
 }
 
-function TrendCard({ range, focus, model, onRangeClick }) {
-  return (
-    <article className={`vitals-card vitals-line-card${focusClass(focus, "review")}`}>
-      <header className="vitals-card-heading">
-        <div>
-          <h2>Recovery & Sleep</h2>
-          <p>Latest aggregate trend values</p>
-        </div>
-        <button type="button" onClick={onRangeClick}>{range} <ChevronDown size={14} /></button>
-      </header>
-      <div className="vitals-chart-legend">
-        <span><i className="green" /> Recovery</span>
-        <span><i className="teal" /> Sleep duration</span>
-      </div>
-      <svg className="vitals-trend-chart" viewBox="0 0 620 260" role="img" aria-label="Live recovery and sleep trend">
-        {[40, 92, 144, 196].map((y) => (
-          <line key={y} x1="18" x2="598" y1={y} y2={y} />
-        ))}
-        <path d={model.trendPaths.recovery} className="green" />
-        <path d={model.trendPaths.sleep} className="teal" />
-      </svg>
-    </article>
-  );
-}
-
-function NutritionCard({ focus, model }) {
-  return (
-    <article className={`vitals-card vitals-nutrition-card${focusClass(focus, "sources")}`}>
-      <header className="vitals-card-heading">
-        <div>
-          <h2>Nutrition</h2>
-          <p>7-day rolling average from {formatShortDate(model.nutritionLatest.date)}</p>
-        </div>
-        <Info size={14} />
-      </header>
-      <strong>{formatNumber(model.nutritionLatest.kcal_7d)}<span>kcal / day</span></strong>
-      <small>
-        Protein {formatNumber(model.nutritionLatest.protein_7d, 1)}g / fat {formatNumber(model.nutritionLatest.fat_7d, 1)}g / net carb {formatNumber(model.nutritionLatest.netcarb_7d, 1)}g.
-      </small>
-      <div className="vitals-bars" aria-label="Nutrition aggregate bars">
-        {model.nutritionBars.map((item) => (
-          <span style={{ "--height": item.height }} title={`${item.title}: ${formatNumber(item.value, 1)}`} key={item.label}>
-            <i />
-            <em>{item.label}</em>
-          </span>
-        ))}
-      </div>
-    </article>
-  );
-}
-
-function ReviewCard({ focus, model, onOpen }) {
-  return (
-    <article className={`vitals-card vitals-review-card${focusClass(focus, "review")}`}>
-      <header className="vitals-card-heading">
-        <div>
-          <h2>Review Prompts</h2>
-          <p>Source-backed questions for health conversations</p>
-        </div>
-        <Info size={14} />
-      </header>
-      <div className="vitals-review-list">
-        {model.reviewRows.map(([label, status, detail], index) => (
-          <div key={label}>
-            {index < 2 ? <CheckCircle2 size={17} /> : <Circle size={17} />}
-            <span>
-              <strong>{label}</strong>
-              <small>{detail}</small>
-            </span>
-            <em>{status}</em>
-          </div>
-        ))}
-      </div>
-      <button type="button" className="vitals-text-link" onClick={onOpen}>
-        View source map
-        <ArrowRight size={15} />
-      </button>
-    </article>
-  );
-}
-
-function LabsCard({ focus, model, onOpen }) {
-  return (
-    <article className={`vitals-card vitals-labs-card${focusClass(focus, "labs")}`} id="vitals-labs">
-      <header className="vitals-card-heading">
-        <div>
-          <h2>Health Data Summary</h2>
-          <p>Latest aggregate records from the website data file</p>
-        </div>
-        <button type="button" onClick={onOpen}>View values <ArrowRight size={15} /></button>
-      </header>
-      <div className="vitals-lab-grid">
-        {model.labRows.map(([label, value, detail]) => (
-          <div key={label}>
-            <span>{label}</span>
-            <strong>{value}</strong>
-            <small>{detail}</small>
-            <i />
-          </div>
-        ))}
-      </div>
-      <footer>
-        <CheckCircle2 size={16} />
-        Aggregate values are visible; raw source exports and identifiers stay out of the repository.
-      </footer>
-    </article>
-  );
-}
-
-function RecentCard({ focus, model, onOpenReview, onOpenSources, onOpenActions }) {
-  return (
-    <article className={`vitals-card vitals-recent-card${focusClass(focus, "recent")}`}>
-      <header className="vitals-card-heading">
-        <div>
-          <h2>Upcoming & Recent</h2>
-          <p>Review trail</p>
-        </div>
-        <Info size={14} />
-      </header>
-      <div className="vitals-event-list">
-        <div className="is-active">
-          <CalendarDays size={20} />
-          <span>
-            <strong>Clinician review thread</strong>
-            <small>{model.reviewPrompts[0]?.title || "Current health review prompt"}</small>
-          </span>
-          <button type="button" onClick={onOpenReview}>Open note</button>
-        </div>
-        <div>
-          <CalendarDays size={20} />
-          <span>
-            <strong>Snapshot generated</strong>
-            <small>{formatDate(model.healthData.generatedAt)} / {model.sourceCoverage.length} source groups</small>
-          </span>
-          <button type="button" onClick={onOpenSources}>Review</button>
-        </div>
-      </div>
-      <button type="button" className="vitals-text-link" onClick={onOpenActions}>View all actions <ArrowRight size={15} /></button>
-    </article>
-  );
-}
-
-function ActionsCard({ focus, onOpen }) {
-  const actions = [
-    [ClipboardList, "Log Symptom", "review"],
-    [Plus, "Add Measure", "labs"],
-    [Upload, "Source Freshness", "sources"],
-    [FileText, "Share Report", "review"]
+function BriefStrip() {
+  const items = [
+    ["Recovery improving", "Your HRV and resting HR are trending in the right direction."],
+    ["Sleep on track", "Consistent sleep supporting recovery and performance."],
+    ["Keep fueling well", "Protein and hydration look good. Stay consistent."],
+    ["Focus for today", "Prioritise an earlier bedtime and mindfully manage stress."]
   ];
 
   return (
-    <article className={`vitals-card vitals-actions-card${focusClass(focus, "activity")}`} id="vitals-actions">
-      <header className="vitals-card-heading">
-        <div>
-          <h2>Quick Actions</h2>
-          <p>Dashboard controls</p>
-        </div>
-      </header>
-      <div>
-        {actions.map(([Icon, label, panel]) => (
-          <button type="button" key={label} onClick={() => onOpen(panel)}>
-            <Icon size={20} strokeWidth={1.7} />
-            <span>{label}</span>
-          </button>
-        ))}
+    <article className="vitals-ai-brief">
+      <div className="vitals-brief-logo">
+        <Activity size={26} />
       </div>
+      <div>
+        <h2>AI Health Brief</h2>
+        <p>Personalised daily summary</p>
+      </div>
+      {items.map(([title, detail]) => (
+        <section key={title}>
+          <CheckCircle2 size={20} />
+          <span><strong>{title}</strong><small>{detail}</small></span>
+        </section>
+      ))}
+      <button type="button">View Full Brief <ArrowRight size={16} /></button>
     </article>
   );
 }
 
 export function VitalsDashboardPreview({ compact = false, dataUrl = remoteVitalsDataUrl }) {
   const [runtimeHealthData, setRuntimeHealthData] = useState(fallbackHealthData);
+  const [range, setRange] = useState("7d");
   const [snapshotIndex, setSnapshotIndex] = useState(0);
-  const [rangeIndex, setRangeIndex] = useState(0);
-  const [focus, setFocus] = useState("all");
-  const [activePanel, setActivePanel] = useState(null);
 
   useEffect(() => {
     const url = String(dataUrl || "").trim();
@@ -787,158 +659,84 @@ export function VitalsDashboardPreview({ compact = false, dataUrl = remoteVitals
     };
   }, [dataUrl]);
 
-  const model = useMemo(() => buildVitalsModel(runtimeHealthData), [runtimeHealthData]);
-  const snapshot = model.snapshots[snapshotIndex] || model.snapshots[0];
-  const range = model.ranges[rangeIndex] || model.ranges[0];
-  const panel = activePanel ? model.panels[activePanel] : null;
+  const model = useMemo(() => buildModel(runtimeHealthData), [runtimeHealthData]);
+  const rangeEndDate = useMemo(() => {
+    const end = dateFromISO(model.snapshotDate);
+    if (!end) return model.snapshotDate;
 
-  const topStats = useMemo(
-    () =>
-      model.baseTopStats.map((stat) => ({
-        ...stat,
-        trend:
-          stat.key === "score"
-            ? snapshot.summary
-            : stat.key === "recovery"
-              ? `${snapshot.recency} / ${range} / ${stat.trend}`
-              : stat.trend
-      })),
-    [model.baseTopStats, range, snapshot]
-  );
+    return isoDate(addDays(end, -snapshotIndex * rangeDays(range)));
+  }, [model.snapshotDate, range, snapshotIndex]);
 
   function moveSnapshot(direction) {
-    setSnapshotIndex((current) => (current + direction + model.snapshots.length) % model.snapshots.length);
-  }
-
-  function openPanel(key) {
-    setActivePanel(key);
-    if (key === "sources") setFocus("sources");
-    if (key === "labs") setFocus("labs");
-    if (key === "review") setFocus("review");
-    if (key === "activity") setFocus("activity");
+    setSnapshotIndex((current) => Math.max(0, Math.min(3, current - direction)));
   }
 
   return (
-    <section
-      className={`vitals-dashboard ${compact ? "is-compact" : ""} ${focus !== "all" ? "is-filtering" : ""}`}
-      aria-label="Vitals dashboard"
-    >
-      <div className="vitals-shell">
-        <header className="vitals-topbar">
-          <div>
-            <h1>Health Overview</h1>
-            <p>{snapshot.caption}</p>
+    <section className={`vitals-ai-dashboard ${compact ? "is-compact" : ""}`} aria-label="Vitals dashboard">
+      <div className="vitals-ai-shell">
+        <header className="vitals-ai-topbar">
+          <div className="vitals-ai-title">
+            <h1>Health Overview <span className="vitals-leaf-logo" /></h1>
+            <p>Live aggregate health intelligence</p>
           </div>
-          <div className="vitals-header-actions">
-            <div className="vitals-date-control" aria-label="Dashboard snapshot">
-              <button type="button" onClick={() => moveSnapshot(-1)} aria-label="Previous dashboard snapshot">
-                <ChevronLeft size={18} />
-              </button>
-              <span>{snapshot.label}</span>
-              <CalendarDays size={16} />
-              <button type="button" onClick={() => moveSnapshot(1)} aria-label="Next dashboard snapshot">
-                <ChevronRight size={18} />
-              </button>
+          <nav className="vitals-ai-sources" aria-label="Connected sources">
+            <SourcePill label="WHOOP" tone="green" />
+            <SourcePill label="Strava" tone="orange" />
+            <SourcePill label="Fitbit" tone="blue" />
+            <SourcePill label="Google Fit" tone="red" />
+            <button type="button" className="vitals-ai-source-more">+2 more</button>
+          </nav>
+          <div className="vitals-ai-controls">
+            <div className="vitals-ai-date">
+              <button type="button" onClick={() => moveSnapshot(-1)} aria-label="Previous dashboard snapshot"><ChevronLeft size={18} /></button>
+              <span>Snapshot {formatShortDate(rangeEndDate)}</span>
+              <CalendarDays size={17} />
+              <button type="button" onClick={() => moveSnapshot(1)} aria-label="Next dashboard snapshot"><ChevronRight size={18} /></button>
             </div>
-            <div className="vitals-range-control" aria-label="Dashboard range">
-              {model.ranges.map((option, index) => (
-                <button
-                  type="button"
-                  className={index === rangeIndex ? "is-active" : ""}
-                  aria-pressed={index === rangeIndex}
-                  onClick={() => setRangeIndex(index)}
-                  key={option}
-                >
-                  {option.replace(" days", "d")}
+            <div className="vitals-ai-ranges" aria-label="Dashboard range">
+              {["7d", "14d", "30d"].map((option) => (
+                <button type="button" className={range === option ? "active" : ""} onClick={() => setRange(option)} key={option}>
+                  {option}
                 </button>
               ))}
             </div>
-            <button type="button" className="vitals-icon-button" aria-label="Notifications" onClick={() => openPanel("review")}>
-              <Bell size={20} strokeWidth={1.7} />
-            </button>
-            <div className="vitals-avatar" aria-label="Health profile">
-              VT
-            </div>
+            <button type="button" className="vitals-ai-bell" aria-label="Notifications"><Bell size={20} /><i /></button>
           </div>
         </header>
 
-        <section className="vitals-source-strip" aria-label="Source freshness summary">
-          {model.sourceRows.map(([label, status, color]) => (
-            <button type="button" onClick={() => openPanel(label === "Labs" ? "labs" : "sources")} key={label}>
-              <i style={{ background: color }} />
-              <span>{label}</span>
-              <strong>{status}</strong>
-            </button>
-          ))}
-        </section>
-
-        <section className="vitals-focus-tabs" aria-label="Dashboard focus">
-          {focusOptions.map((option) => (
-            <button
-              type="button"
-              className={focus === option.key ? "is-active" : ""}
-              aria-pressed={focus === option.key}
-              onClick={() => setFocus(option.key)}
-              key={option.key}
-            >
-              {option.label}
-            </button>
-          ))}
-        </section>
-
-        <section className="vitals-dashboard-grid">
-          {topStats.map((stat) => (
-            <StatCard stat={stat} focus={focus} key={stat.label} />
-          ))}
-          <ReadinessCard focus={focus} />
-
-          {model.miniMetrics.map((metric) => (
-            <MiniMetric metric={metric} focus={focus} key={metric.label} />
-          ))}
-          <ReviewCard focus={focus} model={model} onOpen={() => openPanel("sources")} />
-
-          <TrendCard
-            range={range}
-            focus={focus}
-            model={model}
-            onRangeClick={() => setRangeIndex((current) => (current + 1) % model.ranges.length)}
-          />
-          <SourceCard focus={focus} model={model} onOpen={() => openPanel("sources")} />
-          <NutritionCard focus={focus} model={model} />
-
-          <LabsCard focus={focus} model={model} onOpen={() => openPanel("labs")} />
-          <RecentCard
-            focus={focus}
-            model={model}
-            onOpenReview={() => openPanel("review")}
-            onOpenSources={() => openPanel("sources")}
-            onOpenActions={() => openPanel("activity")}
-          />
-          <ActionsCard focus={focus} onOpen={openPanel} />
-        </section>
-
-        {panel ? (
-          <aside className="vitals-detail-panel" aria-live="polite">
-            <header>
-              <span>{panel.kicker}</span>
-              <button type="button" onClick={() => setActivePanel(null)} aria-label="Close dashboard detail">
-                <X size={17} />
-              </button>
-            </header>
-            <h2>{panel.title}</h2>
-            <p>{panel.body}</p>
-            <ul>
-              {panel.rows.map((row) => (
-                <li key={row}>{row}</li>
-              ))}
-            </ul>
+        <section className="vitals-ai-hero">
+          <div className="vitals-hero-landscape" style={{ backgroundImage: `url(${bannerImage})` }}>
+            <div className="vitals-hero-metrics">
+              <section className="primary">
+                <span>Overall Readiness</span>
+                <strong>{model.readinessScore}<em>%</em></strong>
+                <small>Good <b>+ 8% vs yesterday</b></small>
+              </section>
+              <section><HeartPulse size={18} /><span>Recovery</span><strong>Improving</strong><small>+ 6%</small></section>
+              <section><Moon size={18} /><span>Sleep</span><strong>On Track</strong><small>{model.sleepDisplay}</small></section>
+              <section><Activity size={18} /><span>Training Balance</span><strong>Optimal</strong><small>0.8</small></section>
+            </div>
+          </div>
+          <aside className="vitals-quote-card" style={{ backgroundImage: `url(${bannerImage})` }}>
+            <span>"</span>
+            <p>Small daily choices<br />create big change.</p>
+            <em>Keep going!</em>
           </aside>
-        ) : null}
+        </section>
 
-        <footer className="vitals-privacy-note">
-          <CheckCircle2 size={15} />
-          Live aggregate health values are published here; raw exports, identifiers, and source files stay out of the public repo.
-        </footer>
+        <section className="vitals-ai-grid">
+          <HealthScoreCard model={model} />
+          <RecoveryCard model={model} />
+          <SleepCard model={model} />
+          <TrainingLoadCard model={model} />
+          <BodyMetricsCard model={model} />
+          <NutritionCard model={model} />
+          <StressCard model={model} />
+          <TrendsCard />
+          <ReadinessHabitsCard />
+          <InsightsCard model={model} />
+          <BriefStrip />
+        </section>
       </div>
     </section>
   );
