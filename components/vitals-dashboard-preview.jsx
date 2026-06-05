@@ -716,11 +716,6 @@ export function VitalsDashboardPreview({ compact = false, dataUrl = remoteVitals
               <section><Activity size={18} /><span>Training Balance</span><strong>Optimal</strong><small>0.8</small></section>
             </div>
           </div>
-          <aside className="vitals-quote-card" style={{ backgroundImage: `url(${bannerImage})` }}>
-            <span>"</span>
-            <p>Small daily choices<br />create big change.</p>
-            <em>Keep going!</em>
-          </aside>
         </section>
 
         <section className="vitals-ai-grid">
