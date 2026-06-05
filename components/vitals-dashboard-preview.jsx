@@ -674,38 +674,37 @@ export function VitalsDashboardPreview({ compact = false, dataUrl = remoteVitals
   return (
     <section className={`vitals-ai-dashboard ${compact ? "is-compact" : ""}`} aria-label="Vitals dashboard">
       <div className="vitals-ai-shell">
-        <header className="vitals-ai-topbar">
-          <div className="vitals-ai-title">
-            <h1>Health Overview <span className="vitals-leaf-logo" /></h1>
-            <p>Live aggregate health intelligence</p>
-          </div>
-          <nav className="vitals-ai-sources" aria-label="Connected sources">
-            <SourcePill label="WHOOP" tone="green" />
-            <SourcePill label="Strava" tone="orange" />
-            <SourcePill label="Fitbit" tone="blue" />
-            <SourcePill label="Google Fit" tone="red" />
-            <button type="button" className="vitals-ai-source-more">+2 more</button>
-          </nav>
-          <div className="vitals-ai-controls">
-            <div className="vitals-ai-date">
-              <button type="button" onClick={() => moveSnapshot(-1)} aria-label="Previous dashboard snapshot"><ChevronLeft size={18} /></button>
-              <span>Snapshot {formatShortDate(rangeEndDate)}</span>
-              <CalendarDays size={17} />
-              <button type="button" onClick={() => moveSnapshot(1)} aria-label="Next dashboard snapshot"><ChevronRight size={18} /></button>
-            </div>
-            <div className="vitals-ai-ranges" aria-label="Dashboard range">
-              {["7d", "14d", "30d"].map((option) => (
-                <button type="button" className={range === option ? "active" : ""} onClick={() => setRange(option)} key={option}>
-                  {option}
-                </button>
-              ))}
-            </div>
-            <button type="button" className="vitals-ai-bell" aria-label="Notifications"><Bell size={20} /><i /></button>
-          </div>
-        </header>
-
         <section className="vitals-ai-hero">
           <div className="vitals-hero-landscape" style={{ backgroundImage: `url(${bannerImage})` }}>
+            <header className="vitals-hero-topbar">
+              <div className="vitals-ai-title">
+                <h1>Vitals</h1>
+                <p>Health Intelligence</p>
+              </div>
+              <nav className="vitals-ai-sources" aria-label="Connected sources">
+                <SourcePill label="WHOOP" tone="green" />
+                <SourcePill label="Strava" tone="orange" />
+                <SourcePill label="Fitbit" tone="blue" />
+                <SourcePill label="Google Fit" tone="red" />
+                <button type="button" className="vitals-ai-source-more">+2 more</button>
+              </nav>
+              <div className="vitals-ai-controls">
+                <div className="vitals-ai-date">
+                  <button type="button" onClick={() => moveSnapshot(-1)} aria-label="Previous dashboard snapshot"><ChevronLeft size={18} /></button>
+                  <span>Snapshot {formatShortDate(rangeEndDate)}</span>
+                  <CalendarDays size={17} />
+                  <button type="button" onClick={() => moveSnapshot(1)} aria-label="Next dashboard snapshot"><ChevronRight size={18} /></button>
+                </div>
+                <div className="vitals-ai-ranges" aria-label="Dashboard range">
+                  {["7d", "14d", "30d"].map((option) => (
+                    <button type="button" className={range === option ? "active" : ""} onClick={() => setRange(option)} key={option}>
+                      {option}
+                    </button>
+                  ))}
+                </div>
+                <button type="button" className="vitals-ai-bell" aria-label="Notifications"><Bell size={20} /><i /></button>
+              </div>
+            </header>
             <div className="vitals-hero-metrics">
               <section className="primary">
                 <span>Overall Readiness</span>
