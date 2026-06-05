@@ -215,24 +215,23 @@ function SourcePill({ label, tone = "green" }) {
 
 function Ring({ value, label, tone = "green", size = 118 }) {
   const safe = Math.max(0, Math.min(100, Number(value) || 0));
-  const radius = 45;
-  const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (safe / 100) * circumference;
 
   return (
-    <div className={`vitals-ai-ring ${tone}`} style={{ "--ring-size": `${size}px` }}>
-      <svg viewBox="0 0 112 112" aria-hidden="true">
-        <circle cx="56" cy="56" r={radius} className="track" />
-        <circle
-          cx="56"
-          cy="56"
-          r={radius}
-          className="value"
-          style={{ strokeDasharray: circumference, strokeDashoffset: offset }}
-        />
-      </svg>
-      <strong>{value}%</strong>
-      {label ? <span>{label}</span> : null}
+    <div
+      className={`vitals-ai-ring ${tone}`}
+      style={{
+        "--ring-size": `${size}px`,
+        "--ring-progress": `${safe * 3.6}deg`,
+        "--ring-progress-mid": `${safe * 1.8}deg`,
+        "--ring-start": `${safe * -1.8}deg`
+      }}
+      aria-label={`${label || "Score"} ${value}%`}
+    >
+      <span className="vitals-ai-ring-orbit" aria-hidden="true" />
+      <span className="vitals-ai-ring-copy">
+        <strong>{value}%</strong>
+        {label ? <span className="vitals-ai-ring-label">{label}</span> : null}
+      </span>
     </div>
   );
 }
