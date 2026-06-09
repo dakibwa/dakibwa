@@ -84,13 +84,27 @@ function isAuthorized(request, env) {
   return header === `Bearer ${configuredToken}`;
 }
 
+function trimSeries(data, count = 31) {
+  if (!data?.series) return data;
+
+  return {
+    ...data,
+    series: Object.fromEntries(
+      Object.entries(data.series).map(([metric, points]) => [
+        metric,
+        Array.isArray(points) ? points.slice(-count) : points
+      ])
+    )
+  };
+}
+
 async function readPublicData(env) {
   const cached = await env.VITALS_KV.get(PUBLIC_DATA_KEY, "json");
-  if (cached) return cached;
+  if (cached) return trimSeries(cached);
 
   const seeded = await fetchSeedData(env);
   await env.VITALS_KV.put(PUBLIC_DATA_KEY, JSON.stringify(seeded));
-  return seeded;
+  return trimSeries(seeded);
 }
 
 async function fetchSeedData(env) {
