@@ -6,7 +6,6 @@ import {
   ArrowRight,
   Bell,
   CalendarDays,
-  CheckCircle2,
   ChevronLeft,
   ChevronRight,
   Droplet,
@@ -732,34 +731,6 @@ function InsightsCard({ model }) {
   );
 }
 
-function BriefStrip() {
-  const items = [
-    ["Recovery improving", "Your HRV and resting HR are trending in the right direction."],
-    ["Sleep on track", "Consistent sleep supporting recovery and performance."],
-    ["Keep fueling well", "Protein and hydration look good. Stay consistent."],
-    ["Focus for today", "Prioritise an earlier bedtime and mindfully manage stress."]
-  ];
-
-  return (
-    <article className="vitals-ai-brief">
-      <div className="vitals-brief-logo">
-        <Activity size={26} />
-      </div>
-      <div>
-        <h2>AI Health Brief</h2>
-        <p>Personalised daily summary</p>
-      </div>
-      {items.map(([title, detail]) => (
-        <section key={title}>
-          <CheckCircle2 size={20} />
-          <span><strong>{title}</strong><small>{detail}</small></span>
-        </section>
-      ))}
-      <button type="button">View Full Brief <ArrowRight size={16} /></button>
-    </article>
-  );
-}
-
 export function VitalsDashboardPreview({ compact = false, dataUrl = remoteVitalsDataUrl }) {
   const [runtimeHealthData, setRuntimeHealthData] = useState(fallbackHealthData);
   const [range, setRange] = useState("7d");
@@ -855,7 +826,6 @@ export function VitalsDashboardPreview({ compact = false, dataUrl = remoteVitals
           <TrendsCard />
           <ReadinessHabitsCard model={model} />
           <InsightsCard model={model} />
-          <BriefStrip />
         </section>
       </div>
     </section>
