@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-06-04T08:48:20.698Z",
-  "snapshotDate": "2026-06-04",
+  "generatedAt": "2026-06-06T07:30:21.674Z",
+  "snapshotDate": "2026-06-06",
   "sourceCoverage": [
     {
       "source": "whoop",
       "rows": 450,
       "firstDay": "2026-04-03",
-      "latestDay": "2026-06-04",
+      "latestDay": "2026-06-05",
       "metricCount": 21
     },
     {
@@ -40,58 +40,58 @@
   ],
   "latest": {
     "recovery_score": {
-      "date": "2026-06-04",
+      "date": "2026-06-05",
       "metric": "recovery_score",
-      "value": 39,
+      "value": 30,
       "unit": "%",
       "source": "whoop",
-      "previousValue": 65,
-      "delta": -26
+      "previousValue": 39,
+      "delta": -9
     },
     "sleep_performance": {
-      "date": "2026-06-03",
+      "date": "2026-06-04",
       "metric": "sleep_performance",
       "value": 84,
       "unit": "%",
       "source": "whoop",
-      "previousValue": 81,
-      "delta": 3
+      "previousValue": 84,
+      "delta": 0
     },
     "hrv": {
-      "date": "2026-06-04",
+      "date": "2026-06-05",
       "metric": "hrv",
-      "value": 58.64,
+      "value": 51.57,
       "unit": "ms",
       "source": "whoop",
-      "previousValue": 69.35,
-      "delta": -10.71
+      "previousValue": 58.64,
+      "delta": -7.07
     },
     "heart_rate_resting": {
-      "date": "2026-06-04",
+      "date": "2026-06-05",
       "metric": "heart_rate_resting",
-      "value": 47,
+      "value": 49,
       "unit": "bpm",
       "source": "whoop",
-      "previousValue": 46,
-      "delta": 1
+      "previousValue": 47,
+      "delta": 2
     },
     "sleep_duration": {
-      "date": "2026-06-03",
+      "date": "2026-06-04",
       "metric": "sleep_duration",
-      "value": 432.51,
+      "value": 435.1,
       "unit": "minutes",
       "source": "whoop",
-      "previousValue": 490.82,
-      "delta": -58.31
+      "previousValue": 432.51,
+      "delta": 2.59
     },
     "strain": {
-      "date": "2026-06-03",
+      "date": "2026-06-04",
       "metric": "strain",
-      "value": 4.42,
+      "value": 15.62,
       "unit": "whoop_strain",
       "source": "whoop",
-      "previousValue": 5.66,
-      "delta": -1.24
+      "previousValue": 4.84,
+      "delta": 10.78
     },
     "weight": {
       "date": "2026-04-22",
@@ -101,19 +101,19 @@
       "delta": -0.6000000000000085
     },
     "calories_burned": {
-      "date": "2026-06-03",
+      "date": "2026-06-04",
       "metric": "calories_burned",
-      "value": 669.09,
+      "value": 2889.25,
       "unit": "kcal",
       "source": "whoop",
-      "previousValue": 1803.45,
-      "delta": -1134.36
+      "previousValue": 1594.67,
+      "delta": 1294.58
     },
     "whoopAverages": {
-      "recovery7d": 48,
-      "hrv7d": 64.61,
-      "rhr7d": 48.86,
-      "sleep7d": 461.97
+      "recovery7d": 47.57,
+      "hrv7d": 63.54,
+      "rhr7d": 49,
+      "sleep7d": 466.57
     }
   },
   "nutrition": {
@@ -152,13 +152,6 @@
   ],
   "series": {
     "sleep_duration": [
-      {
-        "date": "2026-04-29",
-        "metric": "sleep_duration",
-        "value": 420.07,
-        "unit": "minutes",
-        "source": "whoop"
-      },
       {
         "date": "2026-04-30",
         "metric": "sleep_duration",
@@ -368,16 +361,16 @@
         "value": 432.51,
         "unit": "minutes",
         "source": "whoop"
+      },
+      {
+        "date": "2026-06-04",
+        "metric": "sleep_duration",
+        "value": 435.1,
+        "unit": "minutes",
+        "source": "whoop"
       }
     ],
     "recovery_score": [
-      {
-        "date": "2026-05-05",
-        "metric": "recovery_score",
-        "value": 89,
-        "unit": "%",
-        "source": "whoop"
-      },
       {
         "date": "2026-05-06",
         "metric": "recovery_score",
@@ -585,6 +578,13 @@
         "date": "2026-06-04",
         "metric": "recovery_score",
         "value": 39,
+        "unit": "%",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-06-05",
+        "metric": "recovery_score",
+        "value": 30,
         "unit": "%",
         "source": "whoop"
       }
@@ -5698,13 +5698,6 @@
     ],
     "calories_burned": [
       {
-        "date": "2026-04-29",
-        "metric": "calories_burned",
-        "value": 1949.13,
-        "unit": "kcal",
-        "source": "whoop"
-      },
-      {
         "date": "2026-04-30",
         "metric": "calories_burned",
         "value": 2291.86,
@@ -5910,26 +5903,19 @@
       {
         "date": "2026-06-03",
         "metric": "calories_burned",
-        "value": 669.09,
+        "value": 1594.67,
+        "unit": "kcal",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-06-04",
+        "metric": "calories_burned",
+        "value": 2889.25,
         "unit": "kcal",
         "source": "whoop"
       }
     ],
     "workout": [
-      {
-        "date": "2026-04-23",
-        "metric": "workout",
-        "value": 80.97,
-        "unit": "minutes",
-        "source": "whoop"
-      },
-      {
-        "date": "2026-04-24",
-        "metric": "workout",
-        "value": 44.98,
-        "unit": "minutes",
-        "source": "whoop"
-      },
       {
         "date": "2026-04-26",
         "metric": "workout",
@@ -6132,16 +6118,23 @@
         "value": 42.98,
         "unit": "minutes",
         "source": "whoop"
+      },
+      {
+        "date": "2026-06-04",
+        "metric": "workout",
+        "value": 22.98,
+        "unit": "minutes",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-06-05",
+        "metric": "workout",
+        "value": 158.93,
+        "unit": "minutes",
+        "source": "whoop"
       }
     ],
     "strain": [
-      {
-        "date": "2026-04-29",
-        "metric": "strain",
-        "value": 9.88,
-        "unit": "whoop_strain",
-        "source": "whoop"
-      },
       {
         "date": "2026-04-30",
         "metric": "strain",
@@ -6348,7 +6341,14 @@
       {
         "date": "2026-06-03",
         "metric": "strain",
-        "value": 4.42,
+        "value": 4.84,
+        "unit": "whoop_strain",
+        "source": "whoop"
+      },
+      {
+        "date": "2026-06-04",
+        "metric": "strain",
+        "value": 15.62,
         "unit": "whoop_strain",
         "source": "whoop"
       }
