@@ -23,6 +23,23 @@ const remoteVitalsDataUrl = (
 
 const bannerImage = "/project-images/vitals/vitals-botanical-banner.png";
 
+const sourceOptions = [
+  { key: "whoop", label: "WHOOP", tone: "green", detail: "Recovery, strain, HRV and sleep source" },
+  { key: "strava", label: "Strava", tone: "orange", detail: "Training load and activity source" },
+  { key: "fitbit", label: "Fitbit", tone: "blue", detail: "Sleep and activity backup source" },
+  { key: "googlefit", label: "Google Fit", tone: "red", detail: "Daily movement and baseline source" }
+];
+
+const habitDays = ["M", "T", "W", "T", "F", "S", "S", "M", "T", "W", "T", "F", "S", "S"];
+
+const habitStatusLabels = {
+  high: "Optimal",
+  mid: "Good",
+  watch: "Needs attention",
+  soft: "No data",
+  none: "No data"
+};
+
 function numberValue(value) {
   const numeric = Number(value);
   return Number.isFinite(numeric) ? numeric : null;
@@ -328,9 +345,17 @@ function buildModel(data) {
   };
 }
 
-function SourcePill({ label, tone = "green" }) {
+function SourcePill({ label, tone = "green", active = false, detail, onSelect }) {
   return (
-    <button type="button" className="vitals-ai-source-pill">
+    <button
+      type="button"
+      className={`vitals-ai-source-pill vitals-hover-tip ${active ? "active" : ""}`}
+      onClick={onSelect}
+      aria-label={label}
+      aria-pressed={active}
+      data-tooltip={detail || `${label} source`}
+      title={detail || `${label} source`}
+    >
       <i className={tone} />
       <span>{label}</span>
     </button>
@@ -342,14 +367,18 @@ function Ring({ value, label, tone = "green", size = 118 }) {
 
   return (
     <div
-      className={`vitals-ai-ring ${tone}`}
+      className={`vitals-ai-ring vitals-hover-tip ${tone}`}
       style={{
         "--ring-size": `${size}px`,
         "--ring-progress": `${safe * 3.6}deg`,
         "--ring-progress-mid": `${safe * 1.8}deg`,
         "--ring-start": `${safe * -1.8}deg`
       }}
+      tabIndex={0}
+      role="img"
       aria-label={`${label || "Score"} ${value}%`}
+      data-tooltip={`${label || "Score"}: ${value}%`}
+      title={`${label || "Score"}: ${value}%`}
     >
       <span className="vitals-ai-ring-orbit" aria-hidden="true" />
       <span className="vitals-ai-ring-copy">
@@ -399,7 +428,12 @@ function ScoreBreakdown({ model }) {
     <div className="vitals-score-breakdown">
       <strong>Score Breakdown</strong>
       {rows.map(([label, value, tone]) => (
-        <div key={label}>
+        <div
+          className="vitals-score-row vitals-hover-tip"
+          data-tooltip={`${label}: ${value}%`}
+          title={`${label}: ${value}%`}
+          key={label}
+        >
           <span>{label}</span>
           <i>
             <b className={tone} style={{ width: `${value}%` }} />
@@ -413,7 +447,7 @@ function ScoreBreakdown({ model }) {
 
 function HealthScoreCard({ model }) {
   return (
-    <article className="vitals-ai-card vitals-score-card">
+    <article className="vitals-ai-card vitals-score-card" data-card-metric="readiness" tabIndex={0}>
       <CardHeading icon={HeartPulse} title="Health Score" />
       <div className="vitals-score-main">
         <div>
@@ -432,7 +466,7 @@ function HealthScoreCard({ model }) {
 
 function RecoveryCard({ model }) {
   return (
-    <article className="vitals-ai-card vitals-recovery-card">
+    <article className="vitals-ai-card vitals-recovery-card" data-card-metric="recovery" tabIndex={0}>
       <CardHeading icon={Droplet} title="Recovery" />
       <div className="vitals-recovery-layout">
         <div>
@@ -442,12 +476,25 @@ function RecoveryCard({ model }) {
           <p>{model.recoveryDelta} vs previous</p>
         </div>
         <dl>
-          <div><dt>HRV</dt><dd>{model.hrv} ms</dd><em>{model.hrvDelta}</em></div>
-          <div><dt>Resting HR</dt><dd>{model.rhr} bpm</dd><em>{model.rhrDelta}</em></div>
-          <div><dt>Resp. Rate</dt><dd>{model.respRate} brpm</dd><em>- 0.4</em></div>
+          <div className="vitals-hover-tip" data-tooltip={`HRV ${model.hrv} ms, ${model.hrvDelta}`} title={`HRV ${model.hrv} ms, ${model.hrvDelta}`}>
+            <dt>HRV</dt>
+            <dd>{model.hrv} ms</dd>
+            <em>{model.hrvDelta}</em>
+          </div>
+          <div className="vitals-hover-tip" data-tooltip={`Resting HR ${model.rhr} bpm, ${model.rhrDelta}`} title={`Resting HR ${model.rhr} bpm, ${model.rhrDelta}`}>
+            <dt>Resting HR</dt>
+            <dd>{model.rhr} bpm</dd>
+            <em>{model.rhrDelta}</em>
+          </div>
+          <div className="vitals-hover-tip" data-tooltip={`Respiratory rate ${model.respRate} brpm, -0.4`} title={`Respiratory rate ${model.respRate} brpm, -0.4`}>
+            <dt>Resp. Rate</dt>
+            <dd>{model.respRate} brpm</dd>
+            <em>- 0.4</em>
+          </div>
         </dl>
       </div>
       <svg className="vitals-ai-line-chart" viewBox="0 0 540 160" aria-hidden="true">
+        <title>Recovery trend ending at {model.recoveryScore}%</title>
         <line x1="28" x2="512" y1="126" y2="126" />
         <path d={model.recoveryPath} />
         <circle cx="512" cy="70" r="4" />
@@ -471,7 +518,7 @@ function SleepCard({ model }) {
   ];
 
   return (
-    <article className="vitals-ai-card vitals-sleep-card">
+    <article className="vitals-ai-card vitals-sleep-card" data-card-metric="sleep" tabIndex={0}>
       <CardHeading icon={Moon} title="Sleep" />
       <div className="vitals-sleep-top">
         <div>
@@ -491,7 +538,13 @@ function SleepCard({ model }) {
         </header>
         <div className="vitals-sleep-bar">
           {stages.map(([label, width, tone], index) => (
-            <b className={tone} style={{ width: `${width}%` }} key={`${label}-${index}`} />
+            <b
+              className={`vitals-hover-tip ${tone}`}
+              data-tooltip={`${label}: ${width}%`}
+              title={`${label}: ${width}%`}
+              style={{ width: `${width}%` }}
+              key={`${label}-${index}`}
+            />
           ))}
         </div>
         <footer><span>23:05</span><span>06:53</span></footer>
@@ -506,9 +559,10 @@ function SleepCard({ model }) {
 
 function TrainingLoadCard({ model }) {
   const bars = [58, 68, 76, 66, 84, 92, 72];
+  const days = ["T", "F", "S", "S", "M", "T", "W"];
 
   return (
-    <article className="vitals-ai-card vitals-training-card">
+    <article className="vitals-ai-card vitals-training-card" data-card-metric="training" tabIndex={0}>
       <CardHeading icon={Zap} title="Training Load / Strain" />
       <div className="vitals-training-main">
         <div>
@@ -520,10 +574,16 @@ function TrainingLoadCard({ model }) {
           <span>7-Day Load Trend</span>
           <div>
             {bars.map((bar, index) => (
-              <i style={{ height: `${bar}%` }} key={index} />
+              <i
+                className="vitals-hover-tip"
+                data-tooltip={`${days[index]} load: ${bar}`}
+                title={`${days[index]} load: ${bar}`}
+                style={{ height: `${bar}%`, "--bar-delay": `${index * 28}ms` }}
+                key={index}
+              />
             ))}
           </div>
-          <footer>{["T", "F", "S", "S", "M", "T", "W"].map((day, index) => <em key={`${day}-${index}`}>{day}</em>)}</footer>
+          <footer>{days.map((day, index) => <em key={`${day}-${index}`}>{day}</em>)}</footer>
         </div>
       </div>
       <div className="vitals-training-stats">
@@ -546,12 +606,12 @@ function BodyMetricsCard({ model }) {
   ];
 
   return (
-    <article className="vitals-ai-card vitals-body-metrics-card">
+    <article className="vitals-ai-card vitals-body-metrics-card" data-card-metric="body" tabIndex={0}>
       <CardHeading icon={Activity} title="Body Metrics" action="View trends" />
       <div className="vitals-body-metrics-layout">
         <dl>
           {rows.map(([label, value, delta]) => (
-            <div key={label}>
+            <div className="vitals-hover-tip" data-tooltip={`${label}: ${value}, ${delta}`} title={`${label}: ${value}, ${delta}`} key={label}>
               <dt>{label}</dt>
               <dd>{value}</dd>
               <em>{delta}</em>
@@ -567,7 +627,7 @@ function BodyMetricsCard({ model }) {
 
 function NutritionCard({ model }) {
   return (
-    <article className="vitals-ai-card vitals-nutrition-card-v2">
+    <article className="vitals-ai-card vitals-nutrition-card-v2" data-card-metric="nutrition" tabIndex={0}>
       <CardHeading icon={Droplet} title="Nutrition & Hydration" action="View details" />
       <div className="vitals-nutrition-v2-body">
         <Ring value={model.nutritionScore} label="Nutrition" tone="green" size={96} />
@@ -577,7 +637,7 @@ function NutritionCard({ model }) {
             ["Protein", `${model.protein} / 140 g`, 80, "green"],
             ["Hydration", model.hydration, 72, "blue"]
           ].map(([label, value, width, tone]) => (
-            <section key={label}>
+            <section className="vitals-hover-tip" data-tooltip={`${label}: ${value}`} title={`${label}: ${value}`} key={label}>
               <span>{label}</span>
               <strong>{value}</strong>
               <i><b className={tone} style={{ width: `${width}%` }} /></i>
@@ -592,7 +652,7 @@ function NutritionCard({ model }) {
 
 function StressCard({ model }) {
   return (
-    <article className="vitals-ai-card vitals-stress-card">
+    <article className="vitals-ai-card vitals-stress-card" data-card-metric="stress" tabIndex={0}>
       <CardHeading icon={Activity} title="Stress & Mindfulness" action="View insights" />
       <div className="vitals-stress-body">
         <Ring value={model.stressScore} label="Low" tone="green" size={94} />
@@ -616,11 +676,11 @@ function TrendsCard() {
   ];
 
   return (
-    <article className="vitals-ai-card vitals-trends-card">
+    <article className="vitals-ai-card vitals-trends-card" data-card-metric="trends" tabIndex={0}>
       <CardHeading title="Trends Summary" action="View all" />
       <div className="vitals-trends-list">
         {rows.map(([label, state, delta, tone]) => (
-          <div key={label}>
+          <div className="vitals-hover-tip" data-tooltip={`${label}: ${state}, ${delta}`} title={`${label}: ${state}, ${delta}`} key={label}>
             <span>{label}</span>
             <strong className={tone}>{state}</strong>
             <em>{delta}</em>
@@ -638,23 +698,34 @@ function ReadinessHabitsCard({ model }) {
   const pattern = ["high", "mid", "high", "soft", "high", "none", "watch", "high", "high", "high", "mid", "high", "none", "soft"];
 
   return (
-    <article className="vitals-ai-card vitals-habits-card">
+    <article className="vitals-ai-card vitals-habits-card" data-card-metric="habits" tabIndex={0}>
       <div className="vitals-habits-board">
         <header>
           <h2>Daily Readiness & Habits</h2>
           <p>Live readiness and habit adherence</p>
         </header>
         <div className="vitals-habit-days">
-          {["M", "T", "W", "T", "F", "S", "S", "M", "T", "W", "T", "F", "S", "S"].map((day, index) => (
+          {habitDays.map((day, index) => (
             <span key={`${day}-${index}`}>{day}</span>
           ))}
         </div>
         {rows.map((row, rowIndex) => (
           <div className="vitals-habit-row" key={row}>
             <span>{row}</span>
-            {pattern.map((cell, index) => (
-              <i className={pattern[(index + rowIndex * 2) % pattern.length]} key={`${row}-${cell}-${index}`} />
-            ))}
+            {pattern.map((cell, index) => {
+              const status = pattern[(index + rowIndex * 2) % pattern.length];
+              const tooltip = `${row} ${habitDays[index]}: ${habitStatusLabels[status]}`;
+
+              return (
+                <i
+                  className={`vitals-hover-tip ${status}`}
+                  data-tooltip={tooltip}
+                  title={tooltip}
+                  style={{ "--cell-delay": `${(rowIndex * 14 + index) * 8}ms` }}
+                  key={`${row}-${cell}-${index}`}
+                />
+              );
+            })}
           </div>
         ))}
         <footer>
@@ -682,15 +753,27 @@ function ReadinessHabitsCard({ model }) {
 }
 
 function InsightsCard({ model }) {
+  const [activeTab, setActiveTab] = useState("top");
   const rows = [
-    ["Iron handling", "Low ferritin/iron saturation trend continues. Consider reviewing iron intake and sources.", "Clinician", "amber"],
-    ["Late bedtimes impacting deep sleep", "You have had 4 late bedtimes this week. Aim for an earlier wind-down routine.", "Lifestyle", "orange"],
-    ["Nice work on training balance", "Your aerobic base and strain balance look great. Keep it up!", "Positive", "green"],
-    ["Hydration dip on training days", "Hydration was below target on 2 training days this week.", "Monitor", "teal"]
+    ["Iron handling", "Low ferritin/iron saturation trend continues. Consider reviewing iron intake and sources.", "Clinician", "amber", "watch"],
+    ["Late bedtimes impacting deep sleep", "You have had 4 late bedtimes this week. Aim for an earlier wind-down routine.", "Lifestyle", "orange", "watch"],
+    ["Nice work on training balance", "Your aerobic base and strain balance look great. Keep it up!", "Positive", "green", "positive"],
+    ["Hydration dip on training days", "Hydration was below target on 2 training days this week.", "Monitor", "teal", "watch"]
+  ];
+  const visibleRows = activeTab === "positive"
+    ? rows.filter((row) => row[4] === "positive")
+    : activeTab === "watch"
+      ? rows.filter((row) => row[4] === "watch")
+      : rows;
+  const tabs = [
+    ["top", "Top Priorities", null],
+    ["positive", "Positive Signals", 4],
+    ["watch", "Watchlist", 2],
+    ["all", "All Insights", null]
   ];
 
   return (
-    <article className="vitals-ai-card vitals-insights-card">
+    <article className="vitals-ai-card vitals-insights-card" data-card-metric="insights" tabIndex={0}>
       <div className="vitals-insights-main">
         <header>
           <div>
@@ -700,14 +783,28 @@ function InsightsCard({ model }) {
           <button type="button">View all insights <ArrowRight size={14} /></button>
         </header>
         <nav>
-          <button type="button" className="active">Top Priorities</button>
-          <button type="button">Positive Signals <span>4</span></button>
-          <button type="button">Watchlist <span>2</span></button>
-          <button type="button">All Insights</button>
+          {tabs.map(([key, label, count]) => (
+            <button
+              type="button"
+              className={activeTab === key ? "active" : ""}
+              onClick={() => setActiveTab(key)}
+              aria-pressed={activeTab === key}
+              key={key}
+            >
+              {label} {count ? <span>{count}</span> : null}
+            </button>
+          ))}
         </nav>
         <div className="vitals-insight-list">
-          {rows.map(([title, detail, tag, tone], index) => (
-            <div key={title}>
+          {visibleRows.map(([title, detail, tag, tone], index) => (
+            <button
+              type="button"
+              className="vitals-insight-row vitals-hover-tip"
+              aria-label={`${tag}: ${title}. ${detail}`}
+              data-tooltip={`${tag}: ${detail}`}
+              title={`${tag}: ${detail}`}
+              key={title}
+            >
               <em>{index + 1}</em>
               <i className={tone}>{tag.slice(0, 1)}</i>
               <span>
@@ -716,7 +813,7 @@ function InsightsCard({ model }) {
               </span>
               <b>{tag}</b>
               <ArrowRight size={15} />
-            </div>
+            </button>
           ))}
         </div>
       </div>
@@ -735,6 +832,9 @@ export function VitalsDashboardPreview({ compact = false, dataUrl = remoteVitals
   const [runtimeHealthData, setRuntimeHealthData] = useState(fallbackHealthData);
   const [range, setRange] = useState("7d");
   const [snapshotIndex, setSnapshotIndex] = useState(0);
+  const [activeSource, setActiveSource] = useState("all");
+  const [activeMetric, setActiveMetric] = useState("readiness");
+  const [alertsOpen, setAlertsOpen] = useState(false);
 
   useEffect(() => {
     const url = String(dataUrl || "").trim();
@@ -768,6 +868,39 @@ export function VitalsDashboardPreview({ compact = false, dataUrl = remoteVitals
     setSnapshotIndex((current) => Math.max(0, Math.min(3, current - direction)));
   }
 
+  const heroMetrics = [
+    {
+      key: "readiness",
+      className: "primary",
+      label: "Overall Readiness",
+      value: model.readinessScore,
+      suffix: "%",
+      status: model.readinessLabel,
+      detail: `${model.recoveryDelta} vs previous`
+    },
+    {
+      key: "recovery",
+      icon: HeartPulse,
+      label: "Recovery",
+      value: model.recoveryStatus,
+      detail: model.recoveryDelta
+    },
+    {
+      key: "sleep",
+      icon: Moon,
+      label: "Sleep",
+      value: model.sleepStatus,
+      detail: model.sleepDisplay
+    },
+    {
+      key: "training",
+      icon: Activity,
+      label: "Training Balance",
+      value: model.strainStatus,
+      detail: model.strainDisplay
+    }
+  ];
+
   return (
     <section className={`vitals-ai-dashboard ${compact ? "is-compact" : ""}`} aria-label="Vitals dashboard">
       <div className="vitals-ai-shell">
@@ -779,11 +912,27 @@ export function VitalsDashboardPreview({ compact = false, dataUrl = remoteVitals
                 <p>Health Intelligence</p>
               </div>
               <nav className="vitals-ai-sources" aria-label="Connected sources">
-                <SourcePill label="WHOOP" tone="green" />
-                <SourcePill label="Strava" tone="orange" />
-                <SourcePill label="Fitbit" tone="blue" />
-                <SourcePill label="Google Fit" tone="red" />
-                <button type="button" className="vitals-ai-source-more">+2 more</button>
+                {sourceOptions.map((source) => (
+                  <SourcePill
+                    label={source.label}
+                    tone={source.tone}
+                    active={activeSource === source.key}
+                    detail={source.detail}
+                    onSelect={() => setActiveSource(source.key)}
+                    key={source.key}
+                  />
+                ))}
+                <button
+                  type="button"
+                  className={`vitals-ai-source-more vitals-hover-tip ${activeSource === "all" ? "active" : ""}`}
+                  onClick={() => setActiveSource("all")}
+                  aria-label="All connected sources"
+                  aria-pressed={activeSource === "all"}
+                  data-tooltip="All connected sources"
+                  title="All connected sources"
+                >
+                  +2 more
+                </button>
               </nav>
               <div className="vitals-ai-controls">
                 <div className="vitals-ai-date">
@@ -799,23 +948,55 @@ export function VitalsDashboardPreview({ compact = false, dataUrl = remoteVitals
                     </button>
                   ))}
                 </div>
-                <button type="button" className="vitals-ai-bell" aria-label="Notifications"><Bell size={20} /><i /></button>
+                <div className="vitals-ai-alert-wrap">
+                  <button
+                    type="button"
+                    className="vitals-ai-bell"
+                    onClick={() => setAlertsOpen((current) => !current)}
+                    aria-expanded={alertsOpen}
+                    aria-label="Notifications"
+                  >
+                    <Bell size={20} />
+                    <i />
+                  </button>
+                  {alertsOpen ? (
+                    <div className="vitals-alert-popover" role="status">
+                      <strong>2 watch signals</strong>
+                      <span>Sleep timing and hydration need attention.</span>
+                    </div>
+                  ) : null}
+                </div>
               </div>
             </header>
             <div className="vitals-hero-metrics">
-              <section className="primary">
-                <span>Overall Readiness</span>
-                <strong>{model.readinessScore}<em>%</em></strong>
-                <small>{model.readinessLabel} <b>{model.recoveryDelta} vs previous</b></small>
-              </section>
-              <section><HeartPulse size={18} /><span>Recovery</span><strong>{model.recoveryStatus}</strong><small>{model.recoveryDelta}</small></section>
-              <section><Moon size={18} /><span>Sleep</span><strong>{model.sleepStatus}</strong><small>{model.sleepDisplay}</small></section>
-              <section><Activity size={18} /><span>Training Balance</span><strong>{model.strainStatus}</strong><small>{model.strainDisplay}</small></section>
+              {heroMetrics.map((metric) => {
+                const Icon = metric.icon;
+
+                return (
+                  <button
+                    type="button"
+                    className={`${metric.className || ""} ${activeMetric === metric.key ? "active" : ""}`}
+                    onMouseEnter={() => setActiveMetric(metric.key)}
+                    onFocus={() => setActiveMetric(metric.key)}
+                    onClick={() => setActiveMetric(metric.key)}
+                    aria-pressed={activeMetric === metric.key}
+                    key={metric.key}
+                  >
+                    {Icon ? <Icon size={18} /> : null}
+                    <span>{metric.label}</span>
+                    <strong>
+                      {metric.value}
+                      {metric.suffix ? <em>{metric.suffix}</em> : null}
+                    </strong>
+                    <small>{metric.status ? `${metric.status} ` : ""}<b>{metric.detail}</b></small>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </section>
 
-        <section className="vitals-ai-grid">
+        <section className="vitals-ai-grid" data-focused-metric={activeMetric}>
           <HealthScoreCard model={model} />
           <RecoveryCard model={model} />
           <SleepCard model={model} />
