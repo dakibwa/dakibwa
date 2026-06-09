@@ -425,6 +425,15 @@ function stableVitalsData(data) {
   return JSON.stringify(comparable);
 }
 
+function trimSeries(series, count = 31) {
+  return Object.fromEntries(
+    Object.entries(series || {}).map(([metric, points]) => [
+      metric,
+      Array.isArray(points) ? points.slice(-count) : points
+    ])
+  );
+}
+
 const existingPublicData = fs.existsSync(publicHealthDataPath) ? readJson(publicHealthDataPath) : null;
 const refreshed = await refreshHealthData(readJson(sourceHealthDataPath));
 const publicData = {
@@ -434,7 +443,7 @@ const publicData = {
   latest: refreshed.latest,
   nutrition: refreshed.nutrition,
   reviewPrompts: refreshed.reviewPrompts,
-  series: refreshed.series
+  series: trimSeries(refreshed.series)
 };
 const changed = !existingPublicData || stableVitalsData(existingPublicData) !== stableVitalsData(publicData);
 

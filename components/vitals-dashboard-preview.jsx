@@ -21,7 +21,7 @@ const remoteVitalsDataUrl = (
   process.env.NEXT_PUBLIC_VITALS_DATA_URL || "https://akibwa-vitals-refresh.dakibwa.workers.dev/vitals"
 ).trim();
 
-const bannerImage = "/project-images/vitals/vitals-botanical-banner.png";
+const bannerImage = "/project-images/vitals/vitals-botanical-banner.jpg";
 
 const sourceOptions = [
   { key: "whoop", label: "WHOOP", tone: "green", detail: "Recovery, strain, HRV and sleep source" },
@@ -85,15 +85,6 @@ function rangeDays(range) {
   return Number(String(range).replace("d", "")) || 7;
 }
 
-function formatRangeWindow(endDate, range) {
-  const end = dateFromISO(endDate);
-  if (!end) return "Snapshot";
-
-  const start = addDays(end, -(rangeDays(range) - 1));
-
-  return `${formatShortDate(isoDate(start))} - ${formatShortDate(isoDate(end))}`;
-}
-
 function formatDuration(minutes) {
   const numeric = numberValue(minutes);
   if (numeric === null) return "--";
@@ -102,18 +93,6 @@ function formatDuration(minutes) {
   const mins = total % 60;
 
   return `${hours}h ${String(mins).padStart(2, "0")}m`;
-}
-
-function sourceName(source) {
-  const names = {
-    whoop: "WHOOP",
-    strava: "Strava",
-    "progress-pic": "Progress",
-    fitbit: "Fitbit",
-    googlefit: "Google Fit"
-  };
-
-  return names[source] || String(source || "Source");
 }
 
 function signed(value, unit = "", digits = 0) {
@@ -256,14 +235,6 @@ function chartPath(points, fallback, width = 520, height = 150, pad = 22) {
       return `${index === 0 ? "M" : "L"}${Math.round(x)} ${Math.round(y)}`;
     })
     .join("");
-}
-
-function compactTitle(title) {
-  return String(title || "Health signal")
-    .replace(" is the main follow-up thread", "")
-    .replace("Wearables show ", "")
-    .replace(" is visible enough to manage", "")
-    .replace(" data is useful but older", " freshness");
 }
 
 function buildModel(data) {
@@ -765,10 +736,12 @@ function InsightsCard({ model }) {
     : activeTab === "watch"
       ? rows.filter((row) => row[4] === "watch")
       : rows;
+  const positiveCount = rows.filter((row) => row[4] === "positive").length;
+  const watchCount = rows.filter((row) => row[4] === "watch").length;
   const tabs = [
     ["top", "Top Priorities", null],
-    ["positive", "Positive Signals", 4],
-    ["watch", "Watchlist", 2],
+    ["positive", "Positive Signals", positiveCount],
+    ["watch", "Watchlist", watchCount],
     ["all", "All Insights", null]
   ];
 
