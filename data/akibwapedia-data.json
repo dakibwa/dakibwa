@@ -1,0 +1,203 @@
+{
+  "citations": [
+    "knowledge-base/00-read-first.md",
+    "knowledge-base/04-source-status.md",
+    "knowledge-base/06-architecture.md",
+    "raw/derived/agentic/state.json",
+    "raw/derived/agentic/retrieval-routes.json",
+    "raw/derived/source-inventory/build-summary.md",
+    "raw/derived/life-ledger/build-summary.md"
+  ],
+  "layers": [
+    {
+      "name": "Raw Evidence",
+      "status": "private",
+      "summary": "Original files, exports, connector snapshots, source maps, and redaction logs stay local and auditable."
+    },
+    {
+      "name": "Normalized Records",
+      "status": "generated",
+      "summary": "Readable entries, source records, and typed rows make messy documents and exports comparable."
+    },
+    {
+      "name": "Event Ledger",
+      "status": "generated",
+      "summary": "Dated rows preserve what happened, where it came from, and how sensitive it is."
+    },
+    {
+      "name": "Reasoning Views",
+      "status": "generated",
+      "summary": "Daily, weekly, monthly, entity, and domain views help Codex reason without rereading the archive."
+    },
+    {
+      "name": "Structured Facts",
+      "status": "compact",
+      "summary": "Durable claims are promoted only when they help future action or avoid repeated confusion."
+    },
+    {
+      "name": "Codex Operating Layer",
+      "status": "active",
+      "summary": "Agent briefs, task queues, retrieval routes, decisions, and state snapshots let future sessions boot quickly."
+    },
+    {
+      "name": "Akibwapedia",
+      "status": "public projection",
+      "summary": "The website shows only safe architecture, counts, routes, and boundaries, never the private memory itself."
+    }
+  ],
+  "local_truth_layer": "knowledge-base, raw, raw/derived, scripts",
+  "metrics": [
+    {
+      "label": "Source files",
+      "note": "local archive inventory",
+      "value": "16,298"
+    },
+    {
+      "label": "Raw manifest records",
+      "note": "source discovery layer",
+      "value": "34,077"
+    },
+    {
+      "label": "Normalized entries",
+      "note": "readable extracted entries",
+      "value": "39,472"
+    },
+    {
+      "label": "Ledger events",
+      "note": "dated source-backed rows",
+      "value": "44,156"
+    },
+    {
+      "label": "Daily views",
+      "note": "reasoning days",
+      "value": "2,455"
+    },
+    {
+      "label": "Structured facts",
+      "note": "compact durable memory",
+      "value": "62"
+    },
+    {
+      "label": "Agent tasks",
+      "note": "current operating queue",
+      "value": "5"
+    },
+    {
+      "label": "Source queue",
+      "note": "remaining source-mining routes",
+      "value": "7"
+    }
+  ],
+  "next_build_step": "Gmail body-level thread and obligation tables",
+  "privacy_rules": [
+    "Private source systems remain read-only unless Dan explicitly requests a write action.",
+    "Raw emails, source exports, identifiers, secrets, booking references, claim numbers, and account details are never exported.",
+    "Health material is framed as tracking and clinician-conversation support, not diagnosis or treatment.",
+    "Old assistant or Akibwapedia-era claims are leads until checked against primary evidence.",
+    "Public copy cites source layers and coverage maps, not the private facts themselves."
+  ],
+  "private_source_root": "personal-memory-wiki",
+  "public_status": "Public-safe projection",
+  "retrieval_routes": [
+    {
+      "description": "Work on the public-safe Akibwapedia projection without exposing private memory.",
+      "name": "akibwapedia",
+      "reads": 5,
+      "rules": [
+        "public-projection-only",
+        "do-not-export-raw-evidence",
+        "cite-source-layers-not-private-facts"
+      ]
+    },
+    {
+      "description": "Start a new Codex session in Dan's knowledge base.",
+      "name": "boot",
+      "reads": 4,
+      "rules": []
+    },
+    {
+      "description": "Decide what Codex should work on now.",
+      "name": "current_priorities",
+      "reads": 3,
+      "rules": []
+    },
+    {
+      "description": "Verify an important claim before acting.",
+      "name": "evidence_check",
+      "reads": 5,
+      "rules": []
+    },
+    {
+      "description": "Answer finance/admin questions from ledgers and source documents.",
+      "name": "finance",
+      "reads": 3,
+      "rules": [
+        "do-not-store-account-identifiers"
+      ]
+    },
+    {
+      "description": "Answer health questions conservatively and source-first.",
+      "name": "health",
+      "reads": 4,
+      "rules": [
+        "clinician-support-only",
+        "separate measurement from interpretation"
+      ]
+    },
+    {
+      "description": "Understand active, parked, or reusable projects and wire new ones quickly.",
+      "name": "project_or_work",
+      "reads": 7,
+      "rules": [
+        "prefer-project-modules-over-prose-pages",
+        "wire-active-projects-through-action-map"
+      ]
+    },
+    {
+      "description": "Continue building source coverage.",
+      "name": "source_mining",
+      "reads": 4,
+      "rules": []
+    }
+  ],
+  "source_families": [
+    {
+      "name": "Gmail",
+      "public_note": "obligations and thread summaries only",
+      "status": "needs body-level backfill"
+    },
+    {
+      "name": "Google Drive",
+      "public_note": "document maps, not document dumps",
+      "status": "targeted extraction next"
+    },
+    {
+      "name": "Calendar",
+      "public_note": "commitment patterns and planning context",
+      "status": "history cleanup next"
+    },
+    {
+      "name": "Finance",
+      "public_note": "no raw rows or account identifiers",
+      "status": "aggregate-only"
+    },
+    {
+      "name": "Health",
+      "public_note": "aggregate/trend framing only",
+      "status": "clinician-conversation support"
+    },
+    {
+      "name": "GitHub",
+      "public_note": "repo and work-state context",
+      "status": "project obligation mapping"
+    },
+    {
+      "name": "Media and Taste",
+      "public_note": "music, film, visual, and creative signals",
+      "status": "targeted extraction"
+    }
+  ],
+  "subtitle": "A public window onto a private, source-backed knowledge system.",
+  "title": "Akibwapedia",
+  "updated": "2026-06-04T12:45:04+00:00"
+}

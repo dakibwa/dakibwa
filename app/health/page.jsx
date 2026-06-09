@@ -2,9 +2,9 @@ import { vitalsAppUrl } from "@/components/site-data";
 import { VitalsDashboardPreview } from "@/components/vitals-dashboard-preview";
 
 export const metadata = {
-  title: "Vitals App",
+  title: "Vitals",
   description:
-    "The live Vitals app route for health signal review."
+    "Vitals is an Akibwa dashboard for public aggregate health signals, WHOOP trends, sleep, recovery, strain, and review prompts."
 };
 
 export default function HealthRoute() {

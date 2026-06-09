@@ -108,6 +108,96 @@ function signed(value, unit = "", digits = 0) {
   return `${sign}${formatNumber(Math.abs(numeric), digits)}${unit}`;
 }
 
+function metricNumber(metric, fallback = null) {
+  const numeric = numberValue(metric?.value);
+  return numeric === null ? fallback : numeric;
+}
+
+function metricDelta(metric, fallback = null) {
+  const numeric = numberValue(metric?.delta);
+  return numeric === null ? fallback : numeric;
+}
+
+function metricSigned(metric, unit = "", digits = 0, fallback = "0") {
+  const delta = metricDelta(metric);
+  return delta === null ? fallback : signed(delta, unit, digits);
+}
+
+function generatedParts(data, fallbackDate) {
+  const day = String(data.generatedAt || fallbackDate || "").slice(0, 10);
+  const parsed = dateFromISO(day);
+
+  return {
+    generatedDay: parsed ? formatShortDate(day) : "latest",
+    generatedYear: parsed ? parsed.getUTCFullYear() : new Date().getUTCFullYear()
+  };
+}
+
+function scoreLabel(score) {
+  const numeric = numberValue(score);
+  if (numeric === null) return "Latest";
+  if (numeric >= 67) return "Good";
+  if (numeric >= 34) return "Watch";
+  return "Low";
+}
+
+function recoveryLabel(score, delta) {
+  const numericDelta = numberValue(delta);
+  if (numericDelta !== null && numericDelta > 0) return "Improving";
+  if (numericDelta !== null && numericDelta < 0) return "Lower";
+  return scoreLabel(score);
+}
+
+function sleepLabel(minutes) {
+  const numeric = numberValue(minutes);
+  if (numeric === null) return "Latest";
+  if (numeric >= 420) return "Good";
+  if (numeric >= 360) return "Watch";
+  return "Short";
+}
+
+function strainLabel(strain) {
+  const numeric = numberValue(strain);
+  if (numeric === null) return "Latest";
+  if (numeric >= 14) return "High";
+  if (numeric >= 8) return "Moderate";
+  if (numeric >= 4) return "Light";
+  return "Rest day";
+}
+
+function scoreFromStrain(strain) {
+  const numeric = numberValue(strain);
+  if (numeric === null) return 72;
+  return Math.max(0, Math.min(100, Math.round((numeric / 21) * 100)));
+}
+
+function sumRecent(points, count) {
+  return (points || [])
+    .slice(-count)
+    .map((point) => numberValue(point.value))
+    .filter((value) => value !== null)
+    .reduce((sum, value) => sum + value, 0);
+}
+
+function axisLabels(points, fallback = ["30 May", "2 Jun", "5 Jun"]) {
+  const sample = (points || [])
+    .filter((point) => point?.date)
+    .slice(-8);
+
+  if (sample.length < 2) return fallback;
+
+  const middle = sample[Math.floor((sample.length - 1) / 2)];
+  return [sample[0], middle, sample.at(-1)].map((point) => formatShortDate(point.date));
+}
+
+function bestRecent(points, count = 7) {
+  return (points || [])
+    .slice(-count)
+    .filter((point) => numberValue(point.value) !== null)
+    .sort((a, b) => Number(a.value) - Number(b.value))
+    .at(-1) || null;
+}
+
 function sparkPoints(points, fallback, width = 220, height = 70, pad = 10) {
   const sample = (points || [])
     .map((point) => numberValue(point.value))
@@ -163,42 +253,77 @@ function compactTitle(title) {
 function buildModel(data) {
   const latest = data.latest || {};
   const series = data.series || {};
+  const sourceCoverage = Array.isArray(data.sourceCoverage) ? data.sourceCoverage : [];
   const recovery = latest.recovery_score || {};
+  const hrv = latest.hrv || {};
+  const restingHeartRate = latest.heart_rate_resting || {};
   const sleepDuration = latest.sleep_duration || {};
   const sleepPerformance = latest.sleep_performance || {};
   const strain = latest.strain || {};
+  const caloriesBurned = latest.calories_burned || {};
   const weight = latest.weight || {};
-  const sourceCount = 5;
-  const snapshotDate = "2026-06-05";
-  const readinessScore = 68;
-  const recoveryScore = 72;
-  const sleepDisplay = "7h 15m";
-  const strainDisplay = "2.2";
+  const nutrition = data.nutrition?.latest || {};
+  const sourceCount = sourceCoverage.length || 5;
+  const snapshotDate =
+    data.snapshotDate ||
+    recovery.date ||
+    sleepDuration.date ||
+    strain.date ||
+    String(data.generatedAt || "").slice(0, 10) ||
+    "2026-06-05";
+  const { generatedDay, generatedYear } = generatedParts(data, snapshotDate);
+  const readinessScore = Math.round(metricNumber(recovery, 68));
+  const recoveryScore = readinessScore;
+  const sleepMinutes = metricNumber(sleepDuration, null);
+  const sleepPerformanceScore = Math.round(metricNumber(sleepPerformance, 84));
+  const strainValue = metricNumber(strain, 2.2);
+  const strainScore = scoreFromStrain(strainValue);
+  const weeklyLoad = Math.round(sumRecent(series.strain, 7));
+  const activityMinutes = Math.round(sumRecent(series.workout, 7));
+  const caloriesValue = metricNumber(caloriesBurned, numberValue(nutrition.kcal_7d) || 1842);
+  const proteinValue = numberValue(nutrition.protein_7d) || 112;
+  const bestRecovery = bestRecent(series.recovery_score);
 
   return {
     data,
     snapshotDate,
-    generatedDay: "5 Jun",
+    generatedDay,
+    generatedYear,
     sourceCount,
     readinessScore,
+    readinessLabel: scoreLabel(readinessScore),
     recoveryScore,
-    sleepDisplay,
-    strainDisplay,
-    rhr: "49",
-    hrv: "62",
+    recoveryStatus: recoveryLabel(recoveryScore, recovery.delta),
+    sleepDisplay: sleepMinutes === null ? "7h 15m" : formatDuration(sleepMinutes),
+    sleepStatus: sleepLabel(sleepMinutes),
+    sleepPerformance: sleepPerformanceScore,
+    strainDisplay: formatNumber(strainValue, 1),
+    strainStatus: strainLabel(strainValue),
+    strainScore,
+    rhr: formatNumber(metricNumber(restingHeartRate, 49)),
+    hrv: formatNumber(metricNumber(hrv, 62), 1),
     respRate: "13.2",
     weight: formatNumber(weight.value || 65.8, 1),
-    sleepPerformance: formatNumber(sleepPerformance.value || 84),
     nutritionScore: 78,
     stressScore: 36,
-    protein: "112",
-    calories: "1,842",
+    protein: formatNumber(proteinValue),
+    calories: formatNumber(caloriesValue),
     hydration: "2.1 / 3 L",
-    recoveryDelta: signed(recovery.delta || 6, "%"),
-    sleepDelta: signed(sleepDuration.delta || 35, "m"),
-    strainDelta: signed(strain.delta || -0.2, "", 1),
+    recoveryDelta: metricSigned(recovery, "%", 0, "+0%"),
+    sleepDelta: metricSigned(sleepDuration, "m", 0, "+0m"),
+    strainDelta: metricSigned(strain, "", 1, "+0"),
+    hrvDelta: metricSigned(hrv, " ms", 1, "+0 ms"),
+    rhrDelta: metricSigned(restingHeartRate, " bpm", 0, "+0 bpm"),
+    weeklyLoad: weeklyLoad || 392,
+    activityMinutes: activityMinutes || 312,
+    trainingBalance: formatNumber(strainValue / 21, 1),
+    bestRecoveryDay: bestRecovery?.date ? formatShortDate(bestRecovery.date) : "latest",
+    bestRecoveryScore: bestRecovery?.value ? Math.round(bestRecovery.value) : readinessScore,
+    readinessFocus: metricDelta(recovery, 0) < 0 ? "Recovery dip" : "Keep trend",
     recoveryPath: chartPath(series.recovery_score, "M22 112L88 92L150 104L218 80L288 98L354 76L420 92L498 70"),
     sleepPath: chartPath(series.sleep_duration, "M22 98L88 88L150 92L218 74L288 82L354 66L420 80L498 72"),
+    recoveryAxis: axisLabels(series.recovery_score),
+    sleepAxis: axisLabels(series.sleep_duration),
     strainSpark: sparkPoints(series.strain, "10,34 38,28 66,32 94,20 122,24 150,16 178,22 210,18"),
     weightSpark: sparkPoints(series.weight, "10,22 38,46 66,26 94,32 122,38 150,40 178,30 210,38")
   };
@@ -263,12 +388,12 @@ function CardHeading({ icon: Icon, title, action, info = false }) {
   );
 }
 
-function ScoreBreakdown() {
+function ScoreBreakdown({ model }) {
   const rows = [
-    ["Sleep", 72, "green"],
-    ["Recovery", 66, "green"],
-    ["Strain", 61, "orange"],
-    ["Nutrition", 70, "green"]
+    ["Sleep", model.sleepPerformance, "green"],
+    ["Recovery", model.recoveryScore, "green"],
+    ["Strain", model.strainScore, "orange"],
+    ["Nutrition", model.nutritionScore, "green"]
   ];
 
   return (
@@ -295,13 +420,13 @@ function HealthScoreCard({ model }) {
         <div>
           <strong>{model.readinessScore}</strong>
           <span>%</span>
-          <small>Good</small>
-          <p>+ 8% vs yesterday</p>
+          <small>{model.readinessLabel}</small>
+          <p>{model.recoveryDelta} vs previous</p>
         </div>
         <Ring value={model.readinessScore} tone="green" size={116} />
-        <ScoreBreakdown />
+        <ScoreBreakdown model={model} />
       </div>
-      <footer>Generated {model.generatedDay} 2026 from {model.sourceCount} sources <Info size={13} /></footer>
+      <footer>Generated {model.generatedDay} {model.generatedYear} from {model.sourceCount} sources <Info size={13} /></footer>
     </article>
   );
 }
@@ -314,12 +439,12 @@ function RecoveryCard({ model }) {
         <div>
           <strong>{model.recoveryScore}</strong>
           <span>%</span>
-          <small>Improving</small>
-          <p>+ 6% vs yesterday</p>
+          <small>{model.recoveryStatus}</small>
+          <p>{model.recoveryDelta} vs previous</p>
         </div>
         <dl>
-          <div><dt>HRV</dt><dd>{model.hrv} ms</dd><em>+ 4 ms</em></div>
-          <div><dt>Resting HR</dt><dd>{model.rhr} bpm</dd><em>- 2 bpm</em></div>
+          <div><dt>HRV</dt><dd>{model.hrv} ms</dd><em>{model.hrvDelta}</em></div>
+          <div><dt>Resting HR</dt><dd>{model.rhr} bpm</dd><em>{model.rhrDelta}</em></div>
           <div><dt>Resp. Rate</dt><dd>{model.respRate} brpm</dd><em>- 0.4</em></div>
         </dl>
       </div>
@@ -328,7 +453,9 @@ function RecoveryCard({ model }) {
         <path d={model.recoveryPath} />
         <circle cx="512" cy="70" r="4" />
       </svg>
-      <div className="vitals-ai-axis"><span>30 May</span><span>2 Jun</span><span>5 Jun</span></div>
+      <div className="vitals-ai-axis">
+        {model.recoveryAxis.map((label) => <span key={label}>{label}</span>)}
+      </div>
     </article>
   );
 }
@@ -350,10 +477,10 @@ function SleepCard({ model }) {
       <div className="vitals-sleep-top">
         <div>
           <strong>{model.sleepDisplay}</strong>
-          <small>Good</small>
-          <p>+ 35m vs yesterday</p>
+          <small>{model.sleepStatus}</small>
+          <p>{model.sleepDelta} vs previous</p>
         </div>
-        <Ring value={84} label="Quality" tone="blue" size={112} />
+        <Ring value={model.sleepPerformance} label="Quality" tone="blue" size={112} />
       </div>
       <div className="vitals-sleep-stages">
         <header>
@@ -387,8 +514,8 @@ function TrainingLoadCard({ model }) {
       <div className="vitals-training-main">
         <div>
           <strong>{model.strainDisplay}</strong>
-          <small>Moderate</small>
-          <p>- 0.2 vs yesterday</p>
+          <small>{model.strainStatus}</small>
+          <p>{model.strainDelta} vs previous</p>
         </div>
         <div className="vitals-load-chart">
           <span>7-Day Load Trend</span>
@@ -401,10 +528,10 @@ function TrainingLoadCard({ model }) {
         </div>
       </div>
       <div className="vitals-training-stats">
-        <div><span>Weekly Load</span><strong>392</strong><small>Optimal</small></div>
-        <div><span>Activity Minutes</span><strong>312</strong><small>This week</small></div>
-        <div><span>Training Balance</span><strong>0.8</strong><small>Optimal</small></div>
-        <Ring value={72} tone="green" size={72} />
+        <div><span>Weekly Load</span><strong>{model.weeklyLoad}</strong><small>7 days</small></div>
+        <div><span>Activity Minutes</span><strong>{model.activityMinutes}</strong><small>This week</small></div>
+        <div><span>Training Balance</span><strong>{model.trainingBalance}</strong><small>Latest</small></div>
+        <Ring value={model.strainScore} tone="green" size={72} />
       </div>
       <p className="vitals-card-note"><Info size={13} /> More aerobic work would support balance.</p>
     </article>
@@ -507,7 +634,7 @@ function TrendsCard() {
   );
 }
 
-function ReadinessHabitsCard() {
+function ReadinessHabitsCard({ model }) {
   const rows = ["WHOOP", "Training", "Nutrition", "Sleep", "Mindfulness"];
   const pattern = ["high", "mid", "high", "soft", "high", "none", "watch", "high", "high", "high", "mid", "high", "none", "soft"];
 
@@ -543,12 +670,12 @@ function ReadinessHabitsCard() {
           <h3>Weekly Readiness</h3>
           <ArrowRight size={15} />
         </header>
-        <strong>68% <span>+ 8%</span></strong>
+        <strong>{model.readinessScore}% <span>{model.recoveryDelta}</span></strong>
         <TinyLine points="10,48 42,42 74,38 106,45 138,30 170,36 202,31 232,34" tone="green" />
         <div>
-          <span>Best Day <b>Wed, 3 Jun</b></span>
-          <span>78%</span>
-          <span>Focus Area <b>Late Bedtime</b></span>
+          <span>Best Day <b>{model.bestRecoveryDay}</b></span>
+          <span>{model.bestRecoveryScore}%</span>
+          <span>Focus Area <b>{model.readinessFocus}</b></span>
         </div>
       </aside>
     </article>
@@ -708,11 +835,11 @@ export function VitalsDashboardPreview({ compact = false, dataUrl = remoteVitals
               <section className="primary">
                 <span>Overall Readiness</span>
                 <strong>{model.readinessScore}<em>%</em></strong>
-                <small>Good <b>+ 8% vs yesterday</b></small>
+                <small>{model.readinessLabel} <b>{model.recoveryDelta} vs previous</b></small>
               </section>
-              <section><HeartPulse size={18} /><span>Recovery</span><strong>Improving</strong><small>+ 6%</small></section>
-              <section><Moon size={18} /><span>Sleep</span><strong>On Track</strong><small>{model.sleepDisplay}</small></section>
-              <section><Activity size={18} /><span>Training Balance</span><strong>Optimal</strong><small>0.8</small></section>
+              <section><HeartPulse size={18} /><span>Recovery</span><strong>{model.recoveryStatus}</strong><small>{model.recoveryDelta}</small></section>
+              <section><Moon size={18} /><span>Sleep</span><strong>{model.sleepStatus}</strong><small>{model.sleepDisplay}</small></section>
+              <section><Activity size={18} /><span>Training Balance</span><strong>{model.strainStatus}</strong><small>{model.strainDisplay}</small></section>
             </div>
           </div>
         </section>
@@ -726,7 +853,7 @@ export function VitalsDashboardPreview({ compact = false, dataUrl = remoteVitals
           <NutritionCard model={model} />
           <StressCard model={model} />
           <TrendsCard />
-          <ReadinessHabitsCard />
+          <ReadinessHabitsCard model={model} />
           <InsightsCard model={model} />
           <BriefStrip />
         </section>

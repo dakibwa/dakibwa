@@ -1,9 +1,9 @@
 import { PersonalPage } from "@/components/pages/personal-page";
 
 export const metadata = {
-  title: "Personal",
+  title: "Projects",
   description:
-    "Personal projects by Daniel Atkinson, including Chorus, Vitals, cover-art experiments, and a private AI memory system."
+    "Browse Akibwa projects that turn listening history, health signals, visual experiments, and private context into useful tools."
 };
 
 export default function ProjectsRoute() {
