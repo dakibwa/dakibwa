@@ -776,11 +776,37 @@ function InsightsCard({ model }) {
   );
 }
 
-export function VitalsDashboardPreview({ compact = false, dataUrl = remoteVitalsDataUrl }) {
+export function vitalsSnapshotLabel(snapshotDate, range, snapshotIndex) {
+  const end = dateFromISO(snapshotDate);
+  if (!end) return formatShortDate(snapshotDate);
+
+  return formatShortDate(isoDate(addDays(end, -snapshotIndex * rangeDays(range))));
+}
+
+export function getVitalsSnapshotDate(data) {
+  return (
+    data?.snapshotDate ||
+    data?.latest?.recovery_score?.date ||
+    String(data?.generatedAt || "").slice(0, 10) ||
+    null
+  );
+}
+
+export function VitalsDashboardPreview({
+  compact = false,
+  dataUrl = remoteVitalsDataUrl,
+  range: rangeProp,
+  snapshotIndex: snapshotIndexProp,
+  onRangeChange,
+  onSnapshotIndexChange
+}) {
   const [runtimeHealthData, setRuntimeHealthData] = useState(fallbackHealthData);
-  const [range, setRange] = useState("7d");
-  const [snapshotIndex, setSnapshotIndex] = useState(0);
+  const [internalRange, setInternalRange] = useState("7d");
+  const [internalSnapshotIndex, setInternalSnapshotIndex] = useState(0);
   const [activeMetric, setActiveMetric] = useState("readiness");
+  const range = rangeProp ?? internalRange;
+  const snapshotIndex = snapshotIndexProp ?? internalSnapshotIndex;
+  const setRange = rangeProp !== undefined && onRangeChange ? onRangeChange : setInternalRange;
 
   useEffect(() => {
     const url = String(dataUrl || "").trim();
@@ -811,7 +837,13 @@ export function VitalsDashboardPreview({ compact = false, dataUrl = remoteVitals
   }, [model.snapshotDate, range, snapshotIndex]);
 
   function moveSnapshot(direction) {
-    setSnapshotIndex((current) => Math.max(0, Math.min(3, current - direction)));
+    const next = (current) => Math.max(0, Math.min(3, current - direction));
+
+    if (snapshotIndexProp !== undefined && onSnapshotIndexChange) {
+      onSnapshotIndexChange(next(snapshotIndex));
+    } else {
+      setInternalSnapshotIndex(next);
+    }
   }
 
   const heroMetrics = [
