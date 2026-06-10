@@ -20,7 +20,7 @@ const remoteVitalsDataUrl = (
   process.env.NEXT_PUBLIC_VITALS_DATA_URL || "https://akibwa-vitals-refresh.dakibwa.workers.dev/vitals"
 ).trim();
 
-const bannerImage = "/project-art/personal/albion-rose-hero.webp";
+const bannerImage = "/project-art/personal/albion-sunburst-hero.webp";
 
 const habitDays = ["M", "T", "W", "T", "F", "S", "S", "M", "T", "W", "T", "F", "S", "S"];
 
