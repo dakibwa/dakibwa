@@ -856,6 +856,31 @@ export function VitalsDashboardPreview({ compact = false, dataUrl = remoteVitals
               <p className="vitals-hero-eyebrow">
                 Vitals <em>Health Intelligence</em>
               </p>
+              <div className="vitals-hero-metrics">
+                {heroMetrics.map((metric) => {
+                  const Icon = metric.icon;
+
+                  return (
+                    <button
+                      type="button"
+                      className={`${metric.className || ""} ${activeMetric === metric.key ? "active" : ""}`}
+                      onMouseEnter={() => setActiveMetric(metric.key)}
+                      onFocus={() => setActiveMetric(metric.key)}
+                      onClick={() => setActiveMetric(metric.key)}
+                      aria-pressed={activeMetric === metric.key}
+                      key={metric.key}
+                    >
+                      {Icon ? <Icon size={18} /> : null}
+                      <span>{metric.label}</span>
+                      <strong>
+                        {metric.value}
+                        {metric.suffix ? <em>{metric.suffix}</em> : null}
+                      </strong>
+                      <small>{metric.status ? `${metric.status} ` : ""}<b>{metric.detail}</b></small>
+                    </button>
+                  );
+                })}
+              </div>
               <div className="vitals-ai-controls">
                 <div className="vitals-ai-date">
                   <button type="button" onClick={() => moveSnapshot(-1)} aria-label="Previous dashboard snapshot"><ChevronLeft size={17} /></button>
@@ -871,31 +896,6 @@ export function VitalsDashboardPreview({ compact = false, dataUrl = remoteVitals
                 </div>
               </div>
             </header>
-            <div className="vitals-hero-metrics">
-              {heroMetrics.map((metric) => {
-                const Icon = metric.icon;
-
-                return (
-                  <button
-                    type="button"
-                    className={`${metric.className || ""} ${activeMetric === metric.key ? "active" : ""}`}
-                    onMouseEnter={() => setActiveMetric(metric.key)}
-                    onFocus={() => setActiveMetric(metric.key)}
-                    onClick={() => setActiveMetric(metric.key)}
-                    aria-pressed={activeMetric === metric.key}
-                    key={metric.key}
-                  >
-                    {Icon ? <Icon size={18} /> : null}
-                    <span>{metric.label}</span>
-                    <strong>
-                      {metric.value}
-                      {metric.suffix ? <em>{metric.suffix}</em> : null}
-                    </strong>
-                    <small>{metric.status ? `${metric.status} ` : ""}<b>{metric.detail}</b></small>
-                  </button>
-                );
-              })}
-            </div>
           </div>
         </section>
 
