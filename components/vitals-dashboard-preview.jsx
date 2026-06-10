@@ -347,7 +347,7 @@ function CardHeading({ icon: Icon, title, action, info = false }) {
   return (
     <header className="vitals-ai-card-heading">
       <div>
-        {Icon ? <Icon size={18} strokeWidth={1.8} /> : null}
+        {Icon ? <Icon size={15} strokeWidth={1.7} /> : null}
         <h2>{title}</h2>
       </div>
       {action ? (
@@ -396,16 +396,14 @@ function HealthScoreCard({ model }) {
     <article className="vitals-ai-card vitals-score-card" data-card-metric="readiness" tabIndex={0}>
       <CardHeading icon={HeartPulse} title="Health Score" />
       <div className="vitals-score-main">
-        <div>
-          <strong>{model.readinessScore}</strong>
-          <span>%</span>
+        <div className="vitals-score-hero">
+          <Ring value={model.readinessScore} tone="green" size={132} />
           <small>{model.readinessLabel}</small>
           <p>{model.recoveryDelta} vs previous</p>
         </div>
-        <Ring value={model.readinessScore} tone="green" size={116} />
         <ScoreBreakdown model={model} />
       </div>
-      <footer>Generated {model.generatedDay} {model.generatedYear} from {model.sourceCount} sources <Info size={13} /></footer>
+      <footer>Updated {model.generatedDay} {model.generatedYear} · {model.sourceCount} sources</footer>
     </article>
   );
 }
@@ -443,7 +441,7 @@ function RecoveryCard({ model }) {
         <title>Recovery trend ending at {model.recoveryScore}%</title>
         <line x1="28" x2="512" y1="126" y2="126" />
         <path d={model.recoveryPath} />
-        <circle cx="512" cy="70" r="4" />
+        <circle cx="512" cy="70" r="5" />
       </svg>
       <div className="vitals-ai-axis">
         {model.recoveryAxis.map((label) => <span key={label}>{label}</span>)}
@@ -509,7 +507,7 @@ function TrainingLoadCard({ model }) {
 
   return (
     <article className="vitals-ai-card vitals-training-card" data-card-metric="training" tabIndex={0}>
-      <CardHeading icon={Zap} title="Training Load / Strain" />
+      <CardHeading icon={Zap} title="Training Load" />
       <div className="vitals-training-main">
         <div>
           <strong>{model.strainDisplay}</strong>
@@ -647,8 +645,14 @@ function ReadinessHabitsCard({ model }) {
     <article className="vitals-ai-card vitals-habits-card" data-card-metric="habits" tabIndex={0}>
       <div className="vitals-habits-board">
         <header>
-          <h2>Daily Readiness & Habits</h2>
-          <p>Live readiness and habit adherence</p>
+          <div>
+            <h2>Daily Readiness & Habits</h2>
+            <p>Two weeks of habit adherence across your sources</p>
+          </div>
+          <p className="vitals-habits-meta">
+            <span>Best day <b>{model.bestRecoveryDay}</b></span>
+            <span>Focus <b>{model.readinessFocus}</b></span>
+          </p>
         </header>
         <div className="vitals-habit-days">
           {habitDays.map((day, index) => (
@@ -681,19 +685,6 @@ function ReadinessHabitsCard({ model }) {
           <span><i className="none" /> No data</span>
         </footer>
       </div>
-      <aside className="vitals-weekly-readiness">
-        <header>
-          <h3>Weekly Readiness</h3>
-          <ArrowRight size={15} />
-        </header>
-        <strong>{model.readinessScore}% <span>{model.recoveryDelta}</span></strong>
-        <TinyLine points="10,48 42,42 74,38 106,45 138,30 170,36 202,31 232,34" tone="green" />
-        <div>
-          <span>Best Day <b>{model.bestRecoveryDay}</b></span>
-          <span>{model.bestRecoveryScore}%</span>
-          <span>Focus Area <b>{model.readinessFocus}</b></span>
-        </div>
-      </aside>
     </article>
   );
 }
@@ -724,11 +715,8 @@ function InsightsCard({ model }) {
     <article className="vitals-ai-card vitals-insights-card" data-card-metric="insights" tabIndex={0}>
       <div className="vitals-insights-main">
         <header>
-          <div>
-            <h2>Health Intelligence & Insights</h2>
-            <p>AI-powered insights and actionable recommendations</p>
-          </div>
-          <button type="button">View all insights <ArrowRight size={14} /></button>
+          <h2>Insights</h2>
+          <button type="button">View all <ArrowRight size={14} /></button>
         </header>
         <nav>
           {tabs.map(([key, label, count]) => (
@@ -744,7 +732,7 @@ function InsightsCard({ model }) {
           ))}
         </nav>
         <div className="vitals-insight-list">
-          {visibleRows.map(([title, detail, tag, tone], index) => (
+          {visibleRows.map(([title, detail, tag, tone]) => (
             <button
               type="button"
               className="vitals-insight-row vitals-hover-tip"
@@ -753,13 +741,11 @@ function InsightsCard({ model }) {
               title={`${tag}: ${detail}`}
               key={title}
             >
-              <em>{index + 1}</em>
-              <i className={tone}>{tag.slice(0, 1)}</i>
+              <i className={tone} aria-hidden="true" />
               <span>
                 <strong>{title}</strong>
                 <small>{detail}</small>
               </span>
-              <b>{tag}</b>
               <ArrowRight size={15} />
             </button>
           ))}
