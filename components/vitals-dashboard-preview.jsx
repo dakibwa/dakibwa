@@ -4,8 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import {
   Activity,
   ArrowRight,
-  Bell,
-  CalendarDays,
   ChevronLeft,
   ChevronRight,
   Droplet,
@@ -23,13 +21,6 @@ const remoteVitalsDataUrl = (
 ).trim();
 
 const bannerImage = "/project-art/personal/albion-rose-hero.webp";
-
-const sourceOptions = [
-  { key: "whoop", label: "WHOOP", tone: "green", detail: "Recovery, strain, HRV and sleep source" },
-  { key: "strava", label: "Strava", tone: "orange", detail: "Training load and activity source" },
-  { key: "fitbit", label: "Fitbit", tone: "blue", detail: "Sleep and activity backup source" },
-  { key: "googlefit", label: "Google Fit", tone: "red", detail: "Daily movement and baseline source" }
-];
 
 const habitDays = ["M", "T", "W", "T", "F", "S", "S", "M", "T", "W", "T", "F", "S", "S"];
 
@@ -315,23 +306,6 @@ function buildModel(data) {
     strainSpark: sparkPoints(series.strain, "10,34 38,28 66,32 94,20 122,24 150,16 178,22 210,18"),
     weightSpark: sparkPoints(series.weight, "10,22 38,46 66,26 94,32 122,38 150,40 178,30 210,38")
   };
-}
-
-function SourcePill({ label, tone = "green", active = false, detail, onSelect }) {
-  return (
-    <button
-      type="button"
-      className={`vitals-ai-source-pill vitals-hover-tip ${active ? "active" : ""}`}
-      onClick={onSelect}
-      aria-label={label}
-      aria-pressed={active}
-      data-tooltip={detail || `${label} source`}
-      title={detail || `${label} source`}
-    >
-      <i className={tone} />
-      <span>{label}</span>
-    </button>
-  );
 }
 
 function Ring({ value, label, tone = "green", size = 118 }) {
@@ -806,9 +780,7 @@ export function VitalsDashboardPreview({ compact = false, dataUrl = remoteVitals
   const [runtimeHealthData, setRuntimeHealthData] = useState(fallbackHealthData);
   const [range, setRange] = useState("7d");
   const [snapshotIndex, setSnapshotIndex] = useState(0);
-  const [activeSource, setActiveSource] = useState("all");
   const [activeMetric, setActiveMetric] = useState("readiness");
-  const [alertsOpen, setAlertsOpen] = useState(false);
 
   useEffect(() => {
     const url = String(dataUrl || "").trim();
@@ -881,39 +853,14 @@ export function VitalsDashboardPreview({ compact = false, dataUrl = remoteVitals
         <section className="vitals-ai-hero">
           <div className="vitals-hero-landscape" style={{ backgroundImage: `url(${bannerImage})` }}>
             <header className="vitals-hero-topbar">
-              <div className="vitals-ai-title">
-                <h1>Vitals</h1>
-                <p>Health Intelligence</p>
-              </div>
-              <nav className="vitals-ai-sources" aria-label="Connected sources">
-                {sourceOptions.map((source) => (
-                  <SourcePill
-                    label={source.label}
-                    tone={source.tone}
-                    active={activeSource === source.key}
-                    detail={source.detail}
-                    onSelect={() => setActiveSource(source.key)}
-                    key={source.key}
-                  />
-                ))}
-                <button
-                  type="button"
-                  className={`vitals-ai-source-more vitals-hover-tip ${activeSource === "all" ? "active" : ""}`}
-                  onClick={() => setActiveSource("all")}
-                  aria-label="All connected sources"
-                  aria-pressed={activeSource === "all"}
-                  data-tooltip="All connected sources"
-                  title="All connected sources"
-                >
-                  +2 more
-                </button>
-              </nav>
+              <p className="vitals-hero-eyebrow">
+                Vitals <em>Health Intelligence</em>
+              </p>
               <div className="vitals-ai-controls">
                 <div className="vitals-ai-date">
-                  <button type="button" onClick={() => moveSnapshot(-1)} aria-label="Previous dashboard snapshot"><ChevronLeft size={18} /></button>
+                  <button type="button" onClick={() => moveSnapshot(-1)} aria-label="Previous dashboard snapshot"><ChevronLeft size={17} /></button>
                   <span>Snapshot {formatShortDate(rangeEndDate)}</span>
-                  <CalendarDays size={17} />
-                  <button type="button" onClick={() => moveSnapshot(1)} aria-label="Next dashboard snapshot"><ChevronRight size={18} /></button>
+                  <button type="button" onClick={() => moveSnapshot(1)} aria-label="Next dashboard snapshot"><ChevronRight size={17} /></button>
                 </div>
                 <div className="vitals-ai-ranges" aria-label="Dashboard range">
                   {["7d", "14d", "30d"].map((option) => (
@@ -921,24 +868,6 @@ export function VitalsDashboardPreview({ compact = false, dataUrl = remoteVitals
                       {option}
                     </button>
                   ))}
-                </div>
-                <div className="vitals-ai-alert-wrap">
-                  <button
-                    type="button"
-                    className="vitals-ai-bell"
-                    onClick={() => setAlertsOpen((current) => !current)}
-                    aria-expanded={alertsOpen}
-                    aria-label="Notifications"
-                  >
-                    <Bell size={20} />
-                    <i />
-                  </button>
-                  {alertsOpen ? (
-                    <div className="vitals-alert-popover" role="status">
-                      <strong>2 watch signals</strong>
-                      <span>Sleep timing and hydration need attention.</span>
-                    </div>
-                  ) : null}
                 </div>
               </div>
             </header>
