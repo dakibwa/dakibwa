@@ -22,7 +22,7 @@ const remoteVitalsDataUrl = (
   process.env.NEXT_PUBLIC_VITALS_DATA_URL || "https://akibwa-vitals-refresh.dakibwa.workers.dev/vitals"
 ).trim();
 
-const bannerImage = "/project-images/vitals/vitals-botanical-banner.webp";
+const bannerImage = "/project-art/personal/albion-rose-hero.webp";
 
 const sourceOptions = [
   { key: "whoop", label: "WHOOP", tone: "green", detail: "Recovery, strain, HRV and sleep source" },
