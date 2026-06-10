@@ -16,12 +16,13 @@ import {
 } from "lucide-react";
 
 import fallbackHealthData from "@/data/public-health-data.json";
+import { fetchSessionJson, readSessionJson } from "@/components/remote-data-cache";
 
 const remoteVitalsDataUrl = (
   process.env.NEXT_PUBLIC_VITALS_DATA_URL || "https://akibwa-vitals-refresh.dakibwa.workers.dev/vitals"
 ).trim();
 
-const bannerImage = "/project-images/vitals/vitals-botanical-banner.jpg";
+const bannerImage = "/project-images/vitals/vitals-botanical-banner.webp";
 
 const sourceOptions = [
   { key: "whoop", label: "WHOOP", tone: "green", detail: "Recovery, strain, HRV and sleep source" },
@@ -815,14 +816,14 @@ export function VitalsDashboardPreview({ compact = false, dataUrl = remoteVitals
 
     let cancelled = false;
 
-    fetch(url, { cache: "no-store" })
-      .then((response) => (response.ok ? response.json() : null))
-      .then((data) => {
-        if (!cancelled && data?.sourceCoverage && data?.latest && data?.series) {
-          setRuntimeHealthData(data);
-        }
-      })
-      .catch(() => {});
+    const applyHealthData = (data) => {
+      if (!cancelled && data?.sourceCoverage && data?.latest && data?.series) {
+        setRuntimeHealthData(data);
+      }
+    };
+
+    applyHealthData(readSessionJson(url));
+    fetchSessionJson(url).then(applyHealthData).catch(() => {});
 
     return () => {
       cancelled = true;
