@@ -337,7 +337,7 @@ function Ring({ value, label, tone = "green", size = 118 }) {
 
 function TinyLine({ points, tone = "green" }) {
   return (
-    <svg className={`vitals-ai-spark ${tone}`} viewBox="0 0 220 70" aria-hidden="true">
+    <svg className={`vitals-ai-spark ${tone}`} viewBox="0 0 220 70" preserveAspectRatio="none" aria-hidden="true">
       <polyline points={points} />
     </svg>
   );
@@ -393,7 +393,7 @@ function ScoreBreakdown({ model }) {
 
 function HealthScoreCard({ model }) {
   return (
-    <article className="vitals-ai-card vitals-score-card" data-card-metric="readiness" tabIndex={0}>
+    <article className="vitals-ai-card vitals-card-wash vitals-score-card" data-card-metric="readiness" tabIndex={0}>
       <CardHeading icon={HeartPulse} title="Health Score" />
       <div className="vitals-score-main">
         <div className="vitals-score-hero">
@@ -437,7 +437,7 @@ function RecoveryCard({ model }) {
           </div>
         </dl>
       </div>
-      <svg className="vitals-ai-line-chart" viewBox="0 0 540 160" aria-hidden="true">
+      <svg className="vitals-ai-line-chart" viewBox="0 0 540 160" preserveAspectRatio="none" aria-hidden="true">
         <title>Recovery trend ending at {model.recoveryScore}%</title>
         <line x1="28" x2="512" y1="126" y2="126" />
         <path d={model.recoveryPath} />
@@ -596,7 +596,7 @@ function NutritionCard({ model }) {
 
 function StressCard({ model }) {
   return (
-    <article className="vitals-ai-card vitals-stress-card" data-card-metric="stress" tabIndex={0}>
+    <article className="vitals-ai-card vitals-card-wash vitals-stress-card" data-card-metric="stress" tabIndex={0}>
       <CardHeading icon={Activity} title="Stress & Mindfulness" action="View insights" />
       <div className="vitals-stress-body">
         <Ring value={model.stressScore} label="Low" tone="green" size={94} />
@@ -642,7 +642,7 @@ function ReadinessHabitsCard({ model }) {
   const pattern = ["high", "mid", "high", "soft", "high", "none", "watch", "high", "high", "high", "mid", "high", "none", "soft"];
 
   return (
-    <article className="vitals-ai-card vitals-habits-card" data-card-metric="habits" tabIndex={0}>
+    <article className="vitals-ai-card vitals-card-wash vitals-habits-card" data-card-metric="habits" tabIndex={0}>
       <div className="vitals-habits-board">
         <header>
           <div>
@@ -789,7 +789,6 @@ export function VitalsDashboardPreview({
   const [runtimeHealthData, setRuntimeHealthData] = useState(fallbackHealthData);
   const [internalRange, setInternalRange] = useState("7d");
   const [internalSnapshotIndex, setInternalSnapshotIndex] = useState(0);
-  const [activeMetric, setActiveMetric] = useState("readiness");
   const range = rangeProp ?? internalRange;
   const snapshotIndex = snapshotIndexProp ?? internalSnapshotIndex;
   const setRange = rangeProp !== undefined && onRangeChange ? onRangeChange : setInternalRange;
@@ -832,92 +831,32 @@ export function VitalsDashboardPreview({
     }
   }
 
-  const heroMetrics = [
-    {
-      key: "readiness",
-      className: "primary",
-      label: "Overall Readiness",
-      value: model.readinessScore,
-      suffix: "%",
-      status: model.readinessLabel,
-      detail: `${model.recoveryDelta} vs previous`
-    },
-    {
-      key: "recovery",
-      icon: HeartPulse,
-      label: "Recovery",
-      value: model.recoveryStatus,
-      detail: model.recoveryDelta
-    },
-    {
-      key: "sleep",
-      icon: Moon,
-      label: "Sleep",
-      value: model.sleepStatus,
-      detail: model.sleepDisplay
-    },
-    {
-      key: "training",
-      icon: Activity,
-      label: "Training Balance",
-      value: model.strainStatus,
-      detail: model.strainDisplay
-    }
-  ];
-
   return (
     <section className={`vitals-ai-dashboard ${compact ? "is-compact" : ""}`} aria-label="Vitals dashboard">
       <div className="vitals-ai-shell">
-        <section className="vitals-ai-hero">
-          <div className="vitals-hero-landscape" style={{ backgroundImage: `url(${bannerImage})` }}>
-            <header className="vitals-hero-topbar">
-              <p className="vitals-hero-eyebrow">
-                Vitals <em>Health Intelligence</em>
-              </p>
-              <div className="vitals-hero-metrics">
-                {heroMetrics.map((metric) => {
-                  const Icon = metric.icon;
-
-                  return (
-                    <button
-                      type="button"
-                      className={`${metric.className || ""} ${activeMetric === metric.key ? "active" : ""}`}
-                      onMouseEnter={() => setActiveMetric(metric.key)}
-                      onFocus={() => setActiveMetric(metric.key)}
-                      onClick={() => setActiveMetric(metric.key)}
-                      aria-pressed={activeMetric === metric.key}
-                      key={metric.key}
-                    >
-                      {Icon ? <Icon size={18} /> : null}
-                      <span>{metric.label}</span>
-                      <strong>
-                        {metric.value}
-                        {metric.suffix ? <em>{metric.suffix}</em> : null}
-                      </strong>
-                      <small>{metric.status ? `${metric.status} ` : ""}<b>{metric.detail}</b></small>
-                    </button>
-                  );
-                })}
+        {rangeProp === undefined ? (
+          <header className="vitals-ai-toolbar">
+            <p className="vitals-hero-eyebrow">
+              Vitals <em>Health Intelligence</em>
+            </p>
+            <div className="vitals-ai-controls">
+              <div className="vitals-ai-date">
+                <button type="button" onClick={() => moveSnapshot(-1)} aria-label="Previous dashboard snapshot"><ChevronLeft size={17} /></button>
+                <span>Snapshot {formatShortDate(rangeEndDate)}</span>
+                <button type="button" onClick={() => moveSnapshot(1)} aria-label="Next dashboard snapshot"><ChevronRight size={17} /></button>
               </div>
-              <div className="vitals-ai-controls">
-                <div className="vitals-ai-date">
-                  <button type="button" onClick={() => moveSnapshot(-1)} aria-label="Previous dashboard snapshot"><ChevronLeft size={17} /></button>
-                  <span>Snapshot {formatShortDate(rangeEndDate)}</span>
-                  <button type="button" onClick={() => moveSnapshot(1)} aria-label="Next dashboard snapshot"><ChevronRight size={17} /></button>
-                </div>
-                <div className="vitals-ai-ranges" aria-label="Dashboard range">
-                  {["7d", "14d", "30d"].map((option) => (
-                    <button type="button" className={range === option ? "active" : ""} onClick={() => setRange(option)} key={option}>
-                      {option}
-                    </button>
-                  ))}
-                </div>
+              <div className="vitals-ai-ranges" aria-label="Dashboard range">
+                {["7d", "14d", "30d"].map((option) => (
+                  <button type="button" className={range === option ? "active" : ""} onClick={() => setRange(option)} key={option}>
+                    {option}
+                  </button>
+                ))}
               </div>
-            </header>
-          </div>
-        </section>
+            </div>
+          </header>
+        ) : null}
 
-        <section className="vitals-ai-grid" data-focused-metric={activeMetric}>
+        <section className="vitals-ai-grid">
           <HealthScoreCard model={model} />
           <RecoveryCard model={model} />
           <SleepCard model={model} />
