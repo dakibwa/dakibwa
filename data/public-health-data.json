@@ -128,28 +128,6 @@
       "sugar_7d": 217.6
     }
   },
-  "reviewPrompts": [
-    {
-      "title": "Iron handling is the main follow-up thread",
-      "detail": "January showed low ferritin/iron saturation; April shows ferritin normalised with high transferrin saturation. Keep this tied to clinician review rather than simple self-optimisation.",
-      "priority": "Clinician"
-    },
-    {
-      "title": "Wearables show low resting pulse",
-      "detail": "WHOOP resting HR and Randox pulse both sit low. Treat as a tracking item unless symptoms change the context.",
-      "priority": "Monitor"
-    },
-    {
-      "title": "Sleep consistency is visible enough to manage",
-      "detail": "WHOOP has current recovery, sleep performance, HRV, RHR, and respiratory-rate coverage. Freshness matters because the latest curated WHOOP date is visible in the source panel.",
-      "priority": "Trend"
-    },
-    {
-      "title": "Nutrition data is useful but older",
-      "detail": "Cronometer rolling summaries are rich, but the latest logged nutrition window is earlier than the current WHOOP and bloodwork windows.",
-      "priority": "Freshness"
-    }
-  ],
   "series": {
     "sleep_duration": [
       {

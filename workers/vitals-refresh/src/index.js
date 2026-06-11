@@ -43,7 +43,7 @@ export default {
       if (request.method !== "POST") {
         return jsonResponse({ ok: false, error: "Use POST." }, 405);
       }
-      if (!isAuthorized(request, env)) {
+      if (!(await isAuthorized(request, env))) {
         return jsonResponse({ ok: false, error: "Unauthorized." }, 401);
       }
 
@@ -76,12 +76,32 @@ function jsonResponse(data, status = 200, headers = {}) {
   });
 }
 
-function isAuthorized(request, env) {
+async function isAuthorized(request, env) {
   const configuredToken = env.ADMIN_TOKEN || "";
   if (!configuredToken) return false;
 
   const header = request.headers.get("Authorization") || "";
-  return header === `Bearer ${configuredToken}`;
+  const provided = header.startsWith("Bearer ") ? header.slice(7) : "";
+  return timingSafeEqual(provided, configuredToken);
+}
+
+async function timingSafeEqual(a, b) {
+  const encoder = new TextEncoder();
+  const left = encoder.encode(a);
+  const right = encoder.encode(b);
+  if (left.length !== right.length) return false;
+
+  return crypto.subtle.timingSafeEqual
+    ? crypto.subtle.timingSafeEqual(left, right)
+    : fallbackTimingSafeEqual(left, right);
+}
+
+function fallbackTimingSafeEqual(left, right) {
+  let diff = 0;
+  for (let index = 0; index < left.length; index += 1) {
+    diff |= left[index] ^ right[index];
+  }
+  return diff === 0;
 }
 
 function trimSeries(data, count = 31) {
@@ -100,11 +120,20 @@ function trimSeries(data, count = 31) {
 
 async function readPublicData(env) {
   const cached = await env.VITALS_KV.get(PUBLIC_DATA_KEY, "json");
-  if (cached) return trimSeries(cached);
+  if (cached) return stripPrivateFields(trimSeries(cached));
 
   const seeded = await fetchSeedData(env);
   await env.VITALS_KV.put(PUBLIC_DATA_KEY, JSON.stringify(seeded));
-  return trimSeries(seeded);
+  return stripPrivateFields(trimSeries(seeded));
+}
+
+// reviewPrompts paraphrase clinician follow-ups and blood-test results; they
+// are only rendered by the private dashboard and must never be served publicly.
+// Stripping at read time also covers stale KV entries written before this rule.
+function stripPrivateFields(data) {
+  if (!data || typeof data !== "object") return data;
+  const { reviewPrompts, ...rest } = data;
+  return rest;
 }
 
 async function fetchSeedData(env) {
@@ -520,7 +549,6 @@ function toPublicData(refreshed) {
     sourceCoverage: refreshed.sourceCoverage,
     latest: refreshed.latest,
     nutrition: refreshed.nutrition,
-    reviewPrompts: refreshed.reviewPrompts,
     series: refreshed.series
   };
 }
@@ -530,7 +558,6 @@ function stableVitalsData(data) {
     sourceCoverage: data.sourceCoverage,
     latest: data.latest,
     nutrition: data.nutrition,
-    reviewPrompts: data.reviewPrompts,
     series: data.series
   });
 }

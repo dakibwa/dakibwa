@@ -419,7 +419,6 @@ function stableVitalsData(data) {
     sourceCoverage: data.sourceCoverage,
     latest: data.latest,
     nutrition: data.nutrition,
-    reviewPrompts: data.reviewPrompts,
     series: data.series
   };
   return JSON.stringify(comparable);
@@ -436,13 +435,14 @@ function trimSeries(series, count = 31) {
 
 const existingPublicData = fs.existsSync(publicHealthDataPath) ? readJson(publicHealthDataPath) : null;
 const refreshed = await refreshHealthData(readJson(sourceHealthDataPath));
+// reviewPrompts stay private: they paraphrase clinician follow-ups and
+// blood-test results, and only the gitignored health dashboard renders them.
 const publicData = {
   generatedAt: refreshed.generatedAt,
   snapshotDate: refreshed.snapshotDate,
   sourceCoverage: refreshed.sourceCoverage,
   latest: refreshed.latest,
   nutrition: refreshed.nutrition,
-  reviewPrompts: refreshed.reviewPrompts,
   series: trimSeries(refreshed.series)
 };
 const changed = !existingPublicData || stableVitalsData(existingPublicData) !== stableVitalsData(publicData);
