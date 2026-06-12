@@ -3,13 +3,13 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   Activity,
-  ArrowRight,
   ChevronLeft,
   ChevronRight,
+  Database,
   Droplet,
   HeartPulse,
-  Info,
   Moon,
+  TrendingUp,
   Zap
 } from "lucide-react";
 
@@ -20,15 +20,14 @@ const remoteVitalsDataUrl = (
   process.env.NEXT_PUBLIC_VITALS_DATA_URL || "https://akibwa-vitals-refresh.dakibwa.workers.dev/vitals"
 ).trim();
 
-const bannerImage = "/project-art/personal/albion-sunburst-hero.webp";
-
-const habitDays = ["M", "T", "W", "T", "F", "S", "S", "M", "T", "W", "T", "F", "S", "S"];
+// Same artwork as the Personal-page expanded overlay banner, so the
+// standalone page and the embed read as one surface.
+const bannerArt = "/project-art/personal/albion-sunburst-banner.webp";
 
 const habitStatusLabels = {
-  high: "Optimal",
-  mid: "Good",
-  watch: "Needs attention",
-  soft: "No data",
+  high: "High",
+  mid: "Moderate",
+  soft: "Light",
   none: "No data"
 };
 
@@ -49,12 +48,13 @@ function formatNumber(value, digits = 0) {
 
 function formatShortDate(value) {
   if (!value) return "latest";
-  const parsed = new Date(value);
+  const parsed = new Date(String(value).length === 10 ? `${value}T00:00:00Z` : value);
   if (Number.isNaN(parsed.getTime())) return "latest";
 
   return new Intl.DateTimeFormat("en-GB", {
     day: "numeric",
-    month: "short"
+    month: "short",
+    timeZone: "UTC"
   }).format(parsed);
 }
 
@@ -81,43 +81,21 @@ function formatDuration(minutes) {
   const numeric = numberValue(minutes);
   if (numeric === null) return "--";
   const total = Math.round(numeric);
-  const hours = Math.floor(total / 60);
-  const mins = total % 60;
 
-  return `${hours}h ${String(mins).padStart(2, "0")}m`;
+  return `${Math.floor(total / 60)}h ${String(total % 60).padStart(2, "0")}m`;
 }
 
 function signed(value, unit = "", digits = 0) {
   const numeric = numberValue(value);
-  if (numeric === null) return "0";
+  if (numeric === null) return null;
   const sign = numeric > 0 ? "+" : numeric < 0 ? "-" : "";
 
   return `${sign}${formatNumber(Math.abs(numeric), digits)}${unit}`;
 }
 
-function metricNumber(metric, fallback = null) {
-  const numeric = numberValue(metric?.value);
-  return numeric === null ? fallback : numeric;
-}
-
-function metricDelta(metric, fallback = null) {
-  const numeric = numberValue(metric?.delta);
-  return numeric === null ? fallback : numeric;
-}
-
-function metricSigned(metric, unit = "", digits = 0, fallback = "0") {
-  const delta = metricDelta(metric);
-  return delta === null ? fallback : signed(delta, unit, digits);
-}
-
-function generatedParts(data, fallbackDate) {
-  const day = String(data.generatedAt || fallbackDate || "").slice(0, 10);
-  const parsed = dateFromISO(day);
-
-  return {
-    generatedDay: parsed ? formatShortDate(day) : "latest",
-    generatedYear: parsed ? parsed.getUTCFullYear() : new Date().getUTCFullYear()
-  };
+function weekdayLetter(dateISO) {
+  const parsed = dateFromISO(dateISO);
+  return parsed ? ["S", "M", "T", "W", "T", "F", "S"][parsed.getUTCDay()] : "";
 }
 
 function scoreLabel(score) {
@@ -154,44 +132,65 @@ function strainLabel(strain) {
 
 function scoreFromStrain(strain) {
   const numeric = numberValue(strain);
-  if (numeric === null) return 72;
+  if (numeric === null) return null;
   return Math.max(0, Math.min(100, Math.round((numeric / 21) * 100)));
 }
 
-function sumRecent(points, count) {
-  return (points || [])
-    .slice(-count)
+function cleanSeries(points) {
+  return (points || []).filter((point) => point?.date && numberValue(point.value) !== null);
+}
+
+function windowSeries(points, startISO, endISO) {
+  return cleanSeries(points).filter((point) => point.date >= startISO && point.date <= endISO);
+}
+
+// Delta for the last windowed point, measured against the reading that
+// precedes it in the full series (which may fall outside the window).
+function lastWithDelta(fullSeries, windowed) {
+  const last = windowed.at(-1) || null;
+  if (!last) return null;
+
+  const all = cleanSeries(fullSeries);
+  const index = all.findIndex((point) => point.date === last.date);
+  const previous = index > 0 ? all[index - 1] : null;
+
+  return {
+    ...last,
+    value: numberValue(last.value),
+    delta: previous ? numberValue(last.value) - numberValue(previous.value) : null
+  };
+}
+
+function averageOf(points) {
+  if (!points.length) return null;
+  return points.reduce((sum, point) => sum + numberValue(point.value), 0) / points.length;
+}
+
+function sumOf(points) {
+  return points.reduce((sum, point) => sum + numberValue(point.value), 0);
+}
+
+function bestOf(points) {
+  return points.length
+    ? [...points].sort((a, b) => numberValue(a.value) - numberValue(b.value)).at(-1)
+    : null;
+}
+
+function axisFor(points) {
+  if (points.length < 2) return [];
+  const middle = points[Math.floor((points.length - 1) / 2)];
+
+  return points.length > 4
+    ? [formatShortDate(points[0].date), formatShortDate(middle.date), formatShortDate(points.at(-1).date)]
+    : [formatShortDate(points[0].date), formatShortDate(points.at(-1).date)];
+}
+
+function sparkPoints(points, width = 220, height = 70, pad = 10) {
+  const sample = cleanSeries(points)
     .map((point) => numberValue(point.value))
-    .filter((value) => value !== null)
-    .reduce((sum, value) => sum + value, 0);
-}
+    .slice(-14);
 
-function axisLabels(points, fallback = ["30 May", "2 Jun", "5 Jun"]) {
-  const sample = (points || [])
-    .filter((point) => point?.date)
-    .slice(-8);
-
-  if (sample.length < 2) return fallback;
-
-  const middle = sample[Math.floor((sample.length - 1) / 2)];
-  return [sample[0], middle, sample.at(-1)].map((point) => formatShortDate(point.date));
-}
-
-function bestRecent(points, count = 7) {
-  return (points || [])
-    .slice(-count)
-    .filter((point) => numberValue(point.value) !== null)
-    .sort((a, b) => Number(a.value) - Number(b.value))
-    .at(-1) || null;
-}
-
-function sparkPoints(points, fallback, width = 220, height = 70, pad = 10) {
-  const sample = (points || [])
-    .map((point) => numberValue(point.value))
-    .filter((value) => value !== null)
-    .slice(-8);
-
-  if (sample.length < 2) return fallback;
+  if (sample.length < 2) return null;
 
   const min = Math.min(...sample);
   const max = Math.max(...sample);
@@ -207,109 +206,212 @@ function sparkPoints(points, fallback, width = 220, height = 70, pad = 10) {
     .join(" ");
 }
 
-function chartPath(points, fallback, width = 520, height = 150, pad = 22) {
-  const sample = (points || [])
-    .map((point) => ({ ...point, value: numberValue(point.value) }))
-    .filter((point) => point.value !== null)
-    .slice(-8);
+function chartPath(points, width = 520, height = 150, pad = 22) {
+  const sample = points.map((point) => numberValue(point.value));
+  if (sample.length < 2) return null;
 
-  if (sample.length < 2) return fallback;
-
-  const min = Math.min(...sample.map((point) => point.value));
-  const max = Math.max(...sample.map((point) => point.value));
+  const min = Math.min(...sample);
+  const max = Math.max(...sample);
   const range = max - min || 1;
 
   return sample
-    .map((point, index) => {
+    .map((value, index) => {
       const x = pad + (index / (sample.length - 1)) * (width - pad * 2);
-      const y = height - pad - ((point.value - min) / range) * (height - pad * 2);
+      const y = height - pad - ((value - min) / range) * (height - pad * 2);
 
       return `${index === 0 ? "M" : "L"}${Math.round(x)} ${Math.round(y)}`;
     })
     .join("");
 }
 
-function buildModel(data) {
+function chartEndY(points, height = 150, pad = 22) {
+  const sample = points.map((point) => numberValue(point.value));
+  if (sample.length < 2) return null;
+
+  const min = Math.min(...sample);
+  const max = Math.max(...sample);
+  const range = max - min || 1;
+  return height - pad - ((sample.at(-1) - min) / range) * (height - pad * 2);
+}
+
+function generatedParts(data, fallbackDate) {
+  const day = String(data.generatedAt || fallbackDate || "").slice(0, 10);
+  const parsed = dateFromISO(day);
+
+  return {
+    generatedDay: parsed ? formatShortDate(day) : "latest",
+    generatedYear: parsed ? parsed.getUTCFullYear() : new Date().getUTCFullYear()
+  };
+}
+
+// Trend across the full series: average of the latest 7 readings against
+// the 7 before them. Null when there isn't enough history.
+function seriesTrend(points) {
+  const all = cleanSeries(points);
+  if (all.length < 8) return null;
+
+  const recent = averageOf(all.slice(-7));
+  const prior = averageOf(all.slice(-14, -7));
+  if (recent === null || prior === null) return null;
+
+  const delta = recent - prior;
+  const threshold = Math.abs(prior) * 0.03;
+  const state = Math.abs(delta) <= threshold ? "Stable" : delta > 0 ? "Trending up" : "Trending down";
+
+  return { delta, state, spark: sparkPoints(all) };
+}
+
+function habitTone(metric, value) {
+  const numeric = numberValue(value);
+  if (numeric === null) return "none";
+
+  if (metric === "recovery") return numeric >= 67 ? "high" : numeric >= 34 ? "mid" : "soft";
+  if (metric === "sleep") return numeric >= 420 ? "high" : numeric >= 360 ? "mid" : "soft";
+  if (metric === "strain") return numeric >= 14 ? "high" : numeric >= 8 ? "mid" : "soft";
+  if (metric === "calories") return numeric >= 2500 ? "high" : numeric >= 1800 ? "mid" : "soft";
+  if (metric === "workout") return numeric >= 60 ? "high" : numeric >= 20 ? "mid" : "soft";
+  return "none";
+}
+
+function habitValueText(metric, value) {
+  if (numberValue(value) === null) return "no data";
+  if (metric === "sleep") return formatDuration(value);
+  if (metric === "strain") return `${formatNumber(value, 1)} strain`;
+  if (metric === "calories") return `${formatNumber(value)} kcal`;
+  if (metric === "workout") return `${formatDuration(value)} active`;
+  return `${formatNumber(value)}%`;
+}
+
+export function getVitalsSnapshotDate(data) {
+  return (
+    data?.snapshotDate ||
+    data?.latest?.recovery_score?.date ||
+    String(data?.generatedAt || "").slice(0, 10) ||
+    null
+  );
+}
+
+export function vitalsSnapshotLabel(snapshotDate, range, snapshotIndex) {
+  const end = dateFromISO(snapshotDate);
+  if (!end) return formatShortDate(snapshotDate);
+
+  return formatShortDate(isoDate(addDays(end, -snapshotIndex * rangeDays(range))));
+}
+
+function buildModel(data, range, snapshotIndex) {
   const latest = data.latest || {};
   const series = data.series || {};
   const sourceCoverage = Array.isArray(data.sourceCoverage) ? data.sourceCoverage : [];
-  const recovery = latest.recovery_score || {};
-  const hrv = latest.hrv || {};
-  const restingHeartRate = latest.heart_rate_resting || {};
-  const sleepDuration = latest.sleep_duration || {};
-  const sleepPerformance = latest.sleep_performance || {};
-  const strain = latest.strain || {};
-  const caloriesBurned = latest.calories_burned || {};
-  const weight = latest.weight || {};
-  const nutrition = data.nutrition?.latest || {};
-  const sourceCount = sourceCoverage.length || 5;
-  const snapshotDate =
-    data.snapshotDate ||
-    recovery.date ||
-    sleepDuration.date ||
-    strain.date ||
-    String(data.generatedAt || "").slice(0, 10) ||
-    "2026-06-05";
+  const days = rangeDays(range);
+  const snapshotDate = getVitalsSnapshotDate(data) || isoDate(new Date());
+  const endDate = addDays(dateFromISO(snapshotDate) || new Date(), -snapshotIndex * days);
+  const endISO = isoDate(endDate);
+  const startISO = isoDate(addDays(endDate, -(days - 1)));
   const { generatedDay, generatedYear } = generatedParts(data, snapshotDate);
-  const readinessScore = Math.round(metricNumber(recovery, 68));
-  const recoveryScore = readinessScore;
-  const sleepMinutes = metricNumber(sleepDuration, null);
-  const sleepPerformanceScore = Math.round(metricNumber(sleepPerformance, 84));
-  const strainValue = metricNumber(strain, 2.2);
-  const strainScore = scoreFromStrain(strainValue);
-  const weeklyLoad = Math.round(sumRecent(series.strain, 7));
-  const activityMinutes = Math.round(sumRecent(series.workout, 7));
-  const caloriesValue = metricNumber(caloriesBurned, numberValue(nutrition.kcal_7d) || 1842);
-  const proteinValue = numberValue(nutrition.protein_7d) || 112;
-  const bestRecovery = bestRecent(series.recovery_score);
+
+  const recovery = windowSeries(series.recovery_score, startISO, endISO);
+  const sleep = windowSeries(series.sleep_duration, startISO, endISO);
+  const strain = windowSeries(series.strain, startISO, endISO);
+  const calories = windowSeries(series.calories_burned, startISO, endISO);
+  const workout = windowSeries(series.workout, startISO, endISO);
+
+  const recoveryLast = lastWithDelta(series.recovery_score, recovery);
+  const sleepLast = lastWithDelta(series.sleep_duration, sleep);
+  const strainLast = lastWithDelta(series.strain, strain);
+
+  const hrv = latest.hrv || null;
+  const restingHeartRate = latest.heart_rate_resting || null;
+  const sleepPerformance = latest.sleep_performance || null;
+  const averages = latest.whoopAverages || {};
+  const weight = latest.weight || null;
+  const weightSeries = cleanSeries(series.weight);
+  const stepsSeries = cleanSeries(series.steps);
+  const stepsLast = stepsSeries.at(-1) || null;
+  const nutrition = data.nutrition?.latest || null;
+
+  // 14 daily cells per metric, ending at the window end — real readings only.
+  const habitDates = Array.from({ length: 14 }, (_, index) => isoDate(addDays(endDate, index - 13)));
+  const habitRows = [
+    ["Recovery", "recovery", series.recovery_score],
+    ["Sleep", "sleep", series.sleep_duration],
+    ["Strain", "strain", series.strain],
+    ["Calories", "calories", series.calories_burned],
+    ["Workouts", "workout", series.workout]
+  ].map(([label, metric, metricSeries]) => {
+    const byDate = new Map(cleanSeries(metricSeries).map((point) => [point.date, point.value]));
+    return { label, metric, values: habitDates.map((date) => byDate.get(date) ?? null) };
+  });
+
+  const trendRows = [
+    ["Recovery", seriesTrend(series.recovery_score), "%", 0],
+    ["Sleep", seriesTrend(series.sleep_duration), "m", 0],
+    ["Strain", seriesTrend(series.strain), "", 1],
+    ["Calories", seriesTrend(series.calories_burned), " kcal", 0]
+  ].filter(([, trend]) => trend !== null);
+
+  const bestRecovery = bestOf(recovery);
+  const readiness = recoveryLast ? Math.round(recoveryLast.value) : null;
 
   return {
-    data,
-    snapshotDate,
+    startISO,
+    endISO,
+    windowLabel: `${formatShortDate(startISO)} – ${formatShortDate(endISO)}`,
     generatedDay,
     generatedYear,
-    sourceCount,
-    readinessScore,
-    readinessLabel: scoreLabel(readinessScore),
-    recoveryScore,
-    recoveryStatus: recoveryLabel(recoveryScore, recovery.delta),
-    sleepDisplay: sleepMinutes === null ? "7h 15m" : formatDuration(sleepMinutes),
-    sleepStatus: sleepLabel(sleepMinutes),
-    sleepPerformance: sleepPerformanceScore,
-    strainDisplay: formatNumber(strainValue, 1),
-    strainStatus: strainLabel(strainValue),
-    strainScore,
-    rhr: formatNumber(metricNumber(restingHeartRate, 49)),
-    hrv: formatNumber(metricNumber(hrv, 62), 1),
-    respRate: "13.2",
-    weight: formatNumber(weight.value || 65.8, 1),
-    nutritionScore: 78,
-    stressScore: 36,
-    protein: formatNumber(proteinValue),
-    calories: formatNumber(caloriesValue),
-    hydration: "2.1 / 3 L",
-    recoveryDelta: metricSigned(recovery, "%", 0, "+0%"),
-    sleepDelta: metricSigned(sleepDuration, "m", 0, "+0m"),
-    strainDelta: metricSigned(strain, "", 1, "+0"),
-    hrvDelta: metricSigned(hrv, " ms", 1, "+0 ms"),
-    rhrDelta: metricSigned(restingHeartRate, " bpm", 0, "+0 bpm"),
-    weeklyLoad: weeklyLoad || 392,
-    activityMinutes: activityMinutes || 312,
-    trainingBalance: formatNumber(strainValue / 21, 1),
-    bestRecoveryDay: bestRecovery?.date ? formatShortDate(bestRecovery.date) : "latest",
-    bestRecoveryScore: bestRecovery?.value ? Math.round(bestRecovery.value) : readinessScore,
-    readinessFocus: metricDelta(recovery, 0) < 0 ? "Recovery dip" : "Keep trend",
-    recoveryPath: chartPath(series.recovery_score, "M22 112L88 92L150 104L218 80L288 98L354 76L420 92L498 70"),
-    sleepPath: chartPath(series.sleep_duration, "M22 98L88 88L150 92L218 74L288 82L354 66L420 80L498 72"),
-    recoveryAxis: axisLabels(series.recovery_score),
-    sleepAxis: axisLabels(series.sleep_duration),
-    strainSpark: sparkPoints(series.strain, "10,34 38,28 66,32 94,20 122,24 150,16 178,22 210,18"),
-    weightSpark: sparkPoints(series.weight, "10,22 38,46 66,26 94,32 122,38 150,40 178,30 210,38")
+    sourceCount: sourceCoverage.length,
+    sources: sourceCoverage,
+    headlineReadiness: numberValue(latest.recovery_score?.value),
+
+    readiness,
+    readinessLabel: scoreLabel(readiness),
+    recovery,
+    recoveryLast,
+    recoveryStatus: recoveryLast ? recoveryLabel(recoveryLast.value, recoveryLast.delta) : "",
+    recoveryDelta: recoveryLast ? signed(recoveryLast.delta, "%") : null,
+    recoveryAvg: averageOf(recovery),
+    recoveryPath: chartPath(recovery),
+    recoveryEndY: chartEndY(recovery),
+    recoveryAxis: axisFor(recovery),
+
+    hrv,
+    restingHeartRate,
+    sleepPerformance,
+    hrvAvg7d: numberValue(averages.hrv7d),
+    rhrAvg7d: numberValue(averages.rhr7d),
+
+    sleep,
+    sleepLast,
+    sleepAvg: averageOf(sleep),
+    bestSleep: bestOf(sleep),
+
+    strain,
+    strainLast,
+    strainScore: scoreFromStrain(strainLast?.value),
+    weeklyLoad: strain.length ? Math.round(sumOf(strain)) : null,
+    activityMinutes: workout.length ? Math.round(sumOf(workout)) : null,
+    workoutDays: workout.length,
+
+    weight,
+    weightSpark: sparkPoints(weightSeries),
+    weightAxis: axisFor(weightSeries.slice(-14)),
+    stepsLast,
+    stepsWeekAvg: averageOf(stepsSeries.slice(-7)),
+    stepsSpark: sparkPoints(stepsSeries),
+
+    nutrition,
+    habitDates,
+    habitRows,
+    trendRows,
+    bestRecoveryDay: bestRecovery ? formatShortDate(bestRecovery.date) : null,
+    bestRecoveryScore: bestRecovery ? Math.round(bestRecovery.value) : null,
+    readinessFocus: recoveryLast?.delta !== null && recoveryLast?.delta < 0 ? "Recovery dip" : "Keep trend"
   };
 }
 
 function Ring({ value, label, tone = "green", size = 118 }) {
-  const safe = Math.max(0, Math.min(100, Number(value) || 0));
+  const numeric = numberValue(value);
+  if (numeric === null) return null;
+  const safe = Math.max(0, Math.min(100, numeric));
 
   return (
     <div
@@ -322,13 +424,13 @@ function Ring({ value, label, tone = "green", size = 118 }) {
       }}
       tabIndex={0}
       role="img"
-      aria-label={`${label || "Score"} ${value}%`}
-      data-tooltip={`${label || "Score"}: ${value}%`}
-      title={`${label || "Score"}: ${value}%`}
+      aria-label={`${label || "Score"} ${Math.round(safe)}%`}
+      data-tooltip={`${label || "Score"}: ${Math.round(safe)}%`}
+      title={`${label || "Score"}: ${Math.round(safe)}%`}
     >
       <span className="vitals-ai-ring-orbit" aria-hidden="true" />
       <span className="vitals-ai-ring-copy">
-        <strong>{value}%</strong>
+        <strong>{Math.round(safe)}%</strong>
         {label ? <span className="vitals-ai-ring-label">{label}</span> : null}
       </span>
     </div>
@@ -336,6 +438,8 @@ function Ring({ value, label, tone = "green", size = 118 }) {
 }
 
 function TinyLine({ points, tone = "green" }) {
+  if (!points) return null;
+
   return (
     <svg className={`vitals-ai-spark ${tone}`} viewBox="0 0 220 70" preserveAspectRatio="none" aria-hidden="true">
       <polyline points={points} />
@@ -343,32 +447,28 @@ function TinyLine({ points, tone = "green" }) {
   );
 }
 
-function CardHeading({ icon: Icon, title, action, info = false }) {
+function CardHeading({ icon: Icon, title, note }) {
   return (
     <header className="vitals-ai-card-heading">
       <div>
         {Icon ? <Icon size={15} strokeWidth={1.7} /> : null}
         <h2>{title}</h2>
       </div>
-      {action ? (
-        <button type="button">
-          {action}
-          <ArrowRight size={14} />
-        </button>
-      ) : info ? (
-        <Info size={15} strokeWidth={1.8} />
-      ) : null}
+      {note ? <span className="vitals-heading-note">{note}</span> : null}
     </header>
   );
 }
 
+function EmptyNote({ model }) {
+  return <p className="vitals-card-note">No readings between {model.windowLabel}.</p>;
+}
+
 function ScoreBreakdown({ model }) {
   const rows = [
-    ["Sleep", model.sleepPerformance, "green"],
-    ["Recovery", model.recoveryScore, "green"],
-    ["Strain", model.strainScore, "orange"],
-    ["Nutrition", model.nutritionScore, "green"]
-  ];
+    ["Sleep quality", model.sleepPerformance ? Math.round(model.sleepPerformance.value) : null, "green"],
+    ["Recovery", model.readiness, "green"],
+    ["Strain", model.strainScore, "orange"]
+  ].filter(([, value]) => value !== null);
 
   return (
     <div className="vitals-score-breakdown">
@@ -395,386 +495,438 @@ function HealthScoreCard({ model }) {
   return (
     <article className="vitals-ai-card vitals-card-wash vitals-score-card" data-card-metric="readiness" tabIndex={0}>
       <CardHeading icon={HeartPulse} title="Health Score" />
-      <div className="vitals-score-main">
-        <div className="vitals-score-hero">
-          <Ring value={model.readinessScore} tone="green" size={132} />
-          <small>{model.readinessLabel}</small>
-          <p>{model.recoveryDelta} vs previous</p>
+      {model.readiness !== null ? (
+        <div className="vitals-score-main">
+          <div className="vitals-score-hero">
+            <Ring value={model.readiness} tone="green" size={132} />
+            <small>{model.readinessLabel}</small>
+            {model.recoveryDelta ? <p>{model.recoveryDelta} vs previous</p> : null}
+          </div>
+          <ScoreBreakdown model={model} />
         </div>
-        <ScoreBreakdown model={model} />
-      </div>
-      <footer>Updated {model.generatedDay} {model.generatedYear} · {model.sourceCount} sources</footer>
+      ) : (
+        <EmptyNote model={model} />
+      )}
+      <footer>
+        Updated {model.generatedDay} {model.generatedYear} · {model.sourceCount} sources
+      </footer>
     </article>
   );
 }
 
 function RecoveryCard({ model }) {
+  const last = model.recoveryLast;
+
   return (
     <article className="vitals-ai-card vitals-recovery-card" data-card-metric="recovery" tabIndex={0}>
-      <CardHeading icon={Droplet} title="Recovery" />
-      <div className="vitals-recovery-layout">
-        <div>
-          <strong>{model.recoveryScore}</strong>
-          <span>%</span>
-          <small>{model.recoveryStatus}</small>
-          <p>{model.recoveryDelta} vs previous</p>
-        </div>
-        <dl>
-          <div className="vitals-hover-tip" data-tooltip={`HRV ${model.hrv} ms, ${model.hrvDelta}`} title={`HRV ${model.hrv} ms, ${model.hrvDelta}`}>
-            <dt>HRV</dt>
-            <dd>{model.hrv} ms</dd>
-            <em>{model.hrvDelta}</em>
+      <CardHeading icon={Droplet} title="Recovery" note={last ? `whoop · ${formatShortDate(last.date)}` : null} />
+      {last ? (
+        <>
+          <div className="vitals-recovery-layout">
+            <div>
+              <strong>{formatNumber(last.value)}</strong>
+              <span>%</span>
+              <small>{model.recoveryStatus}</small>
+              {model.recoveryDelta ? <p>{model.recoveryDelta} vs previous</p> : null}
+            </div>
+            <dl>
+              {model.hrv ? (
+                <div
+                  className="vitals-hover-tip"
+                  data-tooltip={`HRV ${formatNumber(model.hrv.value, 1)} ms on ${formatShortDate(model.hrv.date)}${model.hrvAvg7d !== null ? `, 7-day ${formatNumber(model.hrvAvg7d, 1)} ms` : ""}`}
+                  title={`HRV ${formatNumber(model.hrv.value, 1)} ms on ${formatShortDate(model.hrv.date)}`}
+                >
+                  <dt>HRV</dt>
+                  <dd>{formatNumber(model.hrv.value, 1)} ms</dd>
+                  <em>{signed(model.hrv.delta, " ms", 1) || formatShortDate(model.hrv.date)}</em>
+                </div>
+              ) : null}
+              {model.restingHeartRate ? (
+                <div
+                  className="vitals-hover-tip"
+                  data-tooltip={`Resting HR ${formatNumber(model.restingHeartRate.value)} bpm on ${formatShortDate(model.restingHeartRate.date)}${model.rhrAvg7d !== null ? `, 7-day ${formatNumber(model.rhrAvg7d)} bpm` : ""}`}
+                  title={`Resting HR ${formatNumber(model.restingHeartRate.value)} bpm on ${formatShortDate(model.restingHeartRate.date)}`}
+                >
+                  <dt>Resting HR</dt>
+                  <dd>{formatNumber(model.restingHeartRate.value)} bpm</dd>
+                  <em>{signed(model.restingHeartRate.delta, " bpm") || formatShortDate(model.restingHeartRate.date)}</em>
+                </div>
+              ) : null}
+              {model.recoveryAvg !== null ? (
+                <div
+                  className="vitals-hover-tip"
+                  data-tooltip={`Average across ${model.recovery.length} readings in this window`}
+                  title={`Average across ${model.recovery.length} readings in this window`}
+                >
+                  <dt>Window avg</dt>
+                  <dd>{formatNumber(model.recoveryAvg)}%</dd>
+                  <em>{model.recovery.length} readings</em>
+                </div>
+              ) : null}
+            </dl>
           </div>
-          <div className="vitals-hover-tip" data-tooltip={`Resting HR ${model.rhr} bpm, ${model.rhrDelta}`} title={`Resting HR ${model.rhr} bpm, ${model.rhrDelta}`}>
-            <dt>Resting HR</dt>
-            <dd>{model.rhr} bpm</dd>
-            <em>{model.rhrDelta}</em>
-          </div>
-          <div className="vitals-hover-tip" data-tooltip={`Respiratory rate ${model.respRate} brpm, -0.4`} title={`Respiratory rate ${model.respRate} brpm, -0.4`}>
-            <dt>Resp. Rate</dt>
-            <dd>{model.respRate} brpm</dd>
-            <em>- 0.4</em>
-          </div>
-        </dl>
-      </div>
-      <svg className="vitals-ai-line-chart" viewBox="0 0 540 160" preserveAspectRatio="none" aria-hidden="true">
-        <title>Recovery trend ending at {model.recoveryScore}%</title>
-        <line x1="28" x2="512" y1="126" y2="126" />
-        <path d={model.recoveryPath} />
-        <circle cx="512" cy="70" r="5" />
-      </svg>
-      <div className="vitals-ai-axis">
-        {model.recoveryAxis.map((label) => <span key={label}>{label}</span>)}
-      </div>
+          {model.recoveryPath ? (
+            <>
+              <svg className="vitals-ai-line-chart" viewBox="0 0 540 160" preserveAspectRatio="none" aria-hidden="true">
+                <title>Recovery trend ending at {formatNumber(last.value)}%</title>
+                <line x1="28" x2="512" y1="126" y2="126" />
+                <path d={model.recoveryPath} pathLength="1" />
+                <circle cx="512" cy={model.recoveryEndY ?? 70} r="5" />
+              </svg>
+              <div className="vitals-ai-axis">
+                {model.recoveryAxis.map((label, index) => (
+                  <span key={`${label}-${index}`}>{label}</span>
+                ))}
+              </div>
+            </>
+          ) : null}
+        </>
+      ) : (
+        <EmptyNote model={model} />
+      )}
     </article>
   );
 }
 
 function SleepCard({ model }) {
-  const stages = [
-    ["Deep", 16, "deep"],
-    ["REM", 12, "rem"],
-    ["Light", 22, "light"],
-    ["Awake", 5, "awake"],
-    ["Deep", 18, "deep"],
-    ["REM", 10, "rem"],
-    ["Light", 17, "light"]
-  ];
+  const last = model.sleepLast;
+  const totalMinutes = model.sleep.length ? sumOf(model.sleep) : 0;
 
   return (
     <article className="vitals-ai-card vitals-sleep-card" data-card-metric="sleep" tabIndex={0}>
-      <CardHeading icon={Moon} title="Sleep" />
-      <div className="vitals-sleep-top">
-        <div>
-          <strong>{model.sleepDisplay}</strong>
-          <small>{model.sleepStatus}</small>
-          <p>{model.sleepDelta} vs previous</p>
-        </div>
-        <Ring value={model.sleepPerformance} label="Quality" tone="blue" size={112} />
-      </div>
-      <div className="vitals-sleep-stages">
-        <header>
-          <span>Sleep Stages</span>
-          <i className="deep" /> Deep
-          <i className="rem" /> REM
-          <i className="light" /> Light
-          <i className="awake" /> Awake
-        </header>
-        <div className="vitals-sleep-bar">
-          {stages.map(([label, width, tone], index) => (
-            <b
-              className={`vitals-hover-tip ${tone}`}
-              data-tooltip={`${label}: ${width}%`}
-              title={`${label}: ${width}%`}
-              style={{ width: `${width}%` }}
-              key={`${label}-${index}`}
-            />
-          ))}
-        </div>
-        <footer><span>23:05</span><span>06:53</span></footer>
-      </div>
-      <div className="vitals-sleep-foot">
-        <span>Consistency <b>85%</b></span>
-        <span>Sleep Debt <b>0h 15m</b> <em>Low</em></span>
-      </div>
+      <CardHeading icon={Moon} title="Sleep" note={last ? `whoop · ${formatShortDate(last.date)}` : null} />
+      {last ? (
+        <>
+          <div className="vitals-sleep-top">
+            <div>
+              <strong>{formatDuration(last.value)}</strong>
+              <small>{sleepLabel(last.value)}</small>
+              {last.delta !== null ? <p>{signed(last.delta, "m")} vs previous</p> : null}
+            </div>
+            {model.sleepPerformance ? (
+              <Ring value={model.sleepPerformance.value} label="Quality" tone="blue" size={112} />
+            ) : null}
+          </div>
+          <div className="vitals-sleep-stages">
+            <header>
+              <span>
+                Nights in this window · each segment is one night&apos;s share of {formatDuration(totalMinutes)} total
+              </span>
+            </header>
+            <div className="vitals-sleep-bar">
+              {model.sleep.map((night) => {
+                const share = totalMinutes ? (numberValue(night.value) / totalMinutes) * 100 : 0;
+                const tooltip = `${formatShortDate(night.date)}: ${formatDuration(night.value)}`;
+
+                return (
+                  <b
+                    className="vitals-hover-tip night"
+                    data-tooltip={tooltip}
+                    title={tooltip}
+                    style={{ width: `${share}%` }}
+                    key={night.date}
+                  />
+                );
+              })}
+            </div>
+            <footer>
+              <span>{formatShortDate(model.sleep[0].date)}</span>
+              <span>{formatShortDate(model.sleep.at(-1).date)}</span>
+            </footer>
+          </div>
+          <div className="vitals-sleep-foot">
+            <span>
+              Window average <b>{formatDuration(model.sleepAvg)}</b>
+            </span>
+            {model.bestSleep ? (
+              <span>
+                Best night <b>{formatDuration(model.bestSleep.value)}</b> <em>{formatShortDate(model.bestSleep.date)}</em>
+              </span>
+            ) : null}
+          </div>
+        </>
+      ) : (
+        <EmptyNote model={model} />
+      )}
     </article>
   );
 }
 
 function TrainingLoadCard({ model }) {
-  const bars = [58, 68, 76, 66, 84, 92, 72];
-  const days = ["T", "F", "S", "S", "M", "T", "W"];
+  const last = model.strainLast;
 
   return (
     <article className="vitals-ai-card vitals-training-card" data-card-metric="training" tabIndex={0}>
-      <CardHeading icon={Zap} title="Training Load" />
-      <div className="vitals-training-main">
-        <div>
-          <strong>{model.strainDisplay}</strong>
-          <small>{model.strainStatus}</small>
-          <p>{model.strainDelta} vs previous</p>
-        </div>
-        <div className="vitals-load-chart">
-          <span>7-Day Load Trend</span>
-          <div>
-            {bars.map((bar, index) => (
-              <i
-                className="vitals-hover-tip"
-                data-tooltip={`${days[index]} load: ${bar}`}
-                title={`${days[index]} load: ${bar}`}
-                style={{ height: `${bar}%`, "--bar-delay": `${index * 28}ms` }}
-                key={index}
-              />
-            ))}
+      <CardHeading icon={Zap} title="Training Load" note={last ? `whoop · ${formatShortDate(last.date)}` : null} />
+      {last ? (
+        <>
+          <div className="vitals-training-main">
+            <div>
+              <strong>{formatNumber(last.value, 1)}</strong>
+              <small>{strainLabel(last.value)}</small>
+              {last.delta !== null ? <p>{signed(last.delta, "", 1)} vs previous</p> : null}
+            </div>
+            <div className="vitals-load-chart">
+              <span>Daily strain · {model.windowLabel}</span>
+              <div>
+                {model.strain.map((point, index) => {
+                  const height = Math.max((numberValue(point.value) / 21) * 100, 3);
+                  const tooltip = `${formatShortDate(point.date)}: ${formatNumber(point.value, 1)} strain`;
+
+                  return (
+                    <i
+                      className="vitals-hover-tip"
+                      data-tooltip={tooltip}
+                      title={tooltip}
+                      style={{ height: `${height}%`, "--bar-delay": `${index * 28}ms` }}
+                      key={point.date}
+                    />
+                  );
+                })}
+              </div>
+              <footer>
+                {model.strain.map((point) => (
+                  <em key={point.date}>{weekdayLetter(point.date)}</em>
+                ))}
+              </footer>
+            </div>
           </div>
-          <footer>{days.map((day, index) => <em key={`${day}-${index}`}>{day}</em>)}</footer>
-        </div>
-      </div>
-      <div className="vitals-training-stats">
-        <div><span>Weekly Load</span><strong>{model.weeklyLoad}</strong><small>7 days</small></div>
-        <div><span>Activity Minutes</span><strong>{model.activityMinutes}</strong><small>This week</small></div>
-        <div><span>Training Balance</span><strong>{model.trainingBalance}</strong><small>Latest</small></div>
-        <Ring value={model.strainScore} tone="green" size={72} />
-      </div>
-      <p className="vitals-card-note"><Info size={13} /> More aerobic work would support balance.</p>
+          <div className="vitals-training-stats">
+            <div>
+              <span>Window Load</span>
+              <strong>{model.weeklyLoad ?? "--"}</strong>
+              <small>{model.strain.length} days</small>
+            </div>
+            <div>
+              <span>Activity Minutes</span>
+              <strong>{model.activityMinutes ?? "--"}</strong>
+              <small>{model.workoutDays} workout {model.workoutDays === 1 ? "day" : "days"}</small>
+            </div>
+            <div>
+              <span>Day Intensity</span>
+              <strong>{formatNumber(numberValue(last.value) / 21, 2)}</strong>
+              <small>of 21 max</small>
+            </div>
+            <Ring value={model.strainScore} tone="green" size={72} />
+          </div>
+        </>
+      ) : (
+        <EmptyNote model={model} />
+      )}
     </article>
   );
 }
 
 function BodyMetricsCard({ model }) {
-  const rows = [
-    ["Weight", `${model.weight} kg`, "- 0.6 kg"],
-    ["Body Fat", "21.3%", "- 0.2%"],
-    ["Muscle Mass", "46.1 kg", "+ 0.4 kg"],
-    ["VO2 Max", "48", "Good"]
-  ];
+  const rows = [];
+  if (model.weight) {
+    rows.push([
+      "Weight",
+      `${formatNumber(model.weight.value, 1)} kg`,
+      signed(model.weight.delta, " kg", 1) || "latest",
+      `measured ${formatShortDate(model.weight.date)}`
+    ]);
+  }
+  if (model.stepsLast) {
+    rows.push([
+      "Steps",
+      formatNumber(model.stepsLast.value),
+      formatShortDate(model.stepsLast.date),
+      `last counted ${formatShortDate(model.stepsLast.date)}`
+    ]);
+    if (model.stepsWeekAvg !== null) {
+      rows.push([
+        "Steps, final week",
+        formatNumber(model.stepsWeekAvg),
+        "daily avg",
+        "average of the last 7 recorded days"
+      ]);
+    }
+  }
+
+  if (!rows.length) return null;
 
   return (
     <article className="vitals-ai-card vitals-body-metrics-card" data-card-metric="body" tabIndex={0}>
-      <CardHeading icon={Activity} title="Body Metrics" action="View trends" />
+      <CardHeading icon={Activity} title="Body Metrics" note="dormant sources" />
       <div className="vitals-body-metrics-layout">
         <dl>
-          {rows.map(([label, value, delta]) => (
-            <div className="vitals-hover-tip" data-tooltip={`${label}: ${value}, ${delta}`} title={`${label}: ${value}, ${delta}`} key={label}>
+          {rows.map(([label, value, delta, tooltip]) => (
+            <div className="vitals-hover-tip" data-tooltip={tooltip} title={tooltip} key={label}>
               <dt>{label}</dt>
               <dd>{value}</dd>
               <em>{delta}</em>
             </div>
           ))}
         </dl>
-        <TinyLine points={model.weightSpark} tone="green" />
+        <TinyLine points={model.weightSpark || model.stepsSpark} tone="green" />
       </div>
-      <div className="vitals-ai-axis"><span>30 May</span><span>2 Jun</span><span>5 Jun</span></div>
-    </article>
-  );
-}
-
-function NutritionCard({ model }) {
-  return (
-    <article className="vitals-ai-card vitals-nutrition-card-v2" data-card-metric="nutrition" tabIndex={0}>
-      <CardHeading icon={Droplet} title="Nutrition & Hydration" action="View details" />
-      <div className="vitals-nutrition-v2-body">
-        <Ring value={model.nutritionScore} label="Nutrition" tone="green" size={96} />
-        <div>
-          {[
-            ["Calories", `${model.calories} / 2,200 kcal`, 82, "green"],
-            ["Protein", `${model.protein} / 140 g`, 80, "green"],
-            ["Hydration", model.hydration, 72, "blue"]
-          ].map(([label, value, width, tone]) => (
-            <section className="vitals-hover-tip" data-tooltip={`${label}: ${value}`} title={`${label}: ${value}`} key={label}>
-              <span>{label}</span>
-              <strong>{value}</strong>
-              <i><b className={tone} style={{ width: `${width}%` }} /></i>
-            </section>
-          ))}
-        </div>
-      </div>
-      <footer>Micronutrient Status <strong>Good</strong><i /></footer>
-    </article>
-  );
-}
-
-function StressCard({ model }) {
-  return (
-    <article className="vitals-ai-card vitals-card-wash vitals-stress-card" data-card-metric="stress" tabIndex={0}>
-      <CardHeading icon={Activity} title="Stress & Mindfulness" action="View insights" />
-      <div className="vitals-stress-body">
-        <Ring value={model.stressScore} label="Low" tone="green" size={94} />
-        <div>
-          <span>7-Day Trend</span>
-          <TinyLine points="10,46 38,46 66,42 94,22 122,38 150,26 178,40 210,34" tone="green" />
-          <p>Mindful Minutes <strong>120 / 150 min</strong></p>
-          <i><b style={{ width: "80%" }} /></i>
-        </div>
-      </div>
-    </article>
-  );
-}
-
-function TrendsCard() {
-  const rows = [
-    ["HRV", "Trending up", "+ 8%", "up"],
-    ["Resting HR", "Trending down", "- 4 bpm", "down"],
-    ["Sleep Quality", "Improving", "+ 6%", "up"],
-    ["Body Weight", "Stable", "- 0.6 kg", "flat"]
-  ];
-
-  return (
-    <article className="vitals-ai-card vitals-trends-card" data-card-metric="trends" tabIndex={0}>
-      <CardHeading title="Trends Summary" action="View all" />
-      <div className="vitals-trends-list">
-        {rows.map(([label, state, delta, tone]) => (
-          <div className="vitals-hover-tip" data-tooltip={`${label}: ${state}, ${delta}`} title={`${label}: ${state}, ${delta}`} key={label}>
-            <span>{label}</span>
-            <strong className={tone}>{state}</strong>
-            <em>{delta}</em>
-            <TinyLine points="10,38 42,35 74,37 106,31 138,34 170,29 210,32" tone="green" />
-            <ArrowRight size={14} />
-          </div>
+      <div className="vitals-ai-axis">
+        {model.weightAxis.map((label, index) => (
+          <span key={`${label}-${index}`}>{label}</span>
         ))}
       </div>
     </article>
   );
 }
 
-function ReadinessHabitsCard({ model }) {
-  const rows = ["WHOOP", "Training", "Nutrition", "Sleep", "Mindfulness"];
-  const pattern = ["high", "mid", "high", "soft", "high", "none", "watch", "high", "high", "high", "mid", "high", "none", "soft"];
+function NutritionCard({ model }) {
+  const nutrition = model.nutrition;
+  if (!nutrition) return null;
 
+  const kcal = numberValue(nutrition.kcal_7d);
+  const protein = numberValue(nutrition.protein_7d);
+  const fat = numberValue(nutrition.fat_7d);
+  const netCarbs = numberValue(nutrition.netcarb_7d);
+  const macroKcal = [protein ? protein * 4 : 0, fat ? fat * 9 : 0, netCarbs ? netCarbs * 4 : 0];
+  const macroTotal = macroKcal.reduce((sum, value) => sum + value, 0) || 1;
+  const proteinShare = protein && kcal ? Math.round(((protein * 4) / kcal) * 100) : null;
+  const rows = [
+    ["Calories", kcal !== null ? `${formatNumber(kcal)} kcal / day` : null, 100, "green"],
+    ["Protein", protein !== null ? `${formatNumber(protein)} g / day` : null, (macroKcal[0] / macroTotal) * 100, "green"],
+    ["Fat", fat !== null ? `${formatNumber(fat)} g / day` : null, (macroKcal[1] / macroTotal) * 100, "orange"],
+    ["Net carbs", netCarbs !== null ? `${formatNumber(netCarbs)} g / day` : null, (macroKcal[2] / macroTotal) * 100, "blue"]
+  ].filter(([, value]) => value !== null);
+
+  return (
+    <article className="vitals-ai-card vitals-nutrition-card-v2" data-card-metric="nutrition" tabIndex={0}>
+      <CardHeading icon={Droplet} title="Nutrition" note={`7-day averages to ${formatShortDate(nutrition.date)}`} />
+      <div className="vitals-nutrition-v2-body">
+        <Ring value={proteinShare} label="Protein" tone="green" size={96} />
+        <div>
+          {rows.map(([label, value, width, tone]) => (
+            <section
+              className="vitals-hover-tip"
+              data-tooltip={`${label}: ${value}`}
+              title={`${label}: ${value}`}
+              key={label}
+            >
+              <span>{label}</span>
+              <strong>{value}</strong>
+              <i>
+                <b className={tone} style={{ width: `${Math.max(Math.round(width), 4)}%` }} />
+              </i>
+            </section>
+          ))}
+        </div>
+      </div>
+      <footer>
+        Macro bars show each macro&apos;s share of logged energy · source dormant since {formatShortDate(nutrition.date)}
+      </footer>
+    </article>
+  );
+}
+
+function TrendsCard({ model }) {
+  if (!model.trendRows.length) return null;
+
+  return (
+    <article className="vitals-ai-card vitals-trends-card" data-card-metric="trends" tabIndex={0}>
+      <CardHeading icon={TrendingUp} title="Trends" note="last 7 readings vs the 7 before" />
+      <div className="vitals-trends-list">
+        {model.trendRows.map(([label, trend, unit, digits]) => {
+          const tone = trend.state === "Trending up" ? "up" : trend.state === "Trending down" ? "down" : "flat";
+          const deltaText = signed(trend.delta, unit, digits);
+          const tooltip = `${label}: ${trend.state}, ${deltaText} vs prior week`;
+
+          return (
+            <div className="vitals-hover-tip" data-tooltip={tooltip} title={tooltip} key={label}>
+              <span>{label}</span>
+              <strong className={tone}>{trend.state}</strong>
+              <em>{deltaText}</em>
+              <TinyLine points={trend.spark} tone="green" />
+            </div>
+          );
+        })}
+      </div>
+    </article>
+  );
+}
+
+function SourcesCard({ model }) {
+  if (!model.sources.length) return null;
+
+  return (
+    <article className="vitals-ai-card vitals-sources-card" data-card-metric="sources" tabIndex={0}>
+      <CardHeading icon={Database} title="Sources" note={`compiled ${model.generatedDay}`} />
+      <ul className="vitals-sources-list">
+        {model.sources.map((source) => {
+          const live = source.latestDay >= model.startISO;
+          const tooltip = `${source.source}: ${formatNumber(source.rows)} rows, ${source.metricCount} metrics, ${formatShortDate(source.firstDay)} – ${formatShortDate(source.latestDay)}`;
+
+          return (
+            <li className="vitals-hover-tip" data-tooltip={tooltip} title={tooltip} key={source.source}>
+              <i className={live ? "high" : "none"} aria-hidden="true" />
+              <strong>{source.source}</strong>
+              <span>to {formatShortDate(source.latestDay)}</span>
+            </li>
+          );
+        })}
+      </ul>
+    </article>
+  );
+}
+
+function ReadinessHabitsCard({ model }) {
   return (
     <article className="vitals-ai-card vitals-card-wash vitals-habits-card" data-card-metric="habits" tabIndex={0}>
       <div className="vitals-habits-board">
         <header>
           <div>
-            <h2>Daily Readiness & Habits</h2>
-            <p>Two weeks of habit adherence across your sources</p>
+            <h2>Daily Signals</h2>
+            <p>Two weeks of real readings to {formatShortDate(model.endISO)}</p>
           </div>
           <p className="vitals-habits-meta">
-            <span>Best day <b>{model.bestRecoveryDay}</b></span>
-            <span>Focus <b>{model.readinessFocus}</b></span>
+            {model.bestRecoveryDay ? (
+              <span>
+                Best recovery <b>{model.bestRecoveryScore}% · {model.bestRecoveryDay}</b>
+              </span>
+            ) : null}
+            <span>
+              Focus <b>{model.readinessFocus}</b>
+            </span>
           </p>
         </header>
         <div className="vitals-habit-days">
-          {habitDays.map((day, index) => (
-            <span key={`${day}-${index}`}>{day}</span>
+          {model.habitDates.map((date) => (
+            <span key={date}>{weekdayLetter(date)}</span>
           ))}
         </div>
-        {rows.map((row, rowIndex) => (
-          <div className="vitals-habit-row" key={row}>
-            <span>{row}</span>
-            {pattern.map((cell, index) => {
-              const status = pattern[(index + rowIndex * 2) % pattern.length];
-              const tooltip = `${row} ${habitDays[index]}: ${habitStatusLabels[status]}`;
+        {model.habitRows.map((row) => (
+          <div className="vitals-habit-row" key={row.label}>
+            <span>{row.label}</span>
+            {row.values.map((value, index) => {
+              const tone = habitTone(row.metric, value);
+              const tooltip = `${row.label} ${formatShortDate(model.habitDates[index])}: ${habitValueText(row.metric, value)}`;
 
               return (
                 <i
-                  className={`vitals-hover-tip ${status}`}
+                  className={`vitals-hover-tip ${tone}`}
                   data-tooltip={tooltip}
                   title={tooltip}
-                  style={{ "--cell-delay": `${(rowIndex * 14 + index) * 8}ms` }}
-                  key={`${row}-${cell}-${index}`}
+                  style={{ "--cell-delay": `${index * 8}ms` }}
+                  key={model.habitDates[index]}
                 />
               );
             })}
           </div>
         ))}
         <footer>
-          <span><i className="high" /> Optimal</span>
-          <span><i className="mid" /> Good</span>
-          <span><i className="watch" /> Needs attention</span>
-          <span><i className="none" /> No data</span>
+          <span>
+            <i className="high" /> {habitStatusLabels.high}
+          </span>
+          <span>
+            <i className="mid" /> {habitStatusLabels.mid}
+          </span>
+          <span>
+            <i className="soft" /> {habitStatusLabels.soft}
+          </span>
+          <span>
+            <i className="none" /> {habitStatusLabels.none}
+          </span>
         </footer>
       </div>
     </article>
-  );
-}
-
-function InsightsCard({ model }) {
-  const [activeTab, setActiveTab] = useState("top");
-  const rows = [
-    ["Iron handling", "Low ferritin/iron saturation trend continues. Consider reviewing iron intake and sources.", "Clinician", "amber", "watch"],
-    ["Late bedtimes impacting deep sleep", "You have had 4 late bedtimes this week. Aim for an earlier wind-down routine.", "Lifestyle", "orange", "watch"],
-    ["Nice work on training balance", "Your aerobic base and strain balance look great. Keep it up!", "Positive", "green", "positive"],
-    ["Hydration dip on training days", "Hydration was below target on 2 training days this week.", "Monitor", "teal", "watch"]
-  ];
-  const visibleRows = activeTab === "positive"
-    ? rows.filter((row) => row[4] === "positive")
-    : activeTab === "watch"
-      ? rows.filter((row) => row[4] === "watch")
-      : rows;
-  const positiveCount = rows.filter((row) => row[4] === "positive").length;
-  const watchCount = rows.filter((row) => row[4] === "watch").length;
-  const tabs = [
-    ["top", "Top Priorities", null],
-    ["positive", "Positive Signals", positiveCount],
-    ["watch", "Watchlist", watchCount],
-    ["all", "All Insights", null]
-  ];
-
-  return (
-    <article className="vitals-ai-card vitals-insights-card" data-card-metric="insights" tabIndex={0}>
-      <div className="vitals-insights-main">
-        <header>
-          <h2>Insights</h2>
-          <button type="button">View all <ArrowRight size={14} /></button>
-        </header>
-        <nav>
-          {tabs.map(([key, label, count]) => (
-            <button
-              type="button"
-              className={activeTab === key ? "active" : ""}
-              onClick={() => setActiveTab(key)}
-              aria-pressed={activeTab === key}
-              key={key}
-            >
-              {label} {count ? <span>{count}</span> : null}
-            </button>
-          ))}
-        </nav>
-        <div className="vitals-insight-list">
-          {visibleRows.map(([title, detail, tag, tone]) => (
-            <button
-              type="button"
-              className="vitals-insight-row vitals-hover-tip"
-              aria-label={`${tag}: ${title}. ${detail}`}
-              data-tooltip={`${tag}: ${detail}`}
-              title={`${tag}: ${detail}`}
-              key={title}
-            >
-              <i className={tone} aria-hidden="true" />
-              <span>
-                <strong>{title}</strong>
-                <small>{detail}</small>
-              </span>
-              <ArrowRight size={15} />
-            </button>
-          ))}
-        </div>
-      </div>
-      <aside className="vitals-next-action" style={{ backgroundImage: `url(${bannerImage})` }}>
-        <div>
-          <span>Your Next Best Action</span>
-          <strong>Focus on earlier bedtimes and iron-rich foods this week.</strong>
-          <button type="button">View Plan <ArrowRight size={14} /></button>
-        </div>
-      </aside>
-    </article>
-  );
-}
-
-export function vitalsSnapshotLabel(snapshotDate, range, snapshotIndex) {
-  const end = dateFromISO(snapshotDate);
-  if (!end) return formatShortDate(snapshotDate);
-
-  return formatShortDate(isoDate(addDays(end, -snapshotIndex * rangeDays(range))));
-}
-
-export function getVitalsSnapshotDate(data) {
-  return (
-    data?.snapshotDate ||
-    data?.latest?.recovery_score?.date ||
-    String(data?.generatedAt || "").slice(0, 10) ||
-    null
   );
 }
 
@@ -791,7 +943,6 @@ export function VitalsDashboardPreview({
   const [internalSnapshotIndex, setInternalSnapshotIndex] = useState(0);
   const range = rangeProp ?? internalRange;
   const snapshotIndex = snapshotIndexProp ?? internalSnapshotIndex;
-  const setRange = rangeProp !== undefined && onRangeChange ? onRangeChange : setInternalRange;
 
   useEffect(() => {
     const url = String(dataUrl || "").trim();
@@ -813,13 +964,19 @@ export function VitalsDashboardPreview({
     };
   }, [dataUrl]);
 
-  const model = useMemo(() => buildModel(runtimeHealthData), [runtimeHealthData]);
-  const rangeEndDate = useMemo(() => {
-    const end = dateFromISO(model.snapshotDate);
-    if (!end) return model.snapshotDate;
+  const model = useMemo(
+    () => buildModel(runtimeHealthData, range, snapshotIndex),
+    [runtimeHealthData, range, snapshotIndex]
+  );
 
-    return isoDate(addDays(end, -snapshotIndex * rangeDays(range)));
-  }, [model.snapshotDate, range, snapshotIndex]);
+  function setRange(option) {
+    if (rangeProp !== undefined && onRangeChange) {
+      onRangeChange(option);
+    } else {
+      setInternalRange(option);
+      setInternalSnapshotIndex(0);
+    }
+  }
 
   function moveSnapshot(direction) {
     const next = (current) => Math.max(0, Math.min(3, current - direction));
@@ -836,14 +993,25 @@ export function VitalsDashboardPreview({
       <div className="vitals-ai-shell">
         {rangeProp === undefined ? (
           <header className="vitals-ai-toolbar">
+            <img className="vitals-banner-art" src={bannerArt} alt="" aria-hidden="true" draggable="false" />
             <p className="vitals-hero-eyebrow">
               Vitals <em>Health Intelligence</em>
             </p>
             <div className="vitals-ai-controls">
+              {model.headlineReadiness !== null ? (
+                <p className="vitals-banner-stat">
+                  <strong>{formatNumber(model.headlineReadiness)}%</strong>
+                  <small>overall readiness</small>
+                </p>
+              ) : null}
               <div className="vitals-ai-date">
-                <button type="button" onClick={() => moveSnapshot(-1)} aria-label="Previous dashboard snapshot"><ChevronLeft size={17} /></button>
-                <span>Snapshot {formatShortDate(rangeEndDate)}</span>
-                <button type="button" onClick={() => moveSnapshot(1)} aria-label="Next dashboard snapshot"><ChevronRight size={17} /></button>
+                <button type="button" onClick={() => moveSnapshot(-1)} aria-label="Previous dashboard snapshot">
+                  <ChevronLeft size={17} />
+                </button>
+                <span>{model.windowLabel}</span>
+                <button type="button" onClick={() => moveSnapshot(1)} aria-label="Next dashboard snapshot">
+                  <ChevronRight size={17} />
+                </button>
               </div>
               <div className="vitals-ai-ranges" aria-label="Dashboard range">
                 {["7d", "14d", "30d"].map((option) => (
@@ -856,17 +1024,16 @@ export function VitalsDashboardPreview({
           </header>
         ) : null}
 
-        <section className="vitals-ai-grid">
+        <section className="vitals-ai-grid" key={model.windowLabel}>
           <HealthScoreCard model={model} />
           <RecoveryCard model={model} />
           <SleepCard model={model} />
           <TrainingLoadCard model={model} />
           <BodyMetricsCard model={model} />
           <NutritionCard model={model} />
-          <StressCard model={model} />
-          <TrendsCard />
+          <TrendsCard model={model} />
+          <SourcesCard model={model} />
           <ReadinessHabitsCard model={model} />
-          <InsightsCard model={model} />
         </section>
       </div>
     </section>
