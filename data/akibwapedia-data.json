@@ -128,14 +128,6 @@
       "rules": []
     },
     {
-      "description": "Answer finance/admin questions from ledgers and source documents.",
-      "name": "finance",
-      "reads": 3,
-      "rules": [
-        "do-not-store-account-identifiers"
-      ]
-    },
-    {
       "description": "Answer health questions conservatively and source-first.",
       "name": "health",
       "reads": 4,
@@ -175,11 +167,6 @@
       "name": "Calendar",
       "public_note": "commitment patterns and planning context",
       "status": "history cleanup next"
-    },
-    {
-      "name": "Finance",
-      "public_note": "no raw rows or account identifiers",
-      "status": "aggregate-only"
     },
     {
       "name": "Health",
