@@ -568,7 +568,7 @@ function RecoveryCard({ model }) {
           {model.recoveryPath ? (
             <>
               <svg className="vitals-ai-line-chart" viewBox="0 0 540 160" preserveAspectRatio="none" aria-hidden="true">
-                <title>Recovery trend ending at {formatNumber(last.value)}%</title>
+                <title>{`Recovery trend ending at ${formatNumber(last.value)}%`}</title>
                 <line x1="28" x2="512" y1="126" y2="126" />
                 <path d={model.recoveryPath} pathLength="1" />
                 <circle cx="512" cy={model.recoveryEndY ?? 70} r="5" />

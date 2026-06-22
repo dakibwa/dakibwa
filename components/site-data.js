@@ -25,29 +25,29 @@ export const coverCollisionDataUrl = (
 
 export const areaTiles = [
   {
-    title: "About",
-    descriptor: "How I think and build",
-    href: "/about",
-    image: "/area-art/about-summer.webp",
-    imagePosition: "50% 78%",
-    alt: "Hans Thoma's Summer (1872): a couple resting in a flowering meadow beside a stream",
-    detail: "Background, working principles, and the current toolkit"
-  },
-  {
     title: "Personal",
     descriptor: "Self-built projects",
     href: "/personal",
-    image: "/area-art/personal-tiles.webp",
-    alt: "Ceramic tile mosaic of glazed blue, orange, and green tiles with raised flowers, leaves, and abstract shapes",
+    image: "/area-art/personal-rochegrosse-flowers.webp",
+    alt: "Georges Rochegrosse's The Knight of the Flowers: an armored figure surrounded by flower-crowned figures in a luminous meadow",
     detail: "Chorus, Vitals, Cover Collision, and more"
   },
   {
     title: "Professional",
     descriptor: "Systems for companies",
     href: "/professional",
-    image: "/area-art/offer.webp",
-    alt: "Abstract artwork showing a path from messy marks into a precise output",
+    image: "/area-art/personal-tiles.webp",
+    alt: "Ceramic tile mosaic of glazed blue, orange, and green tiles with raised flowers, leaves, and abstract shapes",
     detail: "Discovery, build, and handover for company systems"
+  },
+  {
+    title: "About",
+    descriptor: "How I think and build",
+    href: "/about",
+    image: "/area-art/about-reflection.jpg",
+    imagePosition: "50% 32%",
+    alt: "Black-and-white artwork of a serene mask reflected in rippled water",
+    detail: "Background, working principles, and the current toolkit"
   },
   {
     title: "Contact",
@@ -138,8 +138,8 @@ export const personalProjects = [
     slug: "personal-knowledge-base",
     title: "Personal Knowledge Base",
     type: "Private AI memory system",
-    image: "/project-art/personal/knowledge-flame-card.webp",
-    alt: "Watercolour abstract of a domed face rotated on its side: two eyes above golden arcs, ringed by a flame-like corona on black",
+    image: "/project-art/personal/knowledge-apple-card.webp",
+    alt: "Painterly collage of a bitten red apple on a yellow field above green patterned foliage",
     summary:
       akibwapediaData.subtitle ||
       "Helps Codex use local, source-backed context without exposing raw records.",
