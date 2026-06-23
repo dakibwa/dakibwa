@@ -738,7 +738,7 @@ button {
 
 .studio-page {
   min-height: calc(100vh - 68px);
-  background: var(--white);
+  background: var(--canvas);
   padding-bottom: 40px;
 }
 
@@ -5865,7 +5865,7 @@ button {
 
 .project-surface-page {
   min-height: 100vh;
-  background: #fff;
+  background: var(--canvas);
 }
 
 .project-surface-nav {
