@@ -2650,7 +2650,7 @@ export const life = [
     note: "Paris to Sofia on foot — 2,017 km across France, Germany, Austria, Slovenia, Croatia, Serbia and Bulgaria, over the Tauern at 2,500 m. Two months, seven countries, then Istanbul and India." },
   { name: "A Life in Maps", href: "/life-map/",
     ground: "#1d4f63", accent: "#1d4f63", eyebrow: "Live", art: "/project-art/personal/life-map-card.webp",
-    note: "One map of the whole thing — thirty years, nineteen homes, twenty-three countries, drawn from the real GPS tracks. The story, in the order it happened." }
+    note: "Paris to Sofia on foot is the thread — 1,982 km, seven countries, from the real GPS. The thirty years around it stay on the map, quieter." }
 ];
 
 export const sets = [
