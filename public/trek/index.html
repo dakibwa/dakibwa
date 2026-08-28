@@ -92,7 +92,7 @@
   .node:focus-visible circle.ring{stroke:var(--hellblau)}
   .node:focus-visible .frame,.node:focus-visible .empty{stroke:var(--hellblau);stroke-width:2}
   .sleeve image,.sleeve .empty,.sleeve .frame{pointer-events:none}
-  .sleeve .empty{fill:var(--surface);stroke:var(--node);stroke-width:1.15}
+  .sleeve .empty{fill:rgba(242,240,234,.08);stroke:var(--node);stroke-width:1.15}
   .sleeve .frame{fill:none;stroke:rgba(242,240,234,.62);stroke-width:1.1}
   .nlabel{font:600 8px var(--sans);fill:var(--ink-soft);letter-spacing:.04em;
           paint-order:stroke;stroke:var(--paper);stroke-width:3.5px;stroke-linejoin:round;
@@ -242,7 +242,7 @@ const nodes=DATA.days.map(d=>({...d, ...xy(d.x, d.y)}));
     if(arr.length<2) return;
     const rest=arr.filter(d=>!d.walked);
     rest.forEach((d,i)=>{
-      const dist=22*(i+1);
+      const dist=26*(i+1);
       d.x += dist * Math.cos(-Math.PI/5);
       d.y += dist * Math.sin(-Math.PI/5);
     });
@@ -271,6 +271,19 @@ const nodes=DATA.days.map(d=>({...d, ...xy(d.x, d.y)}));
         a.x -= ux*push; a.y -= uy*push;
         b.x += ux*push; b.y += uy*push;
       }
+    }
+  }
+  const restNodes=nodes.filter(d=>!d.walked);
+  const minR=SLEEVE/2+10;
+  for(const r of restNodes){
+    for(const w of walked){
+      const dx=r.x-w.x, dy=r.y-w.y;
+      let dist=Math.hypot(dx,dy);
+      if(dist>=minR) continue;
+      if(dist<0.01){ r.x += minR; continue; }
+      const push=minR-dist;
+      r.x += (dx/dist)*push;
+      r.y += (dy/dist)*push;
     }
   }
 })();
