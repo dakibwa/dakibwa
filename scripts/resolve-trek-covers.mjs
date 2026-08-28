@@ -7,7 +7,9 @@
  * documented fallback URL (Dump has no CAA front). Never invent a sleeve.
  *
  *   node scripts/resolve-trek-covers.mjs
+ *   node scripts/resolve-trek-covers.mjs --grounds
  */
+import { existsSync } from "node:fs";
 import { mkdir, readFile, writeFile, readdir } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -128,24 +130,114 @@ async function fromWall(id) {
   }
 }
 
+function findArt(filename) {
+  const dirs = [
+    path.join(root, "akibwa-art/trek-page"),
+    "/workspace/akibwa-art/trek-page",
+    "/opt/cursor/artifacts/assets",
+    "/cursor/stores/self/artifacts/assets"
+  ];
+  for (const dir of dirs) {
+    const p = path.join(dir, filename);
+    if (existsSync(p)) return p;
+  }
+  return null;
+}
+
+async function keyRestPin(src) {
+  const { data, info } = await sharp(src).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  const px = data;
+  const w = info.width;
+  const h = info.height;
+  const n = w * h;
+  let minX = w, minY = h, maxX = 0, maxY = 0;
+  for (let i = 0; i < n; i++) {
+    const o = i * 4;
+    const r = px[o];
+    const g = px[o + 1];
+    const b = px[o + 2];
+    const lum = 0.3 * r + 0.59 * g + 0.11 * b;
+    let a = 0;
+    if (lum > 70) a = 255;
+    else if (lum > 32) a = Math.round(((lum - 32) / 38) * 255);
+    if (lum > 80) {
+      const x = i % w;
+      const y = (i / w) | 0;
+      if (x < minX) minX = x;
+      if (y < minY) minY = y;
+      if (x > maxX) maxX = x;
+      if (y > maxY) maxY = y;
+    }
+    if (a > 0) {
+      px[o] = Math.min(255, Math.round(r * 1.15 + 48));
+      px[o + 1] = Math.min(255, Math.round(g * 1.1 + 38));
+      px[o + 2] = Math.min(255, Math.round(b * 1.02 + 16));
+      a = Math.min(255, Math.round(a * 1.5));
+    }
+    px[o + 3] = a;
+  }
+  // Thicken the stroke so the pin still reads at 13px.
+  const copy = Buffer.from(px);
+  for (let y = 1; y < h - 1; y++) {
+    for (let x = 1; x < w - 1; x++) {
+      const o = (y * w + x) * 4;
+      if (copy[o + 3] > 80) continue;
+      let near = 0;
+      for (let dy = -2; dy <= 2; dy++) {
+        for (let dx = -2; dx <= 2; dx++) {
+          if (copy[((y + dy) * w + (x + dx)) * 4 + 3] > 140) {
+            near += 1;
+          }
+        }
+      }
+      if (near >= 2) {
+        px[o] = 232;
+        px[o + 1] = 220;
+        px[o + 2] = 196;
+        px[o + 3] = Math.min(255, 90 + near * 12);
+      }
+    }
+  }
+  const pad = Math.round(Math.max(maxX - minX, maxY - minY) * 0.12);
+  const left = Math.max(0, minX - pad);
+  const top = Math.max(0, minY - pad);
+  const width = Math.min(w - left, maxX - minX + 1 + pad * 2);
+  const height = Math.min(h - top, maxY - minY + 1 + pad * 2);
+  return sharp(px, { raw: { width: w, height: h, channels: 4 } }).extract({ left, top, width, height });
+}
+
 async function prepareGrounds() {
-  const srcDir = "/opt/cursor/artifacts/assets";
   await mkdir(groundsDir, { recursive: true });
   const countries = ["france", "germany", "austria", "slovenia", "croatia", "serbia", "bulgaria"];
   for (const name of countries) {
-    const src = path.join(srcDir, `trek-ground-${name}.png`);
-    const dest = path.join(groundsDir, `${name}.webp`);
-    await sharp(src).resize(256, 256, { fit: "cover" }).webp({ quality: 68 }).toFile(dest);
+    const src = findArt(`trek-${name}.png`) || findArt(`trek-ground-${name}.png`);
+    if (!src) throw new Error(`missing trek-${name}.png`);
+    await sharp(src)
+      .resize(640, 640, { fit: "cover" })
+      .webp({ quality: 80 })
+      .toFile(path.join(groundsDir, `${name}.webp`));
   }
-  await sharp(path.join(srcDir, "trek-contour-ground.png"))
-    .resize(960, 540, { fit: "cover" })
-    .webp({ quality: 62 })
-    .toFile(path.join(groundsDir, "contour.webp"));
-  await sharp(path.join(srcDir, "trek-rest-mark-v2.png"))
-    .resize(64, 64, { fit: "cover" })
+  const contour = findArt("trek-contour-ground.png");
+  if (!contour) throw new Error("missing trek-contour-ground.png");
+  await sharp(contour)
+    .resize(1280, 720, { fit: "cover" })
     .webp({ quality: 72 })
+    .toFile(path.join(groundsDir, "contour.webp"));
+  const rest = findArt("trek-rest.png") || findArt("trek-rest-mark-v2.png") || findArt("trek-rest-mark.png");
+  if (!rest) throw new Error("missing trek-rest.png");
+  await (await keyRestPin(rest))
+    .resize(128, 128, {
+      fit: "contain",
+      background: { r: 0, g: 0, b: 0, alpha: 0 }
+    })
+    .webp({ quality: 80, alphaQuality: 90 })
     .toFile(path.join(root, "public/trek/rest-mark.webp"));
   console.log("grounds + rest mark written");
+}
+
+if (process.argv.includes("--grounds")) {
+  await prepareGrounds();
+  process.exit(0);
 }
 
 const curated = JSON.parse(await readFile(matchesPath, "utf8"));

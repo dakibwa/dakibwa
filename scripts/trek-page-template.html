@@ -77,9 +77,13 @@
   .countries i{width:8px;height:8px;border-radius:50%;display:inline-block}
   main{flex:1 1 auto;min-height:0;display:flex;margin:14px 0 0;border-top:1px solid var(--rule)}
   .stage{flex:1 1 auto;min-width:0;position:relative;min-height:280px}
-  svg#net{position:absolute;inset:0;width:100%;height:100%;display:block}
-  .land{stroke:rgba(242,240,234,.08);stroke-width:1;opacity:.4}
-  .contour-ground{opacity:.3;pointer-events:none}
+  svg#net{position:absolute;inset:0;width:100%;height:100%;display:block;overflow:hidden}
+  .land{fill:none;stroke:rgba(242,240,234,.1);stroke-width:1;opacity:.42;pointer-events:none}
+  .contour-ground{opacity:.32;pointer-events:none}
+  .country-ground{opacity:.18;pointer-events:none;transition:opacity .28s ease}
+  .country-ground.hot{opacity:.52}
+  #net.country-focus .country-ground{opacity:.07}
+  #net.country-focus .country-ground.hot{opacity:.56}
   .gps{fill:none;stroke:rgba(242,240,234,.11);stroke-width:1.05;stroke-linecap:round;stroke-linejoin:round}
   .thread{fill:none;stroke-linecap:round;stroke-linejoin:round;opacity:.94}
   .thread.dim{opacity:.16}
@@ -87,7 +91,7 @@
   .node circle.hit{fill:transparent;stroke:none}
   .node circle.ring{fill:none;stroke:var(--node);stroke-width:1.7}
   .node.rest .restmark{pointer-events:none}
-  .node.sel .restmark{filter:brightness(1.15)}
+  .node.sel .restmark,.node:focus-visible .restmark{filter:brightness(1.2)}
   .node.sel circle.ring{stroke-width:2.4}
   .node.dim{opacity:.22}
   .node:focus{outline:none}
@@ -126,6 +130,7 @@
     display:block;margin:0 0 14px;background:var(--paper);
     box-shadow:0 8px 24px rgba(0,0,0,.35);
   }
+  aside .art.ground{box-shadow:none;border:1px solid var(--rule)}
   .daylist{list-style:none;margin:0;padding:0}
   .daylist li{display:flex;gap:10px;padding:7px 0;border-top:1px solid var(--rule);
               cursor:pointer;font:400 13px/1.35 var(--sans);color:var(--ink-soft);align-items:center}
@@ -146,7 +151,7 @@
     h1{font-size:26px}
   }
   @media (prefers-reduced-motion:reduce){
-    .thread,.node,.sleeve image,.sleeve .empty{transition:none}
+    .thread,.node,.sleeve image,.sleeve .empty,.country-ground{transition:none}
   }
   .thread,.node{transition:opacity .25s ease}
 </style>
@@ -295,14 +300,14 @@ const defs=el("defs",{});
 const filt=el("filter",{id:"sleeve-shadow", x:"-20%", y:"-20%", width:"140%", height:"140%"});
 filt.appendChild(el("feDropShadow",{"dx":"0","dy":"0.5","stdDeviation":"0.7","flood-color":"#000","flood-opacity":".4"}));
 defs.appendChild(filt);
-DATA.countries.forEach(c=>{
-  const id="g-"+c.name.toLowerCase();
-  const pat=el("pattern",{id, patternUnits:"userSpaceOnUse", width:"220", height:"220"});
-  pat.appendChild(el("image",{
-    href:"/trek/grounds/"+c.name.toLowerCase()+".webp",
-    width:"220", height:"220", preserveAspectRatio:"xMidYMid slice"
-  }));
-  defs.appendChild(pat);
+(DATA.countryRings||[]).forEach(c=>{
+  const id=c.name.toLowerCase();
+  const clip=el("clipPath",{id:"clip-"+id, clipPathUnits:"userSpaceOnUse"});
+  (c.rings||[]).forEach(ring=>{
+    const pts=ring.map(([x,y])=>xy(x,y));
+    clip.appendChild(el("path",{d:dstr(pts)+"Z"}));
+  });
+  defs.appendChild(clip);
 });
 svg.appendChild(defs);
 const gC=el("g",{id:"contour"});
@@ -318,10 +323,29 @@ gC.appendChild(el("image",{
   preserveAspectRatio:"xMidYMid slice"
 }));
 (DATA.countryRings||[]).forEach(c=>{
+  const id=c.name.toLowerCase();
+  const pts=(c.rings||[]).flatMap(ring=>ring.map(([x,y])=>xy(x,y)));
+  if(!pts.length) return;
+  const xs=pts.map(p=>p.x), ys=pts.map(p=>p.y);
+  const x=Math.min(...xs), y=Math.min(...ys);
+  const w=Math.max(...xs)-x, h=Math.max(...ys)-y;
+  const g=el("g",{
+    class:"country-ground",
+    "data-c": c.name,
+    "clip-path":"url(#clip-"+id+")"
+  });
+  g.appendChild(el("image",{
+    href:"/trek/grounds/"+id+".webp",
+    x:String(x), y:String(y), width:String(w), height:String(h),
+    preserveAspectRatio:"xMidYMid slice"
+  }));
+  gC.appendChild(g);
+});
+(DATA.countryRings||[]).forEach(c=>{
   (c.rings||[]).forEach(ring=>{
     const pts=ring.map(([x,y])=>xy(x,y));
     gC.appendChild(el("path",{
-      class:"land", d:dstr(pts)+"Z", fill:"url(#g-"+c.name.toLowerCase()+")"
+      class:"land", d:dstr(pts)+"Z"
     }));
   });
 });
@@ -407,13 +431,13 @@ nodes.forEach((d,i)=>{
       }));
     }
   } else {
-    const rs=11;
+    const rs=15;
     g.appendChild(el("image",{
       class:"restmark",
       href:"/trek/rest-mark.webp",
       x: d.x-rs/2, y: d.y-rs/2,
       width: rs, height: rs,
-      preserveAspectRatio:"xMidYMid slice"
+      preserveAspectRatio:"xMidYMid meet"
     }));
   }
   const title=document.createElementNS("http://www.w3.org/2000/svg","title");
@@ -434,7 +458,7 @@ DATA.countries.forEach(c=>{
 });
 
 const panel=document.getElementById("panel");
-let sel=null, cFocus=null, hot=null;
+let sel=null, cFocus=null, hot=null, groundHot=null;
 
 function idleCopy(){
   panel.replaceChildren(
@@ -443,7 +467,7 @@ function idleCopy(){
     h("p",{class:"when"}, ["24 September – 28 November 2019 · alone"]),
     h("div",{class:"body"}, [
       h("p", null, ["Sixty-seven numbered days. Fifty-two of them walked — about 38 km on a walked day. Each walked day took a title from a song, a lyric, or a record. The sleeve is that record’s real front. Colour is the country that day’s last GPS point sat in."]),
-      h("p", null, ["The pale line is the GPS. The coloured thread is octilinear so the days read as a net. Rest marks are numbered days with no GPS — no sleeve, because there is no record for a day that was not walked."])
+      h("p", null, ["The pale line is the GPS. The coloured thread is octilinear so the days read as a net. Country grounds are original atmospheres clipped to the walk, not sleeves. Rest marks are numbered days with no GPS — an empty pin, because there is no record for a day that was not walked."])
     ]),
     h("p",{class:"after"}, [
       "“I got the coach from Sofia to Istanbul, I was done.” The last walked day is titled ",
@@ -470,7 +494,7 @@ function paint(){
     else {
       const mark=n.querySelector(".restmark");
       if(mark){
-        const rs=(sel===i || hot===i)?16:11;
+        const rs=(sel===i || hot===i)?22:15;
         mark.setAttribute("x", d.x-rs/2);
         mark.setAttribute("y", d.y-rs/2);
         mark.setAttribute("width", rs);
@@ -478,6 +502,12 @@ function paint(){
       }
     }
   });
+  const hi = hot!=null ? hot : sel;
+  const stageCountry = cFocus || groundHot || (hi!=null ? nodes[hi].country : null);
+  gC.querySelectorAll(".country-ground").forEach(g=>{
+    g.classList.toggle("hot", g.dataset.c===stageCountry);
+  });
+  svg.classList.toggle("country-focus", !!cFocus);
   gT.querySelectorAll(".thread").forEach(p=>{
     p.classList.toggle("dim", !!(cFocus && p.dataset.c!==cFocus));
   });
@@ -486,7 +516,6 @@ function paint(){
   });
   const tip=gL.querySelector(".tiplabel");
   if(tip) tip.remove();
-  const hi = hot!=null ? hot : sel;
   if(hi!=null && nodes[hi].walked){
     const d=nodes[hi];
     const above=d.y - SLEEVE_HOT/2 - 8;
@@ -536,7 +565,7 @@ function show(i){
       h("h2", null, ["Not walked"]),
       h("p",{class:"when"}, ["A numbered day with no GPS"]),
       h("div",{class:"body"}, [
-        h("p", null, ["Pinned at the last walked point before it — the place the record actually has, not a guessed campsite. No sleeve, because there is no record for a day that was not walked."])
+        h("p", null, ["Pinned at the last walked point before it — the place the record actually has, not a guessed campsite. An empty pin, because there is no record for a day that was not walked."])
       ])
     );
   } else {
@@ -578,6 +607,7 @@ function showCountry(name){
     ol.appendChild(li);
   });
   panel.replaceChildren(
+    h("img",{class:"art ground", src:"/trek/grounds/"+name.toLowerCase()+".webp", alt:name+" ground"}),
     h("p",{class:"kicker", style:{color}}, [name]),
     h("h2", null, [name]),
     h("p",{class:"when"}, [walked.length+" days walked of "+days.length+" numbered"]),
@@ -590,9 +620,7 @@ function idlePanel(){ sel=null; cFocus=null; hot=null; idleCopy(); paint(); }
 
 gN.addEventListener("pointerenter", e=>{
   const n=e.target.closest(".node"); if(!n) return;
-  const i=+n.dataset.i;
-  if(!nodes[i].walked) return;
-  hot=i; paint();
+  hot=+n.dataset.i; paint();
 }, true);
 gN.addEventListener("pointerleave", e=>{
   const n=e.target.closest(".node"); if(!n) return;
@@ -614,8 +642,19 @@ gN.addEventListener("focusin", e=>{
 svg.addEventListener("click", e=>{ if(!e.target.closest(".node")) idlePanel(); });
 key.addEventListener("click", e=>{
   const b=e.target.closest("button"); if(!b) return;
+  groundHot=null;
   if(cFocus===b.dataset.c && sel==null) idlePanel();
   else showCountry(b.dataset.c);
+});
+key.addEventListener("pointerover", e=>{
+  const b=e.target.closest("button"); if(!b) return;
+  if(groundHot===b.dataset.c) return;
+  groundHot=b.dataset.c;
+  paint();
+});
+key.addEventListener("pointerleave", ()=>{
+  groundHot=null;
+  paint();
 });
 panel.addEventListener("click", e=>{
   const li=e.target.closest(".daylist li"); if(!li) return;
