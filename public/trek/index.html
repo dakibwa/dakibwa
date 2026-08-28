@@ -76,8 +76,8 @@
   .countries button:focus-visible{outline:2px solid var(--hellblau);outline-offset:3px}
   .countries i{width:8px;height:8px;border-radius:50%;display:inline-block}
   main{flex:1 1 auto;min-height:0;display:flex;margin:14px 0 0;border-top:1px solid var(--rule)}
-  .stage{flex:1 1 auto;min-width:0;position:relative}
-  svg#net{width:100%;height:100%;display:block}
+  .stage{flex:1 1 auto;min-width:0;position:relative;min-height:280px}
+  svg#net{position:absolute;inset:0;width:100%;height:100%;display:block}
   .thread{fill:none;stroke-linecap:round;stroke-linejoin:round;opacity:.94}
   .thread.dim{opacity:.16}
   .node{cursor:pointer}
@@ -125,7 +125,7 @@
     body{overflow:auto}
     .sheet{height:auto;min-height:100%;padding:14px 16px 24px}
     main{flex-direction:column;min-height:0;border-top:1px solid var(--rule)}
-    .stage{flex:0 0 56vh;min-height:320px}
+    .stage{flex:0 0 56vh;min-height:320px;position:relative}
     aside{flex:0 0 auto;border-left:0;border-top:1px solid var(--rule);padding:18px 4px 8px}
     h1{font-size:26px}
   }
@@ -211,7 +211,7 @@ const bw=maxx-minx||1, bh=maxy-miny||1;
 const innerW=VB.w-2*VB.pad, innerH=VB.h-2*VB.pad;
 const k=Math.min(innerW/bw, innerH/bh);
 const ox=VB.pad+(innerW-bw*k)/2, oy=VB.pad+(innerH-bh*k)/2;
-const nodes=DATA.days.map(d=>({x:ox+(d.x-minx)*k, y:oy+(d.y-miny)*k, ...d}));
+const nodes=DATA.days.map(d=>({...d, x:ox+(d.x-minx)*k, y:oy+(d.y-miny)*k}));
 
 /* Rest days share the last walked GPS. Nudge them in the diagram so the
    net can be read — the coordinates in the data stay where the record is. */
@@ -226,7 +226,7 @@ const nodes=DATA.days.map(d=>({x:ox+(d.x-minx)*k, y:oy+(d.y-miny)*k, ...d}));
     if(arr.length<2) return;
     const rest=arr.filter(d=>!d.walked);
     rest.forEach((d,i)=>{
-      const dist=15*(i+1);
+      const dist=22*(i+1);
       d.x += dist * Math.cos(-Math.PI/5);
       d.y += dist * Math.sin(-Math.PI/5);
     });
@@ -275,7 +275,7 @@ nodes.forEach((d,i)=>{
     "aria-label": d.walked ? ("Day "+d.n+" — "+(d.title||"")) : ("Day "+d.n+", numbered, not walked")
   });
   const r=d.walked?6.2:4.6;
-  g.appendChild(el("circle",{class:"hit", cx:d.x, cy:d.y, r:14}));
+  g.appendChild(el("circle",{class:"hit", cx:d.x, cy:d.y, r: d.walked?12:9}));
   g.appendChild(el("circle",{class:"ring", cx:d.x, cy:d.y, r}));
   if(d.walked) g.appendChild(el("circle",{class:"fill", cx:d.x, cy:d.y, r:2}));
   const title=document.createElementNS("http://www.w3.org/2000/svg","title");
@@ -288,6 +288,7 @@ nodes.forEach((d,i)=>{
   }
   gN.appendChild(g);
 });
+[...gN.querySelectorAll(".node:not(.rest)")].forEach(n=>gN.appendChild(n));
 
 const key=document.getElementById("ckey");
 DATA.countries.forEach(c=>{
@@ -423,8 +424,7 @@ panel.addEventListener("click", e=>{
   show(+li.dataset.i);
 });
 document.addEventListener("keydown", e=>{
-  if(e.target.closest("input,textarea")) return;
-  if(e.target.closest("button") && (e.key==="ArrowRight"||e.key==="ArrowLeft")) return;
+  if(e.target instanceof Element && e.target.closest("input,textarea")) return;
   if(e.key!=="ArrowRight" && e.key!=="ArrowLeft") return;
   e.preventDefault();
   const dir=e.key==="ArrowRight"?1:-1;
